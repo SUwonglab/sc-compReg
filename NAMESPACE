@@ -1,5 +1,5 @@
 exportPattern("^[[:alpha:]]+")
-useDynLib(couplednmf, .registration = TRUE)
+useDynLib(scCompReg, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 importFrom(RcppParallel, RcppParallelLibs)
 importFrom(graphics, abline, boxplot, bxp, contour, hist, image, lines, par, plot, plot.default, points, polygon, text, title)

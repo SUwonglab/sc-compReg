@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // initializeMatrix
 Rcpp::List initializeMatrix(const unsigned int POnRow, const unsigned int POnCol, const unsigned int XnCol, const unsigned int k, const arma::sp_mat& D);
-RcppExport SEXP _couplednmf_initializeMatrix(SEXP POnRowSEXP, SEXP POnColSEXP, SEXP XnColSEXP, SEXP kSEXP, SEXP DSEXP) {
+RcppExport SEXP _scCompReg_initializeMatrix(SEXP POnRowSEXP, SEXP POnColSEXP, SEXP XnColSEXP, SEXP kSEXP, SEXP DSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // computeLambda
 Rcpp::List computeLambda(const arma::sp_mat& PeakO, const arma::mat& w1, const arma::mat& h1, const arma::sp_mat& X, const arma::mat& w2, const arma::mat& h2, const arma::sp_mat& D, double beta, double alpha, double eps);
-RcppExport SEXP _couplednmf_computeLambda(SEXP PeakOSEXP, SEXP w1SEXP, SEXP h1SEXP, SEXP XSEXP, SEXP w2SEXP, SEXP h2SEXP, SEXP DSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP epsSEXP) {
+RcppExport SEXP _scCompReg_computeLambda(SEXP PeakOSEXP, SEXP w1SEXP, SEXP h1SEXP, SEXP XSEXP, SEXP w2SEXP, SEXP h2SEXP, SEXP DSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP epsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -43,7 +43,7 @@ END_RCPP
 }
 // iterateCluster
 Rcpp::List iterateCluster(const arma::sp_mat& PeakO, const arma::sp_mat& X, const arma::sp_mat& D, const unsigned int k, const unsigned int maxIter, double lambda1, double lambda2, arma::mat W10, arma::mat H10, arma::mat W20, arma::mat H20, double epsD, double tolX, double tolFun, bool verbose, int loopUpdate);
-RcppExport SEXP _couplednmf_iterateCluster(SEXP PeakOSEXP, SEXP XSEXP, SEXP DSEXP, SEXP kSEXP, SEXP maxIterSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP W10SEXP, SEXP H10SEXP, SEXP W20SEXP, SEXP H20SEXP, SEXP epsDSEXP, SEXP tolXSEXP, SEXP tolFunSEXP, SEXP verboseSEXP, SEXP loopUpdateSEXP) {
+RcppExport SEXP _scCompReg_iterateCluster(SEXP PeakOSEXP, SEXP XSEXP, SEXP DSEXP, SEXP kSEXP, SEXP maxIterSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP W10SEXP, SEXP H10SEXP, SEXP W20SEXP, SEXP H20SEXP, SEXP epsDSEXP, SEXP tolXSEXP, SEXP tolFunSEXP, SEXP verboseSEXP, SEXP loopUpdateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -69,7 +69,7 @@ END_RCPP
 }
 // postLapMatMult
 Rcpp::List postLapMatMult(arma::mat W1, arma::mat W2, arma::mat H1, arma::mat H2);
-RcppExport SEXP _couplednmf_postLapMatMult(SEXP W1SEXP, SEXP W2SEXP, SEXP H1SEXP, SEXP H2SEXP) {
+RcppExport SEXP _scCompReg_postLapMatMult(SEXP W1SEXP, SEXP W2SEXP, SEXP H1SEXP, SEXP H2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -83,14 +83,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_couplednmf_initializeMatrix", (DL_FUNC) &_couplednmf_initializeMatrix, 5},
-    {"_couplednmf_computeLambda", (DL_FUNC) &_couplednmf_computeLambda, 10},
-    {"_couplednmf_iterateCluster", (DL_FUNC) &_couplednmf_iterateCluster, 16},
-    {"_couplednmf_postLapMatMult", (DL_FUNC) &_couplednmf_postLapMatMult, 4},
+    {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
+    {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
+    {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 16},
+    {"_scCompReg_postLapMatMult", (DL_FUNC) &_scCompReg_postLapMatMult, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_couplednmf(DllInfo *dll) {
+RcppExport void R_init_scCompReg(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

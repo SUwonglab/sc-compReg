@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {
-    .Call(`_couplednmf_initializeMatrix`, POnRow, POnCol, XnCol, k, D)
+    .Call(`_scCompReg_initializeMatrix`, POnRow, POnCol, XnCol, k, D)
 }
 
 computeLambda <- function(PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps) {
-    .Call(`_couplednmf_computeLambda`, PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps)
+    .Call(`_scCompReg_computeLambda`, PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps)
 }
 
 iterateCluster <- function(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate) {
-    .Call(`_couplednmf_iterateCluster`, PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate)
+    .Call(`_scCompReg_iterateCluster`, PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate)
 }
 
 postLapMatMult <- function(W1, W2, H1, H2) {
-    .Call(`_couplednmf_postLapMatMult`, W1, W2, H1, H2)
+    .Call(`_scCompReg_postLapMatMult`, W1, W2, H1, H2)
 }
 
