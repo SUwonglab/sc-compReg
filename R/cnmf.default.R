@@ -5,6 +5,9 @@ cnmf.default <- function(PeakO,
                          alpha=0.5,
                          beta_max_scale=5,
                          beta_min=NULL) {
+    # TODO: input format checking
+
+
     if (!is.null(beta_min)) {
         beta <- beta_min * 10.0^seq(beta_max_scale, 0, -1)
     } else {
@@ -26,19 +29,6 @@ cnmf.default <- function(PeakO,
                           dim(X)[2],
                           k,
                           D)
-    # W10 <- matrix(runif(PO.dim[1]*k, 0, 1),nrow = PO.dim[1],ncol = k)
-    # H10 <- matrix(runif(PO.dim[2] * k), nrow = k, ncol = PO.dim[2])
-    #
-    # W20 <- D %*% W10
-    # W20 <- W20 - min(W20)
-    # H20 <- matrix(runif(k * dim(X)[2]), nrow = k, ncol = dim(X)[2])
-    #
-    # W10.sum <- apply(W10^2, 2, sum) # sum over each column and return a row vector
-    # W20.sum <- apply(W20^2, 2, sum)
-    # H1 <-diag(W10.sum) %*% H10
-    # H2 <- diag(W20.sum) %*% H20
-    # W1 <- W10 %*% diag(1/sqrt(W10.sum))
-    # W2 <- W20 %*% diag(1/sqrt(W20.sum))
 
     for (j in 1:length(beta)) {
         dp.ret <- compute_lambda(PeakO,
@@ -52,7 +42,6 @@ cnmf.default <- function(PeakO,
                                 beta[j])
         lambda1 <- dp.ret$lambda1
         lambda2 <- dp.ret$lambda2
-
         nmf.ret <- nmf_cluster_sep2_lap(PeakO,
                              X,
                              D,

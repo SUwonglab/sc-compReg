@@ -1,9 +1,4 @@
-"cnmf" <- function(peak_O_path,
-                   p_symbol_path,
-                   e_symbol_path,
-                   e_matrix_path,
-                   pe_path,
-                   k_components,
+"cnmf" <- function(PeakO,w1,h1,X,w2,h2,D,
                    ...){
     UseMethod("cnmf")
 }

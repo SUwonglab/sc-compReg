@@ -119,10 +119,10 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         arma::urowvec S20, S10;
         arma::mat FC1 = arma::mat(PeakO.n_rows, k, arma::fill::zeros);
         arma::mat FC2 = arma::mat(X.n_rows, k, arma::fill::zeros);
-        arma::mat tempSumS10 = arma::mat(PeakO.n_cols, 1);
-        arma::mat tempSumS20 = arma::mat(X.n_cols, 1);
-        arma::mat tempSumNS10 = arma::mat(PeakO.n_cols, 1);
-        arma::mat tempSumNS20 = arma::mat(X.n_cols, 1);
+        arma::mat tempSumS10 = arma::mat(PeakO.n_rows, 1);
+        arma::mat tempSumS20 = arma::mat(X.n_rows, 1);
+        arma::mat tempSumNS10 = arma::mat(PeakO.n_rows, 1);
+        arma::mat tempSumNS20 = arma::mat(X.n_rows, 1);
         unsigned int SSize, XSize;
         arma::sp_mat zeroPOVec = arma::sp_mat(PeakO.n_rows, 1);
         arma::sp_mat zeroXVec = arma::sp_mat(X.n_rows, 1);
@@ -142,7 +142,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             W1.transform([](double val) { return (val >= 0) ? val : 0; }); // max(0, W1)
             S2 = 0.5 * (lambda2 / (lambda1 + epsD)) * (D * W1 * s);
             numer = W20.t() * X;
-            H2 = H20 % (numer / (W20.t() * W20) * H20 + arma::eps(numer));
+            H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer)));
             H20.transform([](double val) { return (val >= 0) ? val : 0; });
             numer = X * H2.t() + S2;
             numer.transform([](double val) { return (val >= 0) ? val : 0; });
@@ -165,9 +165,9 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                     std::cout << std::fixed; // print out 6 decimal places
                     std::cout << "delta " << delta << " is small" << endl;
                     break;
-                } else if (dnorm0 - dnorm <= tolFun * std::max(1.0, dnorm0)) {
+                } else if (abs(dnorm0 - dnorm) <= tolFun * std::max(1.0, dnorm0)) {
                     std::cout << std::fixed; // print out 6 decimal places
-                    std::cout << "dnorm0 - dnorm " << dnorm0 - dnorm << " is small" << endl;
+                    std::cout << "dnorm0 - dnorm " << abs(dnorm0 - dnorm) << " is small" << endl;
                     break;
                 } else if (iter == maxIter) {
                     break;
@@ -180,8 +180,8 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             H20 = H2;
 
             if (iter % loopUpdate == 0) {
-                S20 = arma::index_max(H20 % (1 / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1)))); // sum over each row
-                S10 = arma::index_max(H10 % (1 / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1))));
+                S20 = arma::index_max(arma::diagmat((1 / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1)))) * H20); // sum over each row
+                S10 = arma::index_max(arma::diagmat((1 / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1)))) * H10);
                 SSize = S10.n_elem;
                 XSize = S20.n_elem;
                 FC1.fill(arma::fill::zeros); // could remove later
@@ -235,8 +235,8 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                 lambda2 * arma::trace(W2.t() * D * W1);
         //    double detr = 0.;
 
-        S20 = arma::max(H2 % (1. / arma::sqrt(arma::sum(arma::pow(H2, 2.0), 1))));
-        S10 = arma::max(H1 % (1. / arma::sqrt(arma::sum(arma::pow(H1, 2.0), 1))));
+        S20 = arma::index_max(arma::diagmat((1. / arma::sqrt(arma::sum(arma::pow(H2, 2.0), 1)))) * H2);
+        S10 = arma::index_max(arma::diagmat((1. / arma::sqrt(arma::sum(arma::pow(H1, 2.0), 1)))) * H1);
         FC1.fill(arma::fill::zeros);
         FC2.fill(arma::fill::zeros);
         for (int j = 0; j < k; ++j) {

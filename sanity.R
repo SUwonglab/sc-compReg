@@ -1,6 +1,28 @@
-library(couplednmf)
+library(scCompReg)
 library(tictoc)
-tic('cnmf')
+# tic('cnmf')
+library(R.matlab)
+file.mat <- readMat( '/Users/Sophia/Desktop/BioStats/RAd4_sc_data.mat')
+X <- Matrix(file.mat[['X']], sparse=TRUE)
+A <- Matrix(file.mat[['D']], sparse=TRUE)
+peakO <- Matrix(log10(file.mat[['PeakO']] + 1), sparse=TRUE)
+
+output = cnmf(peakO,
+         X,
+         A,
+         k=3,
+         alpha=0.5,
+         beta_max_scale=5,
+         beta_min=NULL)
+
+
+
+
+
+e.symbol <- unlist(file.mat[[mat_obj$e.sym]], use.names=FALSE)
+p.symbol <- unlist(file.mat[[mat_obj$p.sym]], use.names=FALSE)
+
+
 output = cnmf(mat_path = '/Users/Sophia/Desktop/BioStats/RAd4_sc_data.mat',
               k_components=3,
               mat_obj=list('A'='D',

@@ -14,5 +14,20 @@ nmf_cluster_sep2_lap.default <- function(PeakO,
                                          eps=1e-10,
                                          verbose = TRUE,
                                          loop_update = 50) {
-    return()
+    return(iterateCluster(PeakO,
+                          X,
+                          D,
+                          k,
+                          max_iter,
+                          lambda1,
+                          lambda2,
+                          W10,
+                          H10,
+                          W20,
+                          H20,
+                          eps,
+                          tol_x,
+                          tol_fun,
+                          verbose,
+                          loop_update))
 }
