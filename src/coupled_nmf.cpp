@@ -129,6 +129,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         arma::uvec assignment;
         arma::mat S, WP1, WP2;
         for (int iter = 1; iter <= maxIter; ++iter) {
+            Rcpp::checkUserInterrupt();
             S1 = 0.5 * lambda2 * D.t() * W20 * s;
             numer = W10.t() * PeakO;
             H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer)));

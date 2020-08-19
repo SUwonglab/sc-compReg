@@ -71,6 +71,6 @@ cnmf.default <- function(PeakO,
                 "lambda1" = lambda1,
                 "lambda2" = lambda2,
                 "score" = score,
-                "cluster1" = c1,
-                "cluster2" = c2))
+                "cluster1" = C1,
+                "cluster2" = C2))
 }
