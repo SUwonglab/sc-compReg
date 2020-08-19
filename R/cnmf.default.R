@@ -30,6 +30,7 @@ cnmf.default <- function(PeakO,
                           k,
                           D)
 
+    score = 0
     for (j in 1:length(beta)) {
         dp.ret <- compute_lambda(PeakO,
                                 w1,
@@ -61,11 +62,13 @@ cnmf.default <- function(PeakO,
         H2 = update.ret$H2
         W1 = update.ret$W1
         W2 = update.ret$W2
+        score = update.ret$score
     }
     return(list("W1" = W1,
                 "W2" = W2,
                 "H1" = H1,
                 "H2" = H2,
                 "lambda1" = lambda1,
-                "lambda2" = lambda2))
+                "lambda2" = lambda2,
+                "score" = score))
 }

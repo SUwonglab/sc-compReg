@@ -16,8 +16,7 @@ output = cnmf(peakO,
          beta_min=NULL)
 
 
-
-
+output$
 
 e.symbol <- unlist(file.mat[[mat_obj$e.sym]], use.names=FALSE)
 p.symbol <- unlist(file.mat[[mat_obj$p.sym]], use.names=FALSE)
