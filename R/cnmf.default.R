@@ -54,15 +54,17 @@ cnmf.default <- function(PeakO,
                              mat.init$H1,
                              mat.init$W2,
                              mat.init$H2)
-        update.ret = postLapMatMult(nmf.ret$W1,
+        update.ret <- postLapMatMult(nmf.ret$W1,
                        nmf.ret$W2,
                        nmf.ret$H1,
                        nmf.ret$H2)
-        H1 = update.ret$H1
-        H2 = update.ret$H2
-        W1 = update.ret$W1
-        W2 = update.ret$W2
-        score = update.ret$score
+        H1 <- update.ret$H1
+        H2 <- update.ret$H2
+        W1 <- update.ret$W1
+        W2 <- update.ret$W2
+        score <- update.ret$score
+        c1 <- update.ret$C1
+        c2 <- update.ret$C2
     }
     return(list("W1" = W1,
                 "W2" = W2,
@@ -71,6 +73,6 @@ cnmf.default <- function(PeakO,
                 "lambda1" = lambda1,
                 "lambda2" = lambda2,
                 "score" = score,
-                "cluster1" = C1,
-                "cluster2" = C2))
+                "cluster1" = c1,
+                "cluster2" = c2))
 }
