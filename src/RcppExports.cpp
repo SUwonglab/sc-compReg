@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // compReg
-Rcpp::List compReg(const arma::sp_mat& O1, const arma::sp_mat& E1, arma::uvec O1Idx, arma::uvec E1Idx, std::vector<std::string> symbol1, std::vector<std::string> peakName1, const arma::sp_mat& O2, const arma::sp_mat& E2, arma::uvec O2Idx, arma::uvec E2Idx, std::vector<std::string> symbol2, std::vector<std::string> peakName2, std::vector<std::string> peakNameIntersect);
-RcppExport SEXP _scCompReg_compReg(SEXP O1SEXP, SEXP E1SEXP, SEXP O1IdxSEXP, SEXP E1IdxSEXP, SEXP symbol1SEXP, SEXP peakName1SEXP, SEXP O2SEXP, SEXP E2SEXP, SEXP O2IdxSEXP, SEXP E2IdxSEXP, SEXP symbol2SEXP, SEXP peakName2SEXP, SEXP peakNameIntersectSEXP) {
+Rcpp::List compReg(const arma::sp_mat& O1, const arma::sp_mat& E1, arma::uvec O1Idx, arma::uvec E1Idx, std::vector<std::string> symbol1, std::vector<std::string> peakName1, const arma::sp_mat& O2, const arma::sp_mat& E2, arma::uvec O2Idx, arma::uvec E2Idx, std::vector<std::string> symbol2, std::vector<std::string> peakName2, std::vector<std::string> peakNameIntersect1, std::vector<std::string> peakNameIntersect2);
+RcppExport SEXP _scCompReg_compReg(SEXP O1SEXP, SEXP E1SEXP, SEXP O1IdxSEXP, SEXP E1IdxSEXP, SEXP symbol1SEXP, SEXP peakName1SEXP, SEXP O2SEXP, SEXP E2SEXP, SEXP O2IdxSEXP, SEXP E2IdxSEXP, SEXP symbol2SEXP, SEXP peakName2SEXP, SEXP peakNameIntersect1SEXP, SEXP peakNameIntersect2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,8 +24,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::uvec >::type E2Idx(E2IdxSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type symbol2(symbol2SEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type peakName2(peakName2SEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakNameIntersect(peakNameIntersectSEXP);
-    rcpp_result_gen = Rcpp::wrap(compReg(O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect));
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakNameIntersect1(peakNameIntersect1SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakNameIntersect2(peakNameIntersect2SEXP);
+    rcpp_result_gen = Rcpp::wrap(compReg(O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect1, peakNameIntersect2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -106,7 +107,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 13},
+    {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 14},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 16},
