@@ -290,8 +290,6 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
 }
 
 
-
-
 // [[Rcpp::export]]
 Rcpp::List postLapMatMult(arma::mat W1,
                           arma::mat W2,

@@ -6,6 +6,29 @@
 
 using namespace Rcpp;
 
+// compReg
+Rcpp::List compReg(const arma::sp_mat& O1, const arma::sp_mat& E1, arma::uvec O1Idx, arma::uvec E1Idx, std::vector<std::string> symbol1, std::vector<std::string> peakName1, const arma::sp_mat& O2, const arma::sp_mat& E2, arma::uvec O2Idx, arma::uvec E2Idx, std::vector<std::string> symbol2, std::vector<std::string> peakName2, std::vector<std::string> peakNameIntersect);
+RcppExport SEXP _scCompReg_compReg(SEXP O1SEXP, SEXP E1SEXP, SEXP O1IdxSEXP, SEXP E1IdxSEXP, SEXP symbol1SEXP, SEXP peakName1SEXP, SEXP O2SEXP, SEXP E2SEXP, SEXP O2IdxSEXP, SEXP E2IdxSEXP, SEXP symbol2SEXP, SEXP peakName2SEXP, SEXP peakNameIntersectSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type O1(O1SEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E1(E1SEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type O1Idx(O1IdxSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type E1Idx(E1IdxSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type symbol1(symbol1SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakName1(peakName1SEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type O2(O2SEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E2(E2SEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type O2Idx(O2IdxSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type E2Idx(E2IdxSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type symbol2(symbol2SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakName2(peakName2SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type peakNameIntersect(peakNameIntersectSEXP);
+    rcpp_result_gen = Rcpp::wrap(compReg(O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect));
+    return rcpp_result_gen;
+END_RCPP
+}
 // initializeMatrix
 Rcpp::List initializeMatrix(const unsigned int POnRow, const unsigned int POnCol, const unsigned int XnCol, const unsigned int k, const arma::sp_mat& D);
 RcppExport SEXP _scCompReg_initializeMatrix(SEXP POnRowSEXP, SEXP POnColSEXP, SEXP XnColSEXP, SEXP kSEXP, SEXP DSEXP) {
@@ -83,6 +106,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 13},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 16},
