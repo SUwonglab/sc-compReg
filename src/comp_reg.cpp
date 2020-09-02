@@ -15,7 +15,39 @@ std::vector<std::string> intersection(std::vector<std::string> &v1,
 
 
 // [[Rcpp::export]]
-Rcpp::List compReg(const arma::sp_mat& O1,
+Rcpp::List subpopulationLink(EMH, EMC, OMH, OMC) {
+    // EMH - EMeanHealthy
+    // EMC - EMeanCll
+    // OMH - OMeanHealthy
+    // OMC - OMeanCll
+    try {
+        // r1 is K1 x K2
+        arma::mat r1 = arma::cor(EMH, EMC); // ask Duren if matlab corr of two mats also return a mat
+        arma::mat r2 = arma::cor(EMH, EMC);
+        arma::mat rr1 = r1 - arma::sum(r1, 0) % arma::sum(r1, 1).t() / arma::accu(r1); // ask Duren if this works
+        // outer product
+        arma::mat rr2 = r2 - arma::sum(r2, 0) % arma::sum(r2, 1).t() / arma::accu(r2);
+        arma::mat rr = rr1 + rr2;
+        arma:: uvec b = arma::find(rr > 0);
+
+        arma::mat a;
+        a.col(0) = 0;
+        a.col(1) = 0;
+        a.col(2) = r1.elem(b);
+        a.col(3) = r2.elem(b);
+        a.col(4) = rr1.elem(b);
+        a.col(5) = rr2.elem(b);
+        a.col(6) = rr.elem(b);
+        arma::sort(a.col(6), "descend");
+        a = a.row(f);
+    } catch(...) {
+    ::Rf_error("c++ exception");
+}
+
+
+
+// [[Rcpp::export]]
+Rcpp::List clusterProfile(const arma::sp_mat& O1,
                    const arma::sp_mat& E1,
                    arma::uvec O1Idx,
                    arma::uvec E1Idx,
@@ -118,7 +150,8 @@ Rcpp::List compReg(const arma::sp_mat& O1,
         arma::uvec d2ZeroIdx = arma::find(d2 == 0);
         d2Zero = d2ZeroIdx.n_elem;
         unsigned int m = peakNameIntersect1.size(); // length(peakNameIntersect1) = length(peakNameIntersect2)
-        const std::vector<unsigned int> v {peakNameIntersect1.size(), d1Zero, d2Zero};
+        unsigned int OMeanNRows = m + d1Zero + d2Zero
+        const std::vector<unsigned int> v {m, d1Zero, d2Zero};
         auto maxElem = std::max_element(v.begin(), v.end());
         unsigned int OMeanNRows = *maxElem; // TODO: check with Duren here
 
