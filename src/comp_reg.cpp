@@ -26,6 +26,25 @@ T mod(T a, int n)
 }
 
 // [[Rcpp::export]]
+Rcpp::List mfbs(std::vector<std::string> TFName,
+                std::vector<std::string> motifName,
+                arma::vec motifWeight,
+                std::vector<std::string> elementName,
+                std::vector<std::string> match2TF,
+                std::vector<std::string> match2Motif) {
+    try {
+
+    } catch(...) {
+        ::Rf_error("c++ exception");
+    }
+}
+
+
+
+
+
+
+// [[Rcpp::export]]
 Rcpp::List subpopulationLink(arma::mat EMH,
                              arma::mat EMC,
                              arma::mat OMH,
@@ -251,13 +270,20 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         O1Mean /= arma::mean(O1Mean, 0);
         O2Mean /= arma::mean(O2Mean, 0);
 
+        for (arma::uvec::iterator it = d1ZeroIdx.begin(); it != d1ZeroIdx.end(); ++it) {
+            peakNameIntersect1.push_back(peakName1.at(*it));
+        }
+
+        for (arma::uvec::iterator it = d2ZeroIdx.begin(); it != d2ZeroIdx.end(); ++it) {
+            peakNameIntersect1.push_back(peakName2.at(*it));
+        }
+
         return Rcpp::List::create(Named("E1Mean") = E1Mean,
                                   Named("E2Mean") = E2Mean,
                                   Named("symbol") = symbol,
                                   Named("O1Mean") = O1Mean,
                                   Named("O2Mean") = O2Mean,
-                                  Named("d1Zero") = d1ZeroIdx + 1,
-                                  Named("d2Zero") = d2ZeroIdx + 1);
+                                  Named("elementName") = peakNameIntersect1);
     } catch(...) {
             ::Rf_error("c++ exception");
     }

@@ -6,6 +6,22 @@
 
 using namespace Rcpp;
 
+// mfbs
+Rcpp::List mfbs(std::vector<std::string> TFName, std::vector<std::string> motifName, arma::vec motifWeight, std::vector<std::string> elementName, std::vector<std::string> match2TF, std::vector<std::string> match2Motif);
+RcppExport SEXP _scCompReg_mfbs(SEXP TFNameSEXP, SEXP motifNameSEXP, SEXP motifWeightSEXP, SEXP elementNameSEXP, SEXP match2TFSEXP, SEXP match2MotifSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type TFName(TFNameSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type motifName(motifNameSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type motifWeight(motifWeightSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type elementName(elementNameSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type match2TF(match2TFSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type match2Motif(match2MotifSEXP);
+    rcpp_result_gen = Rcpp::wrap(mfbs(TFName, motifName, motifWeight, elementName, match2TF, match2Motif));
+    return rcpp_result_gen;
+END_RCPP
+}
 // subpopulationLink
 Rcpp::List subpopulationLink(arma::mat EMH, arma::mat EMC, arma::mat OMH, arma::mat OMC);
 RcppExport SEXP _scCompReg_subpopulationLink(SEXP EMHSEXP, SEXP EMCSEXP, SEXP OMHSEXP, SEXP OMCSEXP) {
@@ -121,6 +137,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 6},
     {"_scCompReg_subpopulationLink", (DL_FUNC) &_scCompReg_subpopulationLink, 4},
     {"_scCompReg_clusterProfile", (DL_FUNC) &_scCompReg_clusterProfile, 14},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
