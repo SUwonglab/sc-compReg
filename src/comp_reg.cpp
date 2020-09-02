@@ -13,35 +13,74 @@ std::vector<std::string> intersection(std::vector<std::string> &v1,
     return v3;
 }
 
+/**
+ * Extend division reminder to vectors
+ *
+ * @param   a       Dividend
+ * @param   n       Divisor
+ */
+template<typename T>
+T mod(T a, int n)
+{
+    return a - floor(a/n)*n;
+}
 
 // [[Rcpp::export]]
-Rcpp::List subpopulationLink(EMH, EMC, OMH, OMC) {
+Rcpp::List subpopulationLink(arma::mat EMH,
+                             arma::mat EMC,
+                             arma::mat OMH,
+                             arma::mat OMC) {
     // EMH - EMeanHealthy
     // EMC - EMeanCll
     // OMH - OMeanHealthy
     // OMC - OMeanCll
     try {
         // r1 is K1 x K2
-        arma::mat r1 = arma::cor(EMH, EMC); // ask Duren if matlab corr of two mats also return a mat
+        arma::mat r1 = arma::cor(EMH, EMC);
         arma::mat r2 = arma::cor(EMH, EMC);
-        arma::mat rr1 = r1 - arma::sum(r1, 0) % arma::sum(r1, 1).t() / arma::accu(r1); // ask Duren if this works
         // outer product
-        arma::mat rr2 = r2 - arma::sum(r2, 0) % arma::sum(r2, 1).t() / arma::accu(r2);
+        arma::mat rr1 = r1 - arma::sum(r1, 0).t() * arma::sum(r1, 1) / arma::accu(r1);
+        arma::mat rr2 = r2 - arma::sum(r2, 0).t() * arma::sum(r2, 1) / arma::accu(r2);
         arma::mat rr = rr1 + rr2;
-        arma:: uvec b = arma::find(rr > 0);
+        arma::uvec b = arma::find(rr > 0);
 
         arma::mat a;
-        a.col(0) = 0;
-        a.col(1) = 0;
+        arma::uvec rrPos = arma::find(rr > 0);
+        unsigned int rrNRows = rr.n_rows;
+        // row
+        a.col(0) = conv_to<vec>::from(rrPos / rrNRows);
+        // col
+        a.col(1) = conv_to<vec>::from(mod(rrPos, rrNRows));
         a.col(2) = r1.elem(b);
         a.col(3) = r2.elem(b);
         a.col(4) = rr1.elem(b);
         a.col(5) = rr2.elem(b);
         a.col(6) = rr.elem(b);
-        arma::sort(a.col(6), "descend");
-        a = a.row(f);
-    } catch(...) {
-    ::Rf_error("c++ exception");
+        arma::uvec f = arma::sort_index(a.col(6), "descend");
+        a = a.rows(f);
+        arma::uvec aRows =  arma::find(((a.col(4) > 0) % (a.col(5) > 0)) == 1);
+        a = a.rows(aRows);
+
+        unsigned int aNRows = a.n_rows;
+        arma::vec S1 = arma::vec(aNRows, arma::fill::zeros);
+        arma::vec S2 = arma::vec(aNRows, arma::fill::zeros);
+        arma::mat match = arma::mat(aNRows, a.n_cols, arma::fill::zeros);
+        unsigned int idx;
+        unsigned int matchIdx;
+        for (int i = 0; i < aNRows; ++ i) {
+            idx = arma::any(S1 == a.at(i, 1)) + arma::any(S2 == a.at(i, 2));
+            S1.at(i) = a.at(i, 1);
+            S2.at(i) = a.at(i, 2);
+            if (idx < 2) {
+                match.row(matchIdx) = a.row(i);
+                ++matchIdx;
+            }
+        }
+        match.shed_rows(matchIdx, aNRows - 1);
+        return Rcpp::List::create(Named("match") = match);
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
 }
 
 
@@ -60,8 +99,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
                    std::vector<std::string> symbol2,
                    std::vector<std::string> peakName2,
                    std::vector<std::string> peakNameIntersect1,
-                   std::vector<std::string> peakNameIntersect2
-                   ) {
+                   std::vector<std::string> peakNameIntersect2) {
     try {
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
@@ -150,10 +188,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         arma::uvec d2ZeroIdx = arma::find(d2 == 0);
         d2Zero = d2ZeroIdx.n_elem;
         unsigned int m = peakNameIntersect1.size(); // length(peakNameIntersect1) = length(peakNameIntersect2)
-        unsigned int OMeanNRows = m + d1Zero + d2Zero
-        const std::vector<unsigned int> v {m, d1Zero, d2Zero};
-        auto maxElem = std::max_element(v.begin(), v.end());
-        unsigned int OMeanNRows = *maxElem; // TODO: check with Duren here
+        unsigned int OMeanNRows = m + d1Zero + d2Zero;
 
         arma::mat O1Mean = arma::mat(OMeanNRows, K1, arma::fill::zeros);
         avg = 0.;
@@ -248,3 +283,4 @@ std::vector<std::string> parseSymbol(std::string filePath) {
     symbolFile.close();
     return symbols;
 }
+
