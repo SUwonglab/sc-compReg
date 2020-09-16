@@ -25,23 +25,25 @@ T mod(T a, int n)
     return a - floor(a/n)*n;
 }
 
-std::vector<std::vector<std::variant<std::string, double>>> parseMotifTarget(std::string filePath,
-                                                                             std::vector<std::string>& stringVec1,
-                                                                             std::vector<std::string>& stringVec2,
-                                                                             std::vector<double>& doubleVec) {
+void parseMotifTarget(std::string filePath,
+                      std::vector<std::string>& stringVec1,
+                      std::vector<std::string>& stringVec2,
+                      std::vector<double>& doubleVec) {
     std::ifstream file(filePath);
-    std::string a, b;
+    char a[100], b[100];
     double c;
     int scanRet;
-    std::vector<std::vector<std::variant<std::string, double>>> output;
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-            scanRet = sscanf(line, "%s %s %f", &a, &b, &c);
+            std::istringstream iss(line);
+            scanRet = sscanf(iss, "%s %s %f", a, b, &c);
+            stringVec1.push_back(a);
+            stringVec2.push_back(b);
+            doubleVec.push_back(c);
         }
         file.close();
     }
-    return output;
 }
 
 // [[Rcpp::export]]
@@ -53,8 +55,10 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
                 std::vector<std::string> match2Motif,
                 std::string motifTargetPath) {
     try {
-        auto fileID = parseMotifTarget(motifTargetPath);
-        std::vector<> fileID.at(2);
+        std::vector<std::string> strVec1, strVec2;
+        std::vector<double> f3;
+        parseMotifTarget(motifTargetPath, strVec1, strVec2, f3);
+
 
 
 

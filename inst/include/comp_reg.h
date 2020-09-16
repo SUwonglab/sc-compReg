@@ -16,8 +16,11 @@
 #include <math.h>
 #include <chrono> // for seeding
 #include<bits/stdc++.h>
+#include<cstdio>
 
 #include <iomanip>
+
+#define ENOUGH 100；
 
 using namespace RcppParallel;
 using namespace arma;
