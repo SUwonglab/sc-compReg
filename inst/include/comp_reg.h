@@ -5,9 +5,7 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp11)]]
-#include <random>
 #include <iostream>
-#include <tuple>
 #include <vector>
 #include <string>
 #include <fstream>

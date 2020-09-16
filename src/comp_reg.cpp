@@ -25,14 +25,38 @@ T mod(T a, int n)
     return a - floor(a/n)*n;
 }
 
+std::vector<std::vector<std::variant<std::string, double>>> parseMotifTarget(std::string filePath,
+                                                                             std::vector<std::string>& stringVec1,
+                                                                             std::vector<std::string>& stringVec2,
+                                                                             std::vector<double>& doubleVec) {
+    std::ifstream file(filePath);
+    std::string a, b;
+    double c;
+    int scanRet;
+    std::vector<std::vector<std::variant<std::string, double>>> output;
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            scanRet = sscanf(line, "%s %s %f", &a, &b, &c);
+        }
+        file.close();
+    }
+    return output;
+}
+
 // [[Rcpp::export]]
 Rcpp::List mfbs(std::vector<std::string> TFName,
                 std::vector<std::string> motifName,
                 arma::vec motifWeight,
                 std::vector<std::string> elementName,
                 std::vector<std::string> match2TF,
-                std::vector<std::string> match2Motif) {
+                std::vector<std::string> match2Motif,
+                std::string motifTargetPath) {
     try {
+        auto fileID = parseMotifTarget(motifTargetPath);
+        std::vector<> fileID.at(2);
+
+
 
     } catch(...) {
         ::Rf_error("c++ exception");
@@ -117,9 +141,11 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
                    arma::uvec E2Idx,
                    std::vector<std::string> symbol2,
                    std::vector<std::string> peakName2,
-                   std::vector<std::string> peakNameIntersect1,
-                   std::vector<std::string> peakNameIntersect2) {
+                   std::vector<std::vector<std::string>> peakNameIntersect) {
     try {
+        std::vector<std::string> peakNameIntersect1 = peakNameIntersect.at(0);
+        std::vector<std::string> peakNameIntersect2 = peakNameIntersect.at(1);
+
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
         auto symbol = intersection(symbol1, symbol2);
