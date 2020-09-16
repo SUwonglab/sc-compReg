@@ -20,7 +20,7 @@
 
 #include <iomanip>
 
-#define ENOUGH 100；
+#define BUFFER_SIZE 100
 
 using namespace RcppParallel;
 using namespace arma;

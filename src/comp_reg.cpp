@@ -28,22 +28,20 @@ T mod(T a, int n)
 void parseMotifTarget(std::string filePath,
                       std::vector<std::string>& stringVec1,
                       std::vector<std::string>& stringVec2,
-                      std::vector<double>& doubleVec) {
-    std::ifstream file(filePath);
+                      std::vector<float>& doubleVec) {
+    char buffer[BUFFER_SIZE];
     char a[100], b[100];
-    double c;
+    float c;
     int scanRet;
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line)) {
-            std::istringstream iss(line);
-            scanRet = sscanf(iss, "%s %s %f", a, b, &c);
-            stringVec1.push_back(a);
-            stringVec2.push_back(b);
-            doubleVec.push_back(c);
-        }
-        file.close();
+    FILE* f = fopen(filePath.c_str(), "r");
+    while (true) {
+        if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
+        scanRet = sscanf(buffer, "%s %s %lf", a, b, &c);
+        stringVec1.push_back(a);
+        stringVec2.push_back(b);
+        doubleVec.push_back(c);
     }
+    fclose(f);
 }
 
 // [[Rcpp::export]]
@@ -56,7 +54,7 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
                 std::string motifTargetPath) {
     try {
         std::vector<std::string> strVec1, strVec2;
-        std::vector<double> f3;
+        std::vector<float> f3;
         parseMotifTarget(motifTargetPath, strVec1, strVec2, f3);
 
 
