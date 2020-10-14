@@ -19,7 +19,8 @@
 #include <cstdio>
 #include <algorithm>
 #include <tuple>
-#include <boost/math/distributions/students_t.hpp>
+#include <boost/math/distributions/students_t.hpp> // t-test
+#include <boost/math/distributions/chi_squared.hpp> // LRT
 
 #include <iomanip>
 

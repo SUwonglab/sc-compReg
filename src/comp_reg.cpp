@@ -318,7 +318,7 @@ arma::vec fdrBH(const arma::vec& pvals) {
     arma::vec pSorted = arma::sort(pvals);
     arma::uvec unsortIdx = arma::sort_index(arma::sort_index(pvals));
     int m = pSorted.n_elem;
-    arma::vec mSeq = arma::linspace(0, m-1);
+    arma::vec mSeq = arma::regspace(0, 1, m-1);
     arma::vec thresh = mSeq * ALPHA_THRESH / m;
     arma::vec wtdP = m * pSorted / mSeq;
 
@@ -359,7 +359,6 @@ arma::mat corr(const arma::mat& X,
             tStat = r * sqrt(df) / sqrt(1 - pow(r, 2));
             pMat.at(i, j) = boost::math::cdf (
                     boost::math::complement(dist, fabs(tStat)));
-
         }
     }
     return pMat;
@@ -372,6 +371,63 @@ void convertIdxToRowCol(const arma::uvec& idxVec,
     idxMat.col(0) = mod(idxVec, nRows);
     // col
     idxMat.col(1) = idxVec / nRows;
+}
+
+std::tuple<double, double> LRT(double uLogL,
+                               double rLogL,
+                              unsigned int dof) {
+    double testStat = 2 * (uLogL - rLogL);
+    boost::math::chi_squared dist(dof);
+    double p = boost::math::cdf(dist, fabs(testStat));
+    return std::tuple<double, double> {p, testStat};
+}
+
+
+std::tuple<double, double, double, double> bivariateNormalConditionalLR(const arma::mat& X1,
+                                                        const arma::mat& X2) {
+    double sigmaMinPseudoCount = 0;
+    arma::mat XX = join_vert(X1, X2);
+    arma::mat beta = arma::pinv(
+            arma::join_horiz(
+                    arma::vec(XX.n_rows, arma::fill::ones), XX.col(1)) * XX.col(0));
+    arma::vec estX = beta.at(0) + beta.at(1) * XX.col(1);
+    double condVar = arma::var(XX.col(0) - estX);
+    arma::vec S = arma::vec(estX.n_elem);
+    S.fill(sqrt(condVar) + sigmaMinPseudoCount);
+    double LM0 = arma::as_scalar(arma::sum(arma::log_normpdf(XX.col(0), estX, S)));
+
+    arma::mat beta1 = arma::pinv(arma::join_horiz(arma::vec(X1.n_rows, arma::fill::ones),
+                                                  X1.col(1)) * X1.col(0));
+    arma::vec estX1 = beta1.at(0) + beta.at(1) * X2.col(1);
+    double condVar1 = arma::var(X1.col(0) - estX1);
+
+    arma::mat beta2 = arma::pinv(arma::join_horiz(
+            arma::vec(X2.n_rows, arma::fill::ones), X2.col(1) * X2.col(0)
+            ));
+    arma::vec estX2 = beta2.at(0) + beta2.at(1) * X2.col(1);
+    double condVar2 = arma::var(X2.col(0) - estX2);
+    S.fill(sqrt(condVar1) + sigmaMinPseudoCount);
+    double LM1One = arma::as_scalar(
+            arma::sum(arma::log_normpdf(
+                    X1.col(0), estX1, S
+                    ))
+    );
+    S.fill(sqrt(condVar2) + sigmaMinPseudoCount);
+    double LM1Two = arma::as_scalar(
+            arma::sum(arma::log_normpdf(
+                    X2.col(0), estX2, S
+                    ))
+            );
+    double LM1 = LM1One + LM1Two;
+    std::tuple<double, double> retTup = LRT(LM1, LM0, 3);
+    return std::tuple<double, double, double, double>
+              {LM0, LM1, std::get<0>(retTup), std::get<1>(retTup)};
+}
+
+void gammaQuantileMatch(arma::vec& X, arma::vec eita) {
+    eita = eita.t();
+    arma::vec cut = quantile(X, eita * 100);
+    
 }
 
 // [[Rcpp::export]]
@@ -448,12 +504,15 @@ Rcpp::List compReg(arma::mat TFBinding,
         arma::sp_mat beta = arma::sp_mat(loc, c, symbol.size(), elementName.size());
 
         double i1, i2;
-        arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine, LRSummary;
+        arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine;
         arma::mat OTF1, OTF2, X1, X2;
         int n1, n2;
-        arma::vec pVec, adjPVec;
-        arma::uvec diffGene, tempIdx, id1;
-        arma::umat netIdx;
+        arma::vec pVec, adjPVec, LRi;
+        arma::uvec diffGene, id1, id, tempIdx;
+        arma::umat netIdx, tempMat;
+        std::tuple<double, double, double, double> bivarRetTup;
+        arma::mat LRSummary = arma::mat(1, 4, arma::fill::zeros);
+        double tenSixteenthPow = (double) pow(10, -16);
         for (int ii = 0; ii < match.n_rows; ++ii) {
             i1 = match.at(ii, 0);
             i2 = match.at(ii, 2);
@@ -476,44 +535,48 @@ Rcpp::List compReg(arma::mat TFBinding,
             corrP2 = corr(TF.cols(n1, n1+n2-1).t(), TG2.t());
             pCombine = arma::min(corrP1, corrP2);
             tempIdx = arma::find(pCombine < ALPHA_THRESH);
-            netIdx = arma::umat(tempIdx.n_elem, arma::fill::zeros);
+            netIdx = arma::umat(tempIdx.n_elem, 2, arma::fill::zeros);
             convertIdxToRowCol(tempIdx, netIdx, pCombine.n_rows);
 
             for (int j = 0; j < diffGene.n_elem; ++j) {
                 OTF1 = BO1.col(diffGene.at(j)) % TF.cols(0, n1 - 1);
                 OTF2 = BO2.col(diffGene.at(j)) % TF.cols(n1, n1+n2-1);
-                // get the row indices
-                id1 = netIdx.elem(mod(arma::find(netIdx.col(1) == diffGene.at(j)), pCombine.n_rows));
+                tempMat = netIdx.rows(arma::find(netIdx.col(1) == diffGene.at(j)));
+                id1 = tempMat.col(0);
                 id = arma::find(arma::sum(arma::abs(OTF1.t())) + arma::sum(arma::abs(OTF2.t())) > 0);
                 id = arma::intersect(id1, id);
 
                 for (int i = 0; i < id.n_elem; ++i) {
                     X1 = arma::join_horiz(OTF1.row(id.at(i)).t(), TG1.row(diffGene.at(j)).t());
                     X2 = arma::join_horiz(OTF2.row(id.at(i)).t(), TG2.row(diffGene.at(j)).t());
-
-
+                    bivarRetTup = bivariateNormalConditionalLR(X1, X2);
+                    LRi = {id.at(i), diffGene.at(j), std::get<3>(bivarRetTup), std::get<2>(bivarRetTup)};
+                    LRSummary = arma::join_vert(LRSummary, LRi);
                 }
             }
 
-
-
-            arma::find(arma::sum(arma::abs(OTF1).t()))
-
-
-
-
-
-
         }
+        // remove the first filler row added previously
+        LRSummary.shed_row(0);
+        // find NaN and +-Inf
+        LRSummary.shed_rows(arma::find_nonfinite(LRSummary.col(2)));
+        // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
+        LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
 
-
-
+        gammaQuantileMatch(LRSummary.col(2), arma::regspace(0.1, 0.1, 0.2));
 
     } catch (...) {
         ::Rf_error("c++ exception");
     }
 }
 
+/**
+ * Compute indices based on row and column indices.
+ */
+inline arma::uvec arr2ind(arma::uvec c, arma::uvec r, int nrow)
+{
+    return c * nrow + r;
+}
 
 // [[Rcpp::export]]
 Rcpp::List subpopulationLink(arma::mat EMH,
@@ -537,7 +600,7 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::mat a;
         arma::uvec rrPos = arma::find(rr > 0);
         unsigned int rrNRows = rr.n_rows;
-        arma::umat idxMat = arma::umat(rrPos.n_elem, arma::fill::zeros);
+        arma::umat idxMat = arma::umat(rrPos.n_elem, 2, arma::fill::zeros);
         convertIdxToRowCol(rrPos, idxMat, rrNRows);
         //row
         a.col(0) = arma::conv_to<arma::vec>::from(idxMat.col(0));
