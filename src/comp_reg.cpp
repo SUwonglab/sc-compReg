@@ -63,7 +63,7 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
         unsigned int elemNameSize = elementName.size();
         std::vector<std::string> strVec1, strVec2;
         std::vector<float> floatVec3;
-        int index;
+        unsigned int index;
         parseMotifTarget(motifTargetPath, strVec1, strVec2, floatVec3);
 
         // check if and where is every element of strVec1 in elementName
@@ -73,7 +73,7 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
         arma::vec f1 = arma::vec(strVec1.size(), arma::fill::zeros);
         // TODO: first sort then write ismember will be BUGGY!!!
 //        std::sort(elemStart, elemEnd);
-        int armaVecIdx = 0;
+        unsigned int armaVecIdx = 0;
         arma::vec t2 = arma::regspace(0, elemNameSize - 1);
         for (auto & str : strVec1) {
             auto it = std::find(elemStart, elemEnd, str);
@@ -278,7 +278,7 @@ arma::mat accumArrayMin(const arma::uvec& subs,
     int maxSubs = arma::max(subs);
     arma::vec retVec = arma::vec(maxSubs, arma::fill::zeros);
     arma::uvec idx;
-    for (unsigned int i = 0; i < maxSubs; ++i) {
+    for (int i = 0; i < maxSubs; ++i) {
         idx = arma::find(subs == i);
         if (idx.n_elem > 0) {
             retVec.at(i) = arma::min(val.elem(idx));
@@ -289,9 +289,9 @@ arma::mat accumArrayMin(const arma::uvec& subs,
 
 double ttest(const arma::vec& x,
              const arma::vec& y,
-             const int& n,
-             const int& m,
-             const int& df) {
+             const unsigned int& n,
+             const unsigned int& m,
+             const unsigned int& df) {
     double numerator = arma::mean(x) - arma::mean(y);
     double denominator = (n-1) * arma::var(x, 0) + (m-1) * arma::var(y, 0);
     denominator = sqrt(denominator / df);
@@ -301,13 +301,13 @@ double ttest(const arma::vec& x,
 arma::vec ttest2(const arma::mat& x,
                  const arma::mat& y) {
     assert(x.n_cols == y.n_cols);
-    int numCols = x.n_cols;
+    unsigned int numCols = x.n_cols;
     arma::vec retVec = arma::vec(numCols, arma::fill::zeros);
-    int n = x.n_elem;
-    int m = y.n_elem;
-    int df = n + m - 2;
+    unsigned int n = x.n_elem;
+    unsigned int m = y.n_elem;
+    unsigned int df = n + m - 2;
     boost::math::students_t dist(df);
-    for (int i = 0; i < numCols; ++i) {
+    for (unsigned int i = 0; i < numCols; ++i) {
         retVec.at(i) = boost::math::cdf (
             boost::math::complement(dist, fabs(ttest(x.col(i), y.col(i), n, m, df))));
     }
@@ -317,7 +317,7 @@ arma::vec ttest2(const arma::mat& x,
 arma::vec fdrBH(const arma::vec& pvals) {
     arma::vec pSorted = arma::sort(pvals);
     arma::uvec unsortIdx = arma::sort_index(arma::sort_index(pvals));
-    int m = pSorted.n_elem;
+    unsigned int m = pSorted.n_elem;
     arma::vec mSeq = arma::regspace(0, 1, m-1);
     arma::vec thresh = mSeq * ALPHA_THRESH / m;
     arma::vec wtdP = m * pSorted / mSeq;
@@ -325,8 +325,8 @@ arma::vec fdrBH(const arma::vec& pvals) {
     arma::vec adjPVec = arma::vec(m, arma::fill::zeros);
     arma::vec wtdPSorted = arma::sort(wtdP);
     arma::uvec wtdPIdx = arma::sort_index(wtdP);
-    int nextFill = 0;
-    for (int k = 0; k < m; ++k) {
+    unsigned int nextFill = 0;
+    for (unsigned int k = 0; k < m; ++k) {
         if (wtdPIdx.at(k) >= nextFill) {
             adjPVec.rows(nextFill, wtdPIdx.at(k)).fill(wtdPSorted.at(k));
             nextFill = wtdPIdx.at(k) + 1;
@@ -340,7 +340,7 @@ arma::vec fdrBH(const arma::vec& pvals) {
 arma::sp_mat selectCols(const arma::sp_mat& input,
                         const arma::uvec& idx) {
     arma::sp_mat retMat = arma::sp_mat(input.n_rows, idx.n_elem);
-    for (int i = 0; i < idx.n_elem; ++i) {
+    for (unsigned int i = 0; i < idx.n_elem; ++i) {
         retMat.col(i) = input.col(idx.at(i));
     }
     return retMat;
@@ -350,11 +350,11 @@ arma::mat corr(const arma::mat& X,
                const arma::mat& Y) {
     arma::mat pMat = arma::mat(X.n_cols, Y.n_cols, arma::fill::zeros);
     double r;
-    int df = X.n_rows + Y.n_rows - 2;
+    unsigned int df = X.n_rows + Y.n_rows - 2;
     boost::math::students_t dist(df);
     double tStat;
-    for (int i = 0; i < X.n_cols; ++i) {
-        for (int j = 0; j < Y.n_cols; ++j) {
+    for (unsigned int i = 0; i < X.n_cols; ++i) {
+        for (unsigned int j = 0; j < Y.n_cols; ++j) {
             r = arma::as_scalar(arma::cor(X.col(i), Y.col(j)));
             tStat = r * sqrt(df) / sqrt(1 - pow(r, 2));
             pMat.at(i, j) = boost::math::cdf (
@@ -366,7 +366,7 @@ arma::mat corr(const arma::mat& X,
 
 void convertIdxToRowCol(const arma::uvec& idxVec,
                    arma::umat& idxMat,
-                   int nRows) {
+                   unsigned int nRows) {
     // matrix is interpretted using column-by-column ordering in armadillo
     idxMat.col(0) = mod(idxVec, nRows);
     // col
@@ -424,11 +424,40 @@ std::tuple<double, double, double, double> bivariateNormalConditionalLR(const ar
               {LM0, LM1, std::get<0>(retTup), std::get<1>(retTup)};
 }
 
-void gammaQuantileMatch(arma::vec& X, arma::vec eita) {
+arma::vec gammaQuantileMatch(arma::vec& X, arma::vec eita) {
     eita = eita.t();
     arma::vec cut = quantile(X, eita * 100);
-    
+    return cut;
+
 }
+
+
+/**
+ * Compute indices based on row and column indices.
+ */
+inline arma::uvec arr2ind(arma::uvec c, arma::uvec r, unsigned int nrow)
+{
+    return c * nrow + r;
+}
+
+/**
+ * Assuming indices are sorted, extract the corresponding entries in input
+ * array which should be of std::vector< > type.
+ * @tparam T
+ * @param input
+ * @param indices
+ * @return
+ */
+template <class T>
+T extractElems(T& input,
+               arma::uvec indices) {
+    T retVec;
+    for (unsigned int i = 0; i < indices.n_elem; ++i) {
+        retVec.push_back(input[indices.at(i)]);
+    }
+    return retVec;
+}
+
 
 // [[Rcpp::export]]
 Rcpp::List compReg(arma::mat TFBinding,
@@ -506,14 +535,14 @@ Rcpp::List compReg(arma::mat TFBinding,
         double i1, i2;
         arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine;
         arma::mat OTF1, OTF2, X1, X2;
-        int n1, n2;
-        arma::vec pVec, adjPVec, LRi;
-        arma::uvec diffGene, id1, id, tempIdx;
-        arma::umat netIdx, tempMat;
+        unsigned int n1, n2;
+        arma::vec pTTest, adjPTTest, LRi, phat, pGamma, LRSColTwo, adjPGamma;
+        arma::uvec diffGene, id1, id, tempIdx, sortedIdx;
+        arma::umat netIdx;
         std::tuple<double, double, double, double> bivarRetTup;
         arma::mat LRSummary = arma::mat(1, 4, arma::fill::zeros);
         double tenSixteenthPow = (double) pow(10, -16);
-        for (int ii = 0; ii < match.n_rows; ++ii) {
+        for (unsigned int ii = 0; ii < match.n_rows; ++ii) {
             i1 = match.at(ii, 0);
             i2 = match.at(ii, 2);
             BO1 = (TFBinding % O1Mean.col(i1).t()) * beta.t();
@@ -528,9 +557,9 @@ Rcpp::List compReg(arma::mat TFBinding,
             TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)), TG2.rows(arma::conv_to<arma::uvec>::from(f)));
             n1 = TG1.n_cols;
             n2 = TG2.n_cols;
-            pVec = ttest2(TG1.t(), TG2.t());
-            adjPVec = fdrBH(pVec);
-            diffGene = arma::find(adjPVec < ALPHA_THRESH * 2);
+            pTTest = ttest2(TG1.t(), TG2.t());
+            adjPTTest = fdrBH(pTTest);
+            diffGene = arma::find(adjPTTest < ALPHA_THRESH * 2);
             corrP1 = corr(TF.cols(0, n1-1).t(), TG1.t());
             corrP2 = corr(TF.cols(n1, n1+n2-1).t(), TG2.t());
             pCombine = arma::min(corrP1, corrP2);
@@ -538,19 +567,19 @@ Rcpp::List compReg(arma::mat TFBinding,
             netIdx = arma::umat(tempIdx.n_elem, 2, arma::fill::zeros);
             convertIdxToRowCol(tempIdx, netIdx, pCombine.n_rows);
 
-            for (int j = 0; j < diffGene.n_elem; ++j) {
+            for (unsigned int j = 0; j < diffGene.n_elem; ++j) {
                 OTF1 = BO1.col(diffGene.at(j)) % TF.cols(0, n1 - 1);
                 OTF2 = BO2.col(diffGene.at(j)) % TF.cols(n1, n1+n2-1);
-                tempMat = netIdx.rows(arma::find(netIdx.col(1) == diffGene.at(j)));
-                id1 = tempMat.col(0);
+                temp = netIdx.rows(arma::find(netIdx.col(1) == diffGene.at(j)));
+                id1 = temp.col(0);
                 id = arma::find(arma::sum(arma::abs(OTF1.t())) + arma::sum(arma::abs(OTF2.t())) > 0);
                 id = arma::intersect(id1, id);
 
-                for (int i = 0; i < id.n_elem; ++i) {
+                for (unsigned int i = 0; i < id.n_elem; ++i) {
                     X1 = arma::join_horiz(OTF1.row(id.at(i)).t(), TG1.row(diffGene.at(j)).t());
                     X2 = arma::join_horiz(OTF2.row(id.at(i)).t(), TG2.row(diffGene.at(j)).t());
                     bivarRetTup = bivariateNormalConditionalLR(X1, X2);
-                    LRi = {id.at(i), diffGene.at(j), std::get<3>(bivarRetTup), std::get<2>(bivarRetTup)};
+                    LRi = {(double) id.at(i), (double) diffGene.at(j), std::get<3>(bivarRetTup), std::get<2>(bivarRetTup)};
                     LRSummary = arma::join_vert(LRSummary, LRi);
                 }
             }
@@ -563,20 +592,37 @@ Rcpp::List compReg(arma::mat TFBinding,
         // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
         LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
 
-        gammaQuantileMatch(LRSummary.col(2), arma::regspace(0.1, 0.1, 0.2));
+        LRSColTwo = LRSummary.col(2);
+        phat = gammaQuantileMatch(LRSColTwo, arma::regspace(0.1, 0.1, 0.2));
+        boost::math::gamma_distribution<> gammaDist(phat.at(0), phat.at(1));
+        pGamma = arma::vec(LRSummary.n_rows, arma::fill::zeros);
+        for (unsigned int k = 0; k < LRSummary.n_rows; ++k) {
+            pGamma.at(k) = 1 - boost::math::cdf(gammaDist, LRSColTwo.at(k));
+        }
+        adjPGamma = fdrBH(pGamma);
+        LRSummary = arma::join_horiz(LRSummary, pGamma, adjPGamma);
+        id = arma::find(adjPGamma < 0.1);
+        id1 = arma::uvec(id.n_elem).fill(2);
+
+        sortedIdx = arma::sort_index(LRSummary.elem(arr2ind(id, id1, LRSummary.n_rows)), "descend");
+        id1 = id.elem(sortedIdx);
+        id = arma::uvec(id1.n_elem, arma::fill::zeros);
+
+        extractElems(TFName, arma::conv_to::<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))))
+        id.ones();
+        extractElems(symbol, arma::con_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
+        arma::mat LRTempMat = LRSummary.cols(2, 5);
+        LRTempMat = LRTempMat.rows(id1);
+        
+
+
 
     } catch (...) {
         ::Rf_error("c++ exception");
     }
 }
 
-/**
- * Compute indices based on row and column indices.
- */
-inline arma::uvec arr2ind(arma::uvec c, arma::uvec r, int nrow)
-{
-    return c * nrow + r;
-}
+
 
 // [[Rcpp::export]]
 Rcpp::List subpopulationLink(arma::mat EMH,
@@ -682,7 +728,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
 
         double avg = 0.;
         unsigned int f1Idx;
-        for (int i = 0; i < K1; ++i) {
+        for (unsigned int i = 0; i < K1; ++i) {
             arma::uvec idx = arma::find(E1Idx == i);
             f1Idx = 0;
             for (arma::uvec::iterator it = f1.begin(); it != f1.end(); ++it) {
@@ -696,7 +742,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         }
 
         unsigned int f2Idx;
-        for (int i = 0; i < K2; ++i) {
+        for (unsigned int i = 0; i < K2; ++i) {
             arma::uvec idx = arma::find(E2Idx == i);
             f2Idx = 0;
             for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {
@@ -755,7 +801,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         avg = 0.;
         f1Idx = 0;
         double loopElem;
-        for (int i = 0; i < K1; ++i) {
+        for (unsigned int i = 0; i < K1; ++i) {
             arma::uvec idx = arma::find(O1Idx == i);
             f1Idx = 0;
             for (arma::uvec::iterator it = f1.begin(); it != f1.end(); ++it) {
@@ -784,7 +830,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         avg = 0.;
         f2Idx = 0;
         loopElem;
-        for (int i = 0; i < K2; ++i) {
+        for (unsigned int i = 0; i < K2; ++i) {
             arma::uvec idx = arma::find(O2Idx == i);
             f2Idx = 0;
             for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {

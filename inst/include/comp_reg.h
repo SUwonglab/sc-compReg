@@ -21,6 +21,7 @@
 #include <tuple>
 #include <boost/math/distributions/students_t.hpp> // t-test
 #include <boost/math/distributions/chi_squared.hpp> // LRT
+#include <boost/math/distributions/gamma.hpp> // gamma quantile matching
 
 #include <iomanip>
 
