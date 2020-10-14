@@ -1,12 +1,11 @@
 #include "../inst/include/comp_reg.h"
 
 
-std::vector<std::string> intersection(std::vector<std::string> &v1,
-                                      std::vector<std::string> &v2){
+std::vector<std::string> intersection(std::vector<std::string> v1,
+                                      std::vector<std::string> v2){
     std::vector<std::string> v3;
     std::sort(v1.begin(), v1.end());
     std::sort(v2.begin(), v2.end());
-
     std::set_intersection(v1.begin(),v1.end(),
                           v2.begin(),v2.end(),
                           back_inserter(v3));
@@ -24,6 +23,8 @@ T mod(T a, int n)
 {
     return a - floor(a/n)*n;
 }
+
+
 
 void parseMotifTarget(std::string filePath,
                       std::vector<std::string>& stringVec1,
@@ -70,7 +71,8 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
         auto elemStart = elementName.begin();
         arma::vec d1 = arma::vec(strVec1.size(), arma::fill::zeros);
         arma::vec f1 = arma::vec(strVec1.size(), arma::fill::zeros);
-        std::sort(elemStart, elemEnd);
+        // TODO: first sort then write ismember will be BUGGY!!!
+//        std::sort(elemStart, elemEnd);
         int armaVecIdx = 0;
         arma::vec t2 = arma::regspace(0, elemNameSize - 1);
         for (auto & str : strVec1) {
@@ -94,7 +96,7 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
         auto motifStart = motifName.begin();
         arma::vec d2 = arma::vec(strVec2.size(), arma::fill::zeros);
         arma::vec f2 = arma::vec(strVec2.size(), arma::fill::zeros);
-        std::sort(motifStart, motifEnd);
+//        std::sort(motifStart, motifEnd);
         arma::vec t1 = arma::regspace(0, motifName.size()-1); // regspace is inclusive
         for (auto & str : strVec2) {
             auto it = std::find(motifStart, motifEnd, str);
@@ -114,15 +116,15 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
 
         arma::uvec d1d2BothOnes = arma::find((d1 % d2) == 1);
         f2 = f2.elem(d1d2BothOnes);
-        f2 = arma::join_cols(f2, t1);
+        f2 = arma::join_horiz(f2, t1);
         f1 = f1.elem(d1d2BothOnes);
-        f1 = arma::join_cols(f1, arma::vec(t1.n_elem, arma::fill::ones));
+        f1 = arma::join_horiz(f1, arma::vec(t1.n_elem, arma::fill::ones));
         arma::vec f3 = arma::conv_to<arma::vec>::from(floatVec3);
-        f3 = arma::join_cols(f3, arma::vec(t1.n_elem, arma::fill::zeros));
+        f3 = arma::join_horiz(f3, arma::vec(t1.n_elem, arma::fill::zeros));
 
-        f1 = arma::join_cols(f1, t2);
-        f2 = arma::join_cols(f2, arma::vec(t2.n_elem, arma::fill::ones));
-        f3 = arma::join_cols(f3, arma::vec(t2.n_elem, arma::fill::zeros));
+        f1 = arma::join_horiz(f1, t2);
+        f2 = arma::join_horiz(f2, arma::vec(t2.n_elem, arma::fill::ones));
+        f3 = arma::join_horiz(f3, arma::vec(t2.n_elem, arma::fill::zeros));
         arma::umat spMatLocation = arma::umat(2, f2.n_elem);
         spMatLocation.col(0) = arma::conv_to<arma::uvec>::from(f2);
         spMatLocation.col(1) = arma::conv_to<arma::uvec>::from(f1);
@@ -146,7 +148,7 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
         auto TFStart = TFName.begin();
         auto TFEnd = TFName.end();
         arma::vec TFIdxVec = arma::vec(match2TF.size(), arma::fill::zeros);
-        std::sort(TFStart, TFEnd);
+//        std::sort(TFStart, TFEnd);
         armaVecIdx = 0;
         for (auto & str : match2TF) {
             auto it = std::find(TFStart, TFEnd, str);
@@ -183,8 +185,334 @@ Rcpp::List mfbs(std::vector<std::string> TFName,
 }
 
 
+void parsePeakGenePrior(std::string filePath,
+                        std::vector<std::string>& stringVec1,
+                        std::vector<std::string>& stringVec2,
+                        std::vector<float>& doubleVec1,
+                        std::vector<float>& doubleVec2) {
+    char buffer[BUFFER_SIZE];
+    char *a = (char *)malloc(BUFFER_SIZE);
+    char *b = (char *)malloc(BUFFER_SIZE);
+    float c;
+    float d;
+    int scanRet;
+    FILE* f = fopen(filePath.c_str(), "r");
+    std::string temp;
+    while (true) {
+        if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
+        scanRet = sscanf(buffer, "%s %s %f %f", a, b, &c, &d);
+        temp = a;
+        stringVec1.push_back(temp);
+        temp = b;
+        stringVec2.push_back(temp);
+        doubleVec1.push_back(c);
+        doubleVec2.push_back(d);
+    }
+    fclose(f);
+    free(a);
+    free(b);
+}
+
+template <typename T>
+/**
+ * ismember(A,B) returns an array containing
+ * logical 1 (true) where the data in A is found in B.
+ * Elsewhere, the array contains logical 0 (false).
+ * The second return value contains the index of the first
+ * instance found in array B.
+ * @tparam T
+ * @tparam T
+ * @param vecA
+ * @param vecB
+ * @return
+ */
+std::tuple<arma::vec, arma::vec> isMember(const T& vecA,
+                                          const T& vecB) {
+    auto ABegin = vecA.begin();
+    auto AEnd = vecA.end();
+    arma::vec lia = arma::vec(vecA.size(), arma::fill::zeros);
+    arma::vec locb = arma::vec(vecB.size(), arma::fill::zeros);
+
+    unsigned int insertIdx = 0;
+    for (auto t : vecA) {
+        auto p = std::find(ABegin, AEnd, t);
+        if (p != AEnd) {
+            lia.at(insertIdx) = 1.;
+            locb.at(insertIdx) = std::distance(p, AEnd);
+        } else {
+            lia.at(insertIdx) = 0.;
+            locb.at(insertIdx) = arma::datum::nan;
+        }
+        ++insertIdx;
+    }
+    return std::tuple<arma::vec, arma::vec>{lia, locb};
+}
+
+arma::mat uniqueRows(const arma::mat& m) {
+    arma::uvec ulmt = arma::zeros<arma::uvec>(m.n_rows);
+    for (arma::uword i = 0; i < m.n_rows; i++) {
+        for (arma::uword j = i + 1; j < m.n_rows; j++) {
+            if (arma::approx_equal(m.row(i), m.row(j), "absdiff", TOLERANCE)) { ulmt(j) = 1; break; }
+        }
+    }
+    return m.rows(find(ulmt == 0));
+}
+
+arma::uvec findUniqueRowIdx(const arma::mat& origMat,
+                            const arma::mat& uniqueRows) {
+    arma::uvec ic = arma::uvec(origMat.n_rows, arma::fill::zeros);
+    for (unsigned int oIdx = 0; oIdx < origMat.n_rows; ++oIdx) {
+        for (unsigned int uIdx = 0; uIdx < uniqueRows.n_rows; ++uIdx) {
+            if (arma::approx_equal(uniqueRows.row(uIdx), origMat.row(oIdx), "absdiff", TOLERANCE)) {
+                ic.at(oIdx) = uIdx;
+                break;
+            }
+        }
+    }
+    return ic;
+}
 
 
+arma::mat accumArrayMin(const arma::uvec& subs,
+                        const arma::mat& val) {
+    int maxSubs = arma::max(subs);
+    arma::vec retVec = arma::vec(maxSubs, arma::fill::zeros);
+    arma::uvec idx;
+    for (unsigned int i = 0; i < maxSubs; ++i) {
+        idx = arma::find(subs == i);
+        if (idx.n_elem > 0) {
+            retVec.at(i) = arma::min(val.elem(idx));
+        }
+    }
+    return retVec;
+}
+
+double ttest(const arma::vec& x,
+             const arma::vec& y,
+             const int& n,
+             const int& m,
+             const int& df) {
+    double numerator = arma::mean(x) - arma::mean(y);
+    double denominator = (n-1) * arma::var(x, 0) + (m-1) * arma::var(y, 0);
+    denominator = sqrt(denominator / df);
+    return numerator / denominator;
+}
+
+arma::vec ttest2(const arma::mat& x,
+                 const arma::mat& y) {
+    assert(x.n_cols == y.n_cols);
+    int numCols = x.n_cols;
+    arma::vec retVec = arma::vec(numCols, arma::fill::zeros);
+    int n = x.n_elem;
+    int m = y.n_elem;
+    int df = n + m - 2;
+    boost::math::students_t dist(df);
+    for (int i = 0; i < numCols; ++i) {
+        retVec.at(i) = boost::math::cdf (
+            boost::math::complement(dist, fabs(ttest(x.col(i), y.col(i), n, m, df))));
+    }
+    return retVec;
+}
+
+arma::vec fdrBH(const arma::vec& pvals) {
+    arma::vec pSorted = arma::sort(pvals);
+    arma::uvec unsortIdx = arma::sort_index(arma::sort_index(pvals));
+    int m = pSorted.n_elem;
+    arma::vec mSeq = arma::linspace(0, m-1);
+    arma::vec thresh = mSeq * ALPHA_THRESH / m;
+    arma::vec wtdP = m * pSorted / mSeq;
+
+    arma::vec adjPVec = arma::vec(m, arma::fill::zeros);
+    arma::vec wtdPSorted = arma::sort(wtdP);
+    arma::uvec wtdPIdx = arma::sort_index(wtdP);
+    int nextFill = 0;
+    for (int k = 0; k < m; ++k) {
+        if (wtdPIdx.at(k) >= nextFill) {
+            adjPVec.rows(nextFill, wtdPIdx.at(k)).fill(wtdPSorted.at(k));
+            nextFill = wtdPIdx.at(k) + 1;
+            if (nextFill >= m) break;
+        }
+    }
+    adjPVec = adjPVec.rows(unsortIdx);
+    return adjPVec;
+}
+
+arma::sp_mat selectCols(const arma::sp_mat& input,
+                        const arma::uvec& idx) {
+    arma::sp_mat retMat = arma::sp_mat(input.n_rows, idx.n_elem);
+    for (int i = 0; i < idx.n_elem; ++i) {
+        retMat.col(i) = input.col(idx.at(i));
+    }
+    return retMat;
+}
+
+arma::mat corr(const arma::mat& X,
+               const arma::mat& Y) {
+    arma::mat pMat = arma::mat(X.n_cols, Y.n_cols, arma::fill::zeros);
+    double r;
+    int df = X.n_rows + Y.n_rows - 2;
+    boost::math::students_t dist(df);
+    double tStat;
+    for (int i = 0; i < X.n_cols; ++i) {
+        for (int j = 0; j < Y.n_cols; ++j) {
+            r = arma::as_scalar(arma::cor(X.col(i), Y.col(j)));
+            tStat = r * sqrt(df) / sqrt(1 - pow(r, 2));
+            pMat.at(i, j) = boost::math::cdf (
+                    boost::math::complement(dist, fabs(tStat)));
+
+        }
+    }
+    return pMat;
+}
+
+void convertIdxToRowCol(const arma::uvec& idxVec,
+                   arma::umat& idxMat,
+                   int nRows) {
+    // matrix is interpretted using column-by-column ordering in armadillo
+    idxMat.col(0) = mod(idxVec, nRows);
+    // col
+    idxMat.col(1) = idxVec / nRows;
+}
+
+// [[Rcpp::export]]
+Rcpp::List compReg(arma::mat TFBinding,
+                   arma::mat match,
+                   const arma::sp_mat& E1,
+                   arma::uvec E1Idx,
+                   const arma::sp_mat& E2,
+                   arma::uvec E2Idx,
+                   const arma::mat& O1Mean,
+                   const arma::mat& O2Mean,
+                   std::vector<std::string> symbol,
+                   std::vector<std::string> TFName,
+                   std::vector<std::string> elementName,
+                   std::string peakGenePriorPath
+                   ) {
+    try {
+        arma::umat TFIdx = arma::sort_index(TFBinding, 2);
+        TFIdx = TFIdx.cols(0, 4999); // indices are inclusive
+        arma::mat a = arma::mat(TFIdx.n_rows, TFIdx.n_cols, arma::fill::zeros);
+        arma::urowvec TFRow;
+        arma::rowvec TFBindingRow;
+        for (unsigned int rowIdx=0; rowIdx < TFIdx.n_rows; ++rowIdx) {
+            TFRow = TFIdx.row(rowIdx);
+            TFBindingRow = TFBinding.row(rowIdx);
+            a.row(rowIdx) = TFBindingRow.elem(TFRow);
+        }
+        TFBinding.elem(arma::find(TFBinding - a.col(a.n_cols - 1) < 0)).fill(0);
+
+        std::vector<std::string> strVec1, strVec2;
+        std::vector<float> floatVec3, floatVec4;
+        parsePeakGenePrior(peakGenePriorPath, strVec1, strVec2, floatVec3, floatVec4);
+        arma::vec fv3 = arma::conv_to<arma::vec>::from(floatVec3);
+        arma::vec fv4 = arma::conv_to<arma::vec>::from(floatVec4);
+
+//        auto elemBegin = elementName.begin();
+//        auto elemEnd = elementName.end();
+//
+//        arma::vec d = arma::vec(strVec1.size(), arma::fill::zeros);
+//        arma::vec f = arma::vec(strVec1.size(), arma::fill::zeros);
+//        unsigned int idx = 0;
+//        for (auto t : strVec1) {
+//            auto p = std::find(elemBegin, elemEnd, t);
+//            if (p != elemEnd) {
+//                d.at(idx) = 1.;
+//                f.at(idx) = std::distance(p, elemEnd);
+//            } else {
+//                d.at(idx) = 0.;
+//                f.at(idx) = NAN;
+//            }
+//            ++idx;
+//        }
+
+        std::tuple<arma::vec, arma::vec> tup = isMember(strVec1, elementName);
+        arma::vec d = std::get<0>(tup);
+        arma::vec f = std::get<1>(tup);
+
+        std::tuple<arma::vec, arma::vec> tup2 = isMember(strVec2, symbol);
+        arma::vec d1 = std::get<0>(tup2);
+        arma::vec f1 = std::get<1>(tup2);
+
+        // TODO check whether the .* is outer product
+        arma::mat ff = arma::join_horiz(f.elem(arma::find(d % d1 == 1)), f1.elem(arma::find(d % d1 == 1)));
+        arma::mat f2 = uniqueRows(ff);
+        arma::uvec ic = findUniqueRowIdx(ff, f2);
+
+        arma::vec c3 = accumArrayMin(ic, fv3.elem(arma::find(d % d1 == 1)));
+        arma::vec c4 = accumArrayMin(ic, fv4.elem(arma::find(d % d1 == 1)));
+
+        c4.elem(arma::find(c4 < 0.2)).fill(0.);
+        arma::vec c = arma::exp(-1. * c3 / 500000.) % c4;
+        arma::umat temp = arma::conv_to<arma::umat>::from(f2);
+        arma::umat loc = arma::join_cols(temp.col(1), temp.col(0));
+        arma::sp_mat beta = arma::sp_mat(loc, c, symbol.size(), elementName.size());
+
+        double i1, i2;
+        arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine, LRSummary;
+        arma::mat OTF1, OTF2, X1, X2;
+        int n1, n2;
+        arma::vec pVec, adjPVec;
+        arma::uvec diffGene, tempIdx, id1;
+        arma::umat netIdx;
+        for (int ii = 0; ii < match.n_rows; ++ii) {
+            i1 = match.at(ii, 0);
+            i2 = match.at(ii, 2);
+            BO1 = (TFBinding % O1Mean.col(i1).t()) * beta.t();
+            BO2 = (TFBinding % O2Mean.col(i2).t()) * beta.t();
+            TG1 = selectCols(E1, arma::find(E1Idx == i1));
+            TG2 = selectCols(E2, arma::find(E2Idx == i2));
+            // mean of TG1 and mean of TG2
+            TG2 = TG2 * (arma::accu(TG1) / TG1.n_elem) / (arma::accu(TG2) / TG2.n_elem);
+            tup = isMember(TFName, symbol);
+            d = std::get<0>(tup);
+            f = std::get<1>(tup);
+            TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)), TG2.rows(arma::conv_to<arma::uvec>::from(f)));
+            n1 = TG1.n_cols;
+            n2 = TG2.n_cols;
+            pVec = ttest2(TG1.t(), TG2.t());
+            adjPVec = fdrBH(pVec);
+            diffGene = arma::find(adjPVec < ALPHA_THRESH * 2);
+            corrP1 = corr(TF.cols(0, n1-1).t(), TG1.t());
+            corrP2 = corr(TF.cols(n1, n1+n2-1).t(), TG2.t());
+            pCombine = arma::min(corrP1, corrP2);
+            tempIdx = arma::find(pCombine < ALPHA_THRESH);
+            netIdx = arma::umat(tempIdx.n_elem, arma::fill::zeros);
+            convertIdxToRowCol(tempIdx, netIdx, pCombine.n_rows);
+
+            for (int j = 0; j < diffGene.n_elem; ++j) {
+                OTF1 = BO1.col(diffGene.at(j)) % TF.cols(0, n1 - 1);
+                OTF2 = BO2.col(diffGene.at(j)) % TF.cols(n1, n1+n2-1);
+                // get the row indices
+                id1 = netIdx.elem(mod(arma::find(netIdx.col(1) == diffGene.at(j)), pCombine.n_rows));
+                id = arma::find(arma::sum(arma::abs(OTF1.t())) + arma::sum(arma::abs(OTF2.t())) > 0);
+                id = arma::intersect(id1, id);
+
+                for (int i = 0; i < id.n_elem; ++i) {
+                    X1 = arma::join_horiz(OTF1.row(id.at(i)).t(), TG1.row(diffGene.at(j)).t());
+                    X2 = arma::join_horiz(OTF2.row(id.at(i)).t(), TG2.row(diffGene.at(j)).t());
+
+
+                }
+            }
+
+
+
+            arma::find(arma::sum(arma::abs(OTF1).t()))
+
+
+
+
+
+
+        }
+
+
+
+
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
+}
 
 
 // [[Rcpp::export]]
@@ -209,10 +537,12 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::mat a;
         arma::uvec rrPos = arma::find(rr > 0);
         unsigned int rrNRows = rr.n_rows;
-        // row
-        a.col(0) = conv_to<vec>::from(rrPos / rrNRows);
+        arma::umat idxMat = arma::umat(rrPos.n_elem, arma::fill::zeros);
+        convertIdxToRowCol(rrPos, idxMat, rrNRows);
+        //row
+        a.col(0) = arma::conv_to<arma::vec>::from(idxMat.col(0));
         // col
-        a.col(1) = conv_to<vec>::from(mod(rrPos, rrNRows));
+        a.col(1) = arma::conv_to<arma::vec>::from(idxMat.col(1));
         a.col(2) = r1.elem(b);
         a.col(3) = r2.elem(b);
         a.col(4) = rr1.elem(b);
@@ -268,17 +598,19 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
         auto symbol = intersection(symbol1, symbol2);
-        std::sort(symbol1.begin(), symbol1.end());
+        // TODO: sort will cause problem!!!
+//        std::sort(symbol1.begin(), symbol1.end());
         std::vector<std::string>::iterator s1Start= symbol1.begin();
-        std::sort(symbol2.begin(), symbol2.end());
+//        std::sort(symbol2.begin(), symbol2.end());
         std::vector<std::string>::iterator s2Start= symbol2.begin();
 
         arma::uvec f2 = arma::uvec(symbol.size(), arma::fill::zeros);
         arma::uvec f1 = arma::uvec(symbol.size(), arma::fill::zeros);
         unsigned int ind = 0;
         for (auto & t : symbol) {
-            f1(ind) = lower_bound(symbol1.begin(), symbol1.end(), t) - s1Start;
-            f2(ind) = lower_bound(symbol2.begin(), symbol2.end(), t) - s2Start;
+            // using lower_bound because t is always found in symbol1 and symbol2
+            f1(ind) = std::lower_bound(symbol1.begin(), symbol1.end(), t) - s1Start;
+            f2(ind) = std::lower_bound(symbol2.begin(), symbol2.end(), t) - s2Start;
             ++ind;
         }
 
@@ -314,23 +646,25 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             }
         }
 
-        std::sort(peakName1.begin(), peakName1.end());
-        std::vector<std::string>::iterator p1Start= peakName1.begin();
-        std::sort(peakName2.begin(), peakName2.end());
-        std::vector<std::string>::iterator p2Start= peakName2.begin();
+//        std::sort(peakName1.begin(), peakName1.end());
+        // std::vector<std::string>::iterator p1Start= peakName1.begin();
+//        std::sort(peakName2.begin(), peakName2.end());
+        // std::vector<std::string>::iterator p2Start= peakName2.begin();
 
         f2 = arma::uvec(peakNameIntersect2.size(), arma::fill::zeros);
         f1 = arma::uvec(peakNameIntersect1.size(), arma::fill::zeros);
         ind = 0;
         for (std::vector<std::string>::iterator t=peakNameIntersect1.begin(); t!=peakNameIntersect1.end(); ++t) {
-            f1(ind) = lower_bound(peakName1.begin(), peakName1.end(), *t) - s1Start;
+            f1(ind) = std::lower_bound(peakName1.begin(), peakName1.end(), *t) - s1Start;
             ++ind;
         }
         ind = 0;
         for (std::vector<std::string>::iterator t=peakNameIntersect2.begin(); t!=peakNameIntersect2.end(); ++t) {
-            f2(ind) = lower_bound(peakName2.begin(), peakName2.end(), *t) - s2Start;
+            f2(ind) = std::lower_bound(peakName2.begin(), peakName2.end(), *t) - s2Start;
             ++ind;
         }
+
+        // need to sort here for binary search, but won't affect index since peakNameIntersect1 is not used later
         std::sort(peakNameIntersect1.begin(), peakNameIntersect1.end());
         std::sort(peakNameIntersect2.begin(), peakNameIntersect2.end());
         arma::uvec d1 = arma::uvec(peakName1.size(), arma::fill::zeros);

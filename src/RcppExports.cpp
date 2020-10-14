@@ -23,6 +23,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compReg
+Rcpp::List compReg(arma::mat TFBinding, arma::mat match, const arma::sp_mat& E1, arma::uvec E1Idx, const arma::sp_mat& E2, arma::uvec E2Idx, const arma::mat& O1Mean, const arma::mat& O2Mean, std::vector<std::string> symbol, std::vector<std::string> TFName, std::vector<std::string> elementName, std::string peakGenePriorPath);
+RcppExport SEXP _scCompReg_compReg(SEXP TFBindingSEXP, SEXP matchSEXP, SEXP E1SEXP, SEXP E1IdxSEXP, SEXP E2SEXP, SEXP E2IdxSEXP, SEXP O1MeanSEXP, SEXP O2MeanSEXP, SEXP symbolSEXP, SEXP TFNameSEXP, SEXP elementNameSEXP, SEXP peakGenePriorPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type TFBinding(TFBindingSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type match(matchSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E1(E1SEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type E1Idx(E1IdxSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E2(E2SEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type E2Idx(E2IdxSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O1Mean(O1MeanSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type O2Mean(O2MeanSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type symbol(symbolSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type TFName(TFNameSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type elementName(elementNameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type peakGenePriorPath(peakGenePriorPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(compReg(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath));
+    return rcpp_result_gen;
+END_RCPP
+}
 // subpopulationLink
 Rcpp::List subpopulationLink(arma::mat EMH, arma::mat EMC, arma::mat OMH, arma::mat OMC);
 RcppExport SEXP _scCompReg_subpopulationLink(SEXP EMHSEXP, SEXP EMCSEXP, SEXP OMHSEXP, SEXP OMCSEXP) {
@@ -138,6 +160,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
+    {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
     {"_scCompReg_subpopulationLink", (DL_FUNC) &_scCompReg_subpopulationLink, 4},
     {"_scCompReg_clusterProfile", (DL_FUNC) &_scCompReg_clusterProfile, 13},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},

@@ -15,12 +15,17 @@
 #include <RcppParallel.h>
 #include <math.h>
 #include <chrono> // for seeding
-#include<bits/stdc++.h>
-#include<cstdio>
+#include <bits/stdc++.h>
+#include <cstdio>
+#include <algorithm>
+#include <tuple>
+#include <boost/math/distributions/students_t.hpp>
 
 #include <iomanip>
 
 #define BUFFER_SIZE 100
+#define TOLERANCE 0.00000001
+#define ALPHA_THRESH 0.05
 
 using namespace RcppParallel;
 using namespace arma;
