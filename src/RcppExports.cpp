@@ -6,6 +6,18 @@
 
 using namespace Rcpp;
 
+// loadPeakNameIntersectFile
+Rcpp::List loadPeakNameIntersectFile(std::string path, char token);
+RcppExport SEXP _scCompReg_loadPeakNameIntersectFile(SEXP pathSEXP, SEXP tokenSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
+    Rcpp::traits::input_parameter< char >::type token(tokenSEXP);
+    rcpp_result_gen = Rcpp::wrap(loadPeakNameIntersectFile(path, token));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mfbs
 Rcpp::List mfbs(std::vector<std::string> TFName, std::vector<std::string> motifName, arma::vec motifWeight, std::vector<std::string> elementName, std::vector<std::string> match2TF, std::vector<std::string> match2Motif, std::string motifTargetPath);
 RcppExport SEXP _scCompReg_mfbs(SEXP TFNameSEXP, SEXP motifNameSEXP, SEXP motifWeightSEXP, SEXP elementNameSEXP, SEXP match2TFSEXP, SEXP match2MotifSEXP, SEXP motifTargetPathSEXP) {
@@ -159,6 +171,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
     {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
     {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
     {"_scCompReg_subpopulationLink", (DL_FUNC) &_scCompReg_subpopulationLink, 4},

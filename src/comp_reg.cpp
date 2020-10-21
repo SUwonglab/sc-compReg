@@ -1,5 +1,36 @@
 #include "../inst/include/comp_reg.h"
 
+// [[Rcpp::export]]
+Rcpp::List loadPeakNameIntersectFile(std::string path,
+                                     char token) {
+    try {
+        char buffer[BUFFER_SIZE];
+        char *a = (char *)malloc(BUFFER_SIZE);
+        char *b = (char *)malloc(BUFFER_SIZE);
+        std::string tokenStr = std::string(1, token);
+        tokenStr = "%s" + tokenStr + "%s";
+        std::vector<std::string> file1;
+        std::vector<std::string> file2;
+        int scanRet;
+        FILE* f = fopen(path.c_str(), "r");
+        std::string temp;
+        while (true) {
+            if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
+            scanRet = sscanf(buffer, tokenStr.c_str(), a, b);
+            temp = a;
+            file1.push_back(temp);
+            temp = b;
+            file2.push_back(temp);
+        }
+        fclose(f);
+        free(a);
+        free(b);
+        return Rcpp::List::create(Named("vo") = file1,
+                                  Named("vt") = file2);
+    } catch(...) {
+        ::Rf_error("c++ exception");
+    }
+}
 
 std::vector<std::string> intersection(std::vector<std::string> v1,
                                       std::vector<std::string> v2){
@@ -583,40 +614,35 @@ Rcpp::List compReg(arma::mat TFBinding,
                     LRSummary = arma::join_vert(LRSummary, LRi);
                 }
             }
+            // remove the first filler row added previously
+            LRSummary.shed_row(0);
+            // find NaN and +-Inf
+            LRSummary.shed_rows(arma::find_nonfinite(LRSummary.col(2)));
+            // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
+            LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
 
+            LRSColTwo = LRSummary.col(2);
+            phat = gammaQuantileMatch(LRSColTwo, arma::regspace(0.1, 0.1, 0.2));
+            boost::math::gamma_distribution<> gammaDist(phat.at(0), phat.at(1));
+            pGamma = arma::vec(LRSummary.n_rows, arma::fill::zeros);
+            for (unsigned int k = 0; k < LRSummary.n_rows; ++k) {
+                pGamma.at(k) = 1 - boost::math::cdf(gammaDist, LRSColTwo.at(k));
+            }
+            adjPGamma = fdrBH(pGamma);
+            LRSummary = arma::join_horiz(LRSummary, pGamma, adjPGamma);
+            id = arma::find(adjPGamma < 0.1);
+            id1 = arma::uvec(id.n_elem).fill(2);
+
+            sortedIdx = arma::sort_index(LRSummary.elem(arr2ind(id, id1, LRSummary.n_rows)), "descend");
+            id1 = id.elem(sortedIdx);
+            id = arma::uvec(id1.n_elem, arma::fill::zeros);
+
+            extractElems(TFName, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
+            id.ones();
+            extractElems(symbol, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
+            arma::mat LRTempMat = LRSummary.cols(2, 5);
+            LRTempMat = LRTempMat.rows(id1);
         }
-        // remove the first filler row added previously
-        LRSummary.shed_row(0);
-        // find NaN and +-Inf
-        LRSummary.shed_rows(arma::find_nonfinite(LRSummary.col(2)));
-        // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
-        LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
-
-        LRSColTwo = LRSummary.col(2);
-        phat = gammaQuantileMatch(LRSColTwo, arma::regspace(0.1, 0.1, 0.2));
-        boost::math::gamma_distribution<> gammaDist(phat.at(0), phat.at(1));
-        pGamma = arma::vec(LRSummary.n_rows, arma::fill::zeros);
-        for (unsigned int k = 0; k < LRSummary.n_rows; ++k) {
-            pGamma.at(k) = 1 - boost::math::cdf(gammaDist, LRSColTwo.at(k));
-        }
-        adjPGamma = fdrBH(pGamma);
-        LRSummary = arma::join_horiz(LRSummary, pGamma, adjPGamma);
-        id = arma::find(adjPGamma < 0.1);
-        id1 = arma::uvec(id.n_elem).fill(2);
-
-        sortedIdx = arma::sort_index(LRSummary.elem(arr2ind(id, id1, LRSummary.n_rows)), "descend");
-        id1 = id.elem(sortedIdx);
-        id = arma::uvec(id1.n_elem, arma::fill::zeros);
-
-        extractElems(TFName, arma::conv_to::<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))))
-        id.ones();
-        extractElems(symbol, arma::con_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
-        arma::mat LRTempMat = LRSummary.cols(2, 5);
-        LRTempMat = LRTempMat.rows(id1);
-        
-
-
-
     } catch (...) {
         ::Rf_error("c++ exception");
     }

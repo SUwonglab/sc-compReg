@@ -1,5 +1,6 @@
 #include "../inst/include/coupled_nmf.h"
 
+
 // [[Rcpp::export]]
 Rcpp::List initializeMatrix(const unsigned int POnRow,
                                  const unsigned int POnCol,
