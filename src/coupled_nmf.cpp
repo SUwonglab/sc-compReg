@@ -9,7 +9,7 @@ Rcpp::List initializeMatrix(const unsigned int POnRow,
                                  const arma::sp_mat& D) {
     try {
         arma::mat W10 = arma::mat(POnRow, k, fill::randu);
-        arma::mat H10 = arma::mat(k, POnCol);
+        arma::mat H10 = arma::mat(k, POnCol, fill::randu);
 
         arma::mat W20 = D * W10;
         W20 = W20 - W20.min();
@@ -19,8 +19,8 @@ Rcpp::List initializeMatrix(const unsigned int POnRow,
         arma::rowvec W20Sum = arma::sum(arma::pow(W20, 2), 0);
         arma::mat H1 = arma::diagmat(W10Sum) * H10;
         arma::mat H2 = arma::diagmat(W20Sum) * H20;
-        arma::mat W1 = W10 * arma::diagmat(arma::sqrt(W10Sum));
-        arma::mat W2 = W20 * arma::diagmat(arma::sqrt(W20Sum));
+        arma::mat W1 = W10 * arma::diagmat(1./ arma::sqrt(W10Sum));
+        arma::mat W2 = W20 * arma::diagmat(1./ arma::sqrt(W20Sum));
 
         return Rcpp::List::create(Named("W1") = W1,
                                  Named("W2") = W2,
@@ -95,15 +95,13 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                           arma::mat H10,
                           arma::mat W20,
                           arma::mat H20,
-                          double epsD,
                           double tolX,
                           double tolFun,
                           bool verbose,
                           int loopUpdate
 ) {
     try {
-        double sqrtEps = sqrt(epsD);
-        int beta = 2;
+        double sqrtEps = sqrt(arma::datum::eps);
         unsigned int n = PeakO.n_rows;
         unsigned int m = PeakO.n_cols;
         unsigned int n1 = X.n_rows;
@@ -135,25 +133,26 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             Rcpp::checkUserInterrupt();
             S1 = 0.5 * lambda2 * D.t() * W20 * s;
             numer = W10.t() * PeakO;
-            H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer)));
+            H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer) + arma::datum::eps));
             H1.elem(arma::find(H1 < 0)).fill(0.);
             numer = PeakO * H1.t() + S1;
             numer.elem(arma::find(numer < 0.)).fill(0.);
             mu11 = arma::diagmat(arma::sum(0.5 * W10 % numer));
             mu12 = arma::diagmat(arma::sum(0.5 * W10 % (W10 * (H1 * H1.t()))));
-            W1 = W10 % ((numer + 2 * arma::pow(W10, beta - 1) * mu12) /
-                        (W10 * (H1 * H1.t()) + 2 * arma::pow(W10, beta - 1) * mu11 + arma::eps(numer)));
+            W1 = W10 % ((numer + 2 * W10 * mu12) /
+                        (W10 * (H1 * H1.t()) + 2 * W10 * mu11 + arma::eps(numer) + arma::datum::eps));
+
             W1.elem(arma::find(W1 < 0.)).fill(0.);
-            S2 = 0.5 * (lambda2 / (lambda1 + epsD)) * (D * W1 * s);
+            S2 = 0.5 * (lambda2 / (lambda1 + arma::datum::eps)) * (D * W1 * s);
             numer = W20.t() * X;
-            H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer)));
+            H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer) + arma::datum::eps));
             H2.elem(arma::find(H2 < 0.)).fill(0.);
             numer = X * H2.t() + S2;
             numer.elem(arma::find(numer<0.)).fill(0.);
             mu21 = arma::diagmat(arma::sum(0.5 * W20 % numer));
             mu22 = arma::diagmat(arma::sum(0.5 * W20 % (W20 * (H2 * H2.t()))));
-            W2 = W20 % ((numer + 2 * arma::pow(W20, beta - 1) * mu22) /
-                 (W20 * (H2 * H2.t()) + 2 * arma::pow(W20, beta - 1) * mu21 + eps(numer)));
+            W2 = W20 % ((numer + 2 * W20 * mu22) /
+                 (W20 * (H2 * H2.t()) + 2 * W20 * mu21 + arma::eps(numer) + arma::datum::eps));
             W2.elem(arma::find(W2 < 0.)).fill(0.);
 
             dnorm = pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + lambda1 * pow(arma::norm(X - W2 * H2, "fro"), 2.0);
@@ -182,9 +181,6 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             H10 = H1;
             W20 = W2;
             H20 = H2;
-
-            H1.print();
-            H2.print();
 
             if (iter % loopUpdate == 0) {
                 hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1));

@@ -22,20 +22,20 @@ rm(list=ls())
 
 t2 = as.numeric(read.table('/Users/Sophia/Desktop/BioStats/scRNA-result.txt', header=F))
 t1 = as.numeric(read.table('/Users/Sophia/Desktop/BioStats/scATAC-result.txt', header=F))
-hist(output$cluster2)
-hist(t2)
 
 par(mfrow=c(1,2))
 hist(t1)
 hist(output$cluster1)
 c1 = output$cluster1
 c2 = output$cluster2
-length(which(c1[which(t1 == 1)] != 2)) +
-    length(which(c1[which(t1 == 2)] != 1))+
-length(which(c1[which(t1 == 3)] != 0))
 
-hist(c2)
+library(mclust)
+adjustedRandIndex(t1, c1)
+adjustedRandIndex(t2, c2)
+
 hist(t2)
+hist(c2)
+
 
 
 

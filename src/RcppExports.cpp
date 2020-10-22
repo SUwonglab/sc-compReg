@@ -131,8 +131,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // iterateCluster
-Rcpp::List iterateCluster(const arma::sp_mat& PeakO, const arma::sp_mat& X, const arma::sp_mat& D, const unsigned int k, const unsigned int maxIter, double lambda1, double lambda2, arma::mat W10, arma::mat H10, arma::mat W20, arma::mat H20, double epsD, double tolX, double tolFun, bool verbose, int loopUpdate);
-RcppExport SEXP _scCompReg_iterateCluster(SEXP PeakOSEXP, SEXP XSEXP, SEXP DSEXP, SEXP kSEXP, SEXP maxIterSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP W10SEXP, SEXP H10SEXP, SEXP W20SEXP, SEXP H20SEXP, SEXP epsDSEXP, SEXP tolXSEXP, SEXP tolFunSEXP, SEXP verboseSEXP, SEXP loopUpdateSEXP) {
+Rcpp::List iterateCluster(const arma::sp_mat& PeakO, const arma::sp_mat& X, const arma::sp_mat& D, const unsigned int k, const unsigned int maxIter, double lambda1, double lambda2, arma::mat W10, arma::mat H10, arma::mat W20, arma::mat H20, double tolX, double tolFun, bool verbose, int loopUpdate);
+RcppExport SEXP _scCompReg_iterateCluster(SEXP PeakOSEXP, SEXP XSEXP, SEXP DSEXP, SEXP kSEXP, SEXP maxIterSEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP W10SEXP, SEXP H10SEXP, SEXP W20SEXP, SEXP H20SEXP, SEXP tolXSEXP, SEXP tolFunSEXP, SEXP verboseSEXP, SEXP loopUpdateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -147,12 +147,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type H10(H10SEXP);
     Rcpp::traits::input_parameter< arma::mat >::type W20(W20SEXP);
     Rcpp::traits::input_parameter< arma::mat >::type H20(H20SEXP);
-    Rcpp::traits::input_parameter< double >::type epsD(epsDSEXP);
     Rcpp::traits::input_parameter< double >::type tolX(tolXSEXP);
     Rcpp::traits::input_parameter< double >::type tolFun(tolFunSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< int >::type loopUpdate(loopUpdateSEXP);
-    rcpp_result_gen = Rcpp::wrap(iterateCluster(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate));
+    rcpp_result_gen = Rcpp::wrap(iterateCluster(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, tolX, tolFun, verbose, loopUpdate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -191,7 +190,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_clusterProfile", (DL_FUNC) &_scCompReg_clusterProfile, 14},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
-    {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 16},
+    {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},
     {"_scCompReg_cluster", (DL_FUNC) &_scCompReg_cluster, 2},
     {"_scCompReg_postLapMatMult", (DL_FUNC) &_scCompReg_postLapMatMult, 4},
     {NULL, NULL, 0}

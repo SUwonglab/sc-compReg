@@ -29,8 +29,8 @@ computeLambda <- function(PeakO, w1, h1, X, w2, h2, D, alpha, beta, eps) {
     .Call(`_scCompReg_computeLambda`, PeakO, w1, h1, X, w2, h2, D, alpha, beta, eps)
 }
 
-iterateCluster <- function(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate) {
-    .Call(`_scCompReg_iterateCluster`, PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate)
+iterateCluster <- function(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, tolX, tolFun, verbose, loopUpdate) {
+    .Call(`_scCompReg_iterateCluster`, PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, tolX, tolFun, verbose, loopUpdate)
 }
 
 cluster <- function(H1, H2) {
