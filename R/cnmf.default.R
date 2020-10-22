@@ -60,6 +60,8 @@ cnmf.default <- function(PeakO,
                                 beta[j])
         lambda1 <- dp.ret$lambda1
         lambda2 <- dp.ret$lambda2
+        print(lambda1)
+        print(lambda2)
         nmf.ret <- nmf_cluster_sep2_lap(PeakO,
                              X,
                              D,

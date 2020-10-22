@@ -157,13 +157,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // cluster
-Rcpp::List cluster(arma::mat& H1, arma::mat& H2);
+Rcpp::List cluster(const arma::mat& H1, const arma::mat& H2);
 RcppExport SEXP _scCompReg_cluster(SEXP H1SEXP, SEXP H2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type H1(H1SEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type H2(H2SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type H1(H1SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type H2(H2SEXP);
     rcpp_result_gen = Rcpp::wrap(cluster(H1, H2));
     return rcpp_result_gen;
 END_RCPP
