@@ -20,24 +20,27 @@ cnmf.default <- function(PeakO,
     }
 
     if (! is(k, 'numeric')) {
-        k <- as.integer(k)
         stop('k must be an integer.')
     }
 
+    k <- as.integer(k)
+
     if (!missing(beta_min)) {
         if (! is(beta_min, numeric)) {
-            stop('User must supply a valid beta_min of type numeric, or supply nothing at all.')
+            warning('User must supply a valid beta_min of type numeric, or supply nothing at all. Using default value.')
+            beta <- 10.0^seq(beta_max_scale, -3, -1)
+        } else {
+            beta <- beta_min * 10.0^seq(beta_max_scale, 0, -1)
         }
-        beta <- beta_min * 10.0^seq(beta_max_scale, 0, -1)
     } else {
         beta <- 10.0^seq(beta_max_scale, -3, -1)
     }
     # convert to matrix to use NNLM::nnmf function
-    X.nmf <- nnmf(as.matrix(X), k=k, loss='mse')
+    X.nmf <- nnmf(as.matrix(X), k=k)
     w2 <- X.nmf$W
     h2 <- X.nmf$H
 
-    PO.nmf <- nnmf(as.matrix(PeakO), k=k, loss='mse')
+    PO.nmf <- nnmf(as.matrix(PeakO), k=k)
     w1 <- PO.nmf$W
     h1 <- PO.nmf$H
 
@@ -61,8 +64,11 @@ cnmf.default <- function(PeakO,
                                 beta[j])
         lambda1 <- dp.ret$lambda1
         lambda2 <- dp.ret$lambda2
-        print(lambda1)
-        print(lambda2)
+        if (verbose) {
+            message(paste("On ", j, "-th loop", sep = ''))
+            message(paste("Lambda 1:", lambda1))
+            message(paste("Lambda 2:", lambda2))
+        }
         nmf.ret <- nmf_cluster_sep2_lap(PeakO,
                              X,
                              D,

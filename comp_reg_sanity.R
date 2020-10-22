@@ -19,11 +19,6 @@ clusterProfile(Matrix(s1$O1, sparse=T),
                pni$vt
                )
 
-# clusterProfile(Matrix(s1$O1, sparse=T),
-#                Matrix(s1$E1, sparse=T),
-#                as.integer(s1$O1.idx),
-#                as.integer(s1$E1.idx),
-#                unlist(s1$Symbol1, use.names = F))
 library(scCompReg)
 
 as.integer(s1$O1.idx)
