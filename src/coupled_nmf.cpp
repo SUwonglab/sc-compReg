@@ -276,18 +276,23 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         assignment = assignment - arma::floor(assignment / S.n_cols) * S.n_cols;
         W2 = W2.cols(assignment);
         H2 = H2.rows(assignment);
-        arma::urowvec C1 = arma::index_max(H1, 0);
-        arma::urowvec C2 = arma::index_max(H2, 0);
         return Rcpp::List::create(Named("W1") = W1,
                                   Named("W2") = W2,
                                   Named("H1") = H1,
                                   Named("H2") = H2,
-                                  Named("C1") = C1,
-                                  Named("C2") = C2,
                                   Named("score") = score);
     } catch(...) {
         ::Rf_error("c++ exception");
     }
+}
+
+// [[Rcpp::export]]
+Rcpp::List cluster(const arma::mat& H1,
+                   const arma::mat& H2) {
+    arma::urowvec C1 = arma::index_max(H1, 0);
+    arma::urowvec C2 = arma::index_max(H2, 0);
+    return Rcpp::List::create(Named("c1") = C1,
+                              Named("c2") = C2);
 }
 
 

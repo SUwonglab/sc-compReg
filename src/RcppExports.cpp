@@ -156,6 +156,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cluster
+Rcpp::List cluster(arma::mat& H1, arma::mat& H2);
+RcppExport SEXP _scCompReg_cluster(SEXP H1SEXP, SEXP H2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type H1(H1SEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type H2(H2SEXP);
+    rcpp_result_gen = Rcpp::wrap(cluster(H1, H2));
+    return rcpp_result_gen;
+END_RCPP
+}
 // postLapMatMult
 Rcpp::List postLapMatMult(arma::mat W1, arma::mat W2, arma::mat H1, arma::mat H2);
 RcppExport SEXP _scCompReg_postLapMatMult(SEXP W1SEXP, SEXP W2SEXP, SEXP H1SEXP, SEXP H2SEXP) {
@@ -180,6 +192,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 16},
+    {"_scCompReg_cluster", (DL_FUNC) &_scCompReg_cluster, 2},
     {"_scCompReg_postLapMatMult", (DL_FUNC) &_scCompReg_postLapMatMult, 4},
     {NULL, NULL, 0}
 };

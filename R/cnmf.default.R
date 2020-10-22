@@ -48,7 +48,6 @@ cnmf.default <- function(PeakO,
                           k,
                           D)
 
-    score = 0
     for (j in 1:length(beta)) {
         dp.ret <- compute_lambda(PeakO,
                                 w1,
@@ -81,9 +80,8 @@ cnmf.default <- function(PeakO,
         W1 <- update.ret$W1
         W2 <- update.ret$W2
         score <- nmf.ret$score
-        c1 <- nmf.ret$C1
-        c2 <- nmf.ret$C2
     }
+    cluster.output <- cluster(H1, H2);
     return(list("W1" = W1,
                 "W2" = W2,
                 "H1" = H1,
@@ -91,6 +89,6 @@ cnmf.default <- function(PeakO,
                 "lambda1" = lambda1,
                 "lambda2" = lambda2,
                 "score" = score,
-                "cluster1" = c1,
-                "cluster2" = c2))
+                "cluster1" = cluster.output$c1,
+                "cluster2" = cluster.output$c2))
 }

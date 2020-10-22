@@ -33,6 +33,10 @@ iterateCluster <- function(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, 
     .Call(`_scCompReg_iterateCluster`, PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate)
 }
 
+cluster <- function(H1, H2) {
+    .Call(`_scCompReg_cluster`, H1, H2)
+}
+
 postLapMatMult <- function(W1, W2, H1, H2) {
     .Call(`_scCompReg_postLapMatMult`, W1, W2, H1, H2)
 }
