@@ -25,8 +25,8 @@ initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {
     .Call(`_scCompReg_initializeMatrix`, POnRow, POnCol, XnCol, k, D)
 }
 
-computeLambda <- function(PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps) {
-    .Call(`_scCompReg_computeLambda`, PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps)
+computeLambda <- function(PeakO, w1, h1, X, w2, h2, D, alpha, beta, eps) {
+    .Call(`_scCompReg_computeLambda`, PeakO, w1, h1, X, w2, h2, D, alpha, beta, eps)
 }
 
 iterateCluster <- function(PeakO, X, D, k, maxIter, lambda1, lambda2, W10, H10, W20, H20, epsD, tolX, tolFun, verbose, loopUpdate) {

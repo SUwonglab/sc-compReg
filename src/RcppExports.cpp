@@ -111,8 +111,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // computeLambda
-Rcpp::List computeLambda(const arma::sp_mat& PeakO, const arma::mat& w1, const arma::mat& h1, const arma::sp_mat& X, const arma::mat& w2, const arma::mat& h2, const arma::sp_mat& D, double beta, double alpha, double eps);
-RcppExport SEXP _scCompReg_computeLambda(SEXP PeakOSEXP, SEXP w1SEXP, SEXP h1SEXP, SEXP XSEXP, SEXP w2SEXP, SEXP h2SEXP, SEXP DSEXP, SEXP betaSEXP, SEXP alphaSEXP, SEXP epsSEXP) {
+Rcpp::List computeLambda(const arma::sp_mat& PeakO, const arma::mat& w1, const arma::mat& h1, const arma::sp_mat& X, const arma::mat& w2, const arma::mat& h2, const arma::sp_mat& D, double alpha, double beta, double eps);
+RcppExport SEXP _scCompReg_computeLambda(SEXP PeakOSEXP, SEXP w1SEXP, SEXP h1SEXP, SEXP XSEXP, SEXP w2SEXP, SEXP h2SEXP, SEXP DSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP epsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -123,10 +123,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type w2(w2SEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type h2(h2SEXP);
     Rcpp::traits::input_parameter< const arma::sp_mat& >::type D(DSEXP);
-    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeLambda(PeakO, w1, h1, X, w2, h2, D, beta, alpha, eps));
+    rcpp_result_gen = Rcpp::wrap(computeLambda(PeakO, w1, h1, X, w2, h2, D, alpha, beta, eps));
     return rcpp_result_gen;
 END_RCPP
 }

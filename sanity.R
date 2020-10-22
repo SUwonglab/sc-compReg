@@ -8,14 +8,17 @@ X <- Matrix(file.mat[['X']], sparse=TRUE)
 A <- Matrix(file.mat[['D']], sparse=TRUE)
 peakO <- Matrix(log10(file.mat[['PeakO']] + 1), sparse=TRUE)
 
-tic('cnmf')
+# tic('cnmf')
 output = cnmf(peakO,
          X,
          A,
          k=3,
          alpha=0.5,
-         beta_max_scale=5)
-toc()
+         beta_max_scale=5,
+         verbose=F)
+# toc()
+
+rm(list=ls())
 
 t2 = as.numeric(read.table('/Users/Sophia/Desktop/BioStats/scRNA-result.txt', header=F))
 t1 = as.numeric(read.table('/Users/Sophia/Desktop/BioStats/scATAC-result.txt', header=F))

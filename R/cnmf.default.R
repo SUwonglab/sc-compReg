@@ -4,7 +4,8 @@ cnmf.default <- function(PeakO,
                          k,
                          beta_min,
                          alpha=0.5,
-                         beta_max_scale=5) {
+                         beta_max_scale=5,
+                         verbose=T) {
     # TODO: input format checking
     if (! is(PeakO, 'sparseMatrix')) {
         PeakO <- Matrix(PeakO, sparse = T)
@@ -32,11 +33,11 @@ cnmf.default <- function(PeakO,
         beta <- 10.0^seq(beta_max_scale, -3, -1)
     }
     # convert to matrix to use NNLM::nnmf function
-    X.nmf <- nnmf(as.matrix(X), k=k)
+    X.nmf <- nnmf(as.matrix(X), k=k, loss='mse')
     w2 <- X.nmf$W
     h2 <- X.nmf$H
 
-    PO.nmf <- nnmf(as.matrix(PeakO), k=k)
+    PO.nmf <- nnmf(as.matrix(PeakO), k=k, loss='mse')
     w1 <- PO.nmf$W
     h1 <- PO.nmf$H
 
@@ -72,7 +73,8 @@ cnmf.default <- function(PeakO,
                              mat.init$W1,
                              mat.init$H1,
                              mat.init$W2,
-                             mat.init$H2)
+                             mat.init$H2,
+                             verbose=verbose)
         update.ret <- postLapMatMult(nmf.ret$W1,
                        nmf.ret$W2,
                        nmf.ret$H1,

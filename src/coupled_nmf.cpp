@@ -40,8 +40,8 @@ Rcpp::List computeLambda(const arma::sp_mat& PeakO,
                          const arma::mat& w2,
                          const arma::mat& h2,
                          const arma::sp_mat& D,
-                         double beta,
                          double alpha,
+                         double beta,
                          double eps) {
     try {
         // take mean of both
@@ -49,7 +49,7 @@ Rcpp::List computeLambda(const arma::sp_mat& PeakO,
         double lambda2 = 2 * alpha * beta * r1;
 
         double r2 = arma::mean(arma::mean(X * h2.t())) / arma::mean(arma::mean(D * w1));
-        double lambda1 = alpha / (1 - alpha + eps) * r1 / r2;
+        double lambda1 = alpha / (1 - alpha + eps) * r1 / (r2 + eps);
         return Rcpp::List::create(Named("lambda1") = lambda1,
                                   Named("lambda2") = lambda2);
     } catch(...) {
@@ -103,7 +103,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
 ) {
     try {
         double sqrtEps = sqrt(epsD);
-        double beta = 2;
+        int beta = 2;
         unsigned int n = PeakO.n_rows;
         unsigned int m = PeakO.n_cols;
         unsigned int n1 = X.n_rows;
@@ -128,38 +128,35 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         arma::uvec assignment;
         arma::mat S, WP1, WP2;
         arma::uvec tempJIdx, tempNJIdx;
+        arma::vec hTempVec;
+        arma::mat H1T, H2T;
         for (int iter = 1; iter <= maxIter; ++iter) {
+            if (verbose) std::cout<< "On iteration " << iter << "." << std::endl;
             Rcpp::checkUserInterrupt();
             S1 = 0.5 * lambda2 * D.t() * W20 * s;
             numer = W10.t() * PeakO;
             H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer)));
             H1.elem(arma::find(H1 < 0)).fill(0.);
-//            H1.transform([](double val) { return (val >= 0) ? val : 0; }); //max(0, H1)
             numer = PeakO * H1.t() + S1;
-            numer.elem(arma::find(numer < 0)).fill(0.);
-//            numer.transform([](double val) { return (val >= 0) ? val : 0; }); //max(0, numer)
-            mu11 = arma::diagmat(arma::sum(0.5 * W10 % numer, 0));
+            numer.elem(arma::find(numer < 0.)).fill(0.);
+            mu11 = arma::diagmat(arma::sum(0.5 * W10 % numer));
             mu12 = arma::diagmat(arma::sum(0.5 * W10 % (W10 * (H1 * H1.t()))));
             W1 = W10 % ((numer + 2 * arma::pow(W10, beta - 1) * mu12) /
                         (W10 * (H1 * H1.t()) + 2 * arma::pow(W10, beta - 1) * mu11 + arma::eps(numer)));
-            W1.elem(arma::find(W1 < 0)).fill(0.);
-//            W1.transform([](double val) { return (val >= 0) ? val : 0; }); // max(0, W1)
+            W1.elem(arma::find(W1 < 0.)).fill(0.);
             S2 = 0.5 * (lambda2 / (lambda1 + epsD)) * (D * W1 * s);
             numer = W20.t() * X;
             H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer)));
-            H2.elem(arma::find(H2)).fill(0.);
-//            H20.transform([](double val) { return (val >= 0) ? val : 0; });
+            H2.elem(arma::find(H2 < 0.)).fill(0.);
             numer = X * H2.t() + S2;
-//            numer.transform([](double val) { return (val >= 0) ? val : 0; });
-            numer.elem(arma::find(numer<0)).fill(0.);
-            mu21 = arma::diagmat(arma::sum(0.5 * W20 % numer, 0));
+            numer.elem(arma::find(numer<0.)).fill(0.);
+            mu21 = arma::diagmat(arma::sum(0.5 * W20 % numer));
             mu22 = arma::diagmat(arma::sum(0.5 * W20 % (W20 * (H2 * H2.t()))));
             W2 = W20 % ((numer + 2 * arma::pow(W20, beta - 1) * mu22) /
                  (W20 * (H2 * H2.t()) + 2 * arma::pow(W20, beta - 1) * mu21 + eps(numer)));
-            W2.elem(arma::find(W2 < 0)).fill(0.);
-//            W2.transform([](double val) { return (val >= 0) ? val : 0; });
+            W2.elem(arma::find(W2 < 0.)).fill(0.);
 
-            dnorm = pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + pow(lambda1 * arma::norm(X - W2 * H2, "fro"), 2.0);
+            dnorm = pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + lambda1 * pow(arma::norm(X - W2 * H2, "fro"), 2.0);
             dw1 = arma::max(arma::max(arma::abs(W1 - W10))) / (sqrtEps + arma::max(arma::max(arma::abs(W10))));
             dh1 = arma::max(arma::max(arma::abs(H1 - H10))) / (sqrtEps + arma::max(arma::max(arma::abs(H10))));
             dw2 = arma::max(arma::max(arma::abs(W2 - W20))) / (sqrtEps + arma::max(arma::max(arma::abs(W20))));
@@ -186,10 +183,23 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             W20 = W2;
             H20 = H2;
 
+            H1.print();
+            H2.print();
+
             if (iter % loopUpdate == 0) {
+                hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1));
+                H2T = H20;
                 // row-wise scalar multiplication
-                S20 = arma::index_max(H20 * arma::diagmat((1 / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1))))); // sum over each row
-                S10 = arma::index_max(H10 * arma::diagmat((1 / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1)))));
+                for (unsigned int hIdx = 0; hIdx < H20.n_rows; ++hIdx) {
+                    H2T.row(hIdx) *= hTempVec.at(hIdx);
+                }
+                S20 = arma::index_max(H2T);
+                hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1));
+                H1T = H10;
+                for (unsigned int hIdx = 0; hIdx < H10.n_rows; ++hIdx) {
+                    H1T.row(hIdx) *= hTempVec.at(hIdx);
+                }
+                S10 = arma::index_max(H1T);
                 SSize = S10.n_elem;
                 XSize = S20.n_elem;
                 FC1.fill(arma::fill::zeros); // could remove later
@@ -203,11 +213,9 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                     for (unsigned int poColIdx = 0; poColIdx < SSize; ++poColIdx) {
                         zeroPOVec = PeakO.col(poColIdx);
                         if (S10.at(poColIdx) == j) {
-                            tempSumS10 =
-                                    tempSumS10 + zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
+                            tempSumS10 += zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
                         } else {
-                            tempSumNS10 =
-                                    tempSumNS10 + zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
+                            tempSumNS10 += zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
                         }
                     }
 
@@ -219,7 +227,6 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                             tempSumNS20 += zeroXVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
                         }
                     }
-
                     FC1.col(j) = tempSumS10 / (tempSumNS10 / arma::sum(S10 != j) * arma::sum(S10 == j) + 1.0);
                     FC2.col(j) = tempSumS20 / (tempSumNS20 / arma::sum(S20 != j) * arma::sum(S20 == j) + 1.0);
                 }
@@ -240,10 +247,21 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         double score =
                 pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + lambda1 * pow(arma::norm(X - W2 * H2, "fro"), 2.0) -
                 lambda2 * arma::trace(W2.t() * D * W1);
-        //    double detr = 0.;
 
-        S20 = arma::index_max(H2 * arma::diagmat((1. / arma::sqrt(arma::sum(arma::pow(H2, 2.0), 1)))));
-        S10 = arma::index_max(H1 * arma::diagmat((1. / arma::sqrt(arma::sum(arma::pow(H1, 2.0), 1)))));
+        H1T = H1;
+        H2T = H2;
+        hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H2, 2.0), 1));
+        for (unsigned int hIdx = 0; hIdx < H2.n_rows; ++hIdx) {
+            H2T.row(hIdx) *= hTempVec.at(hIdx);
+        }
+        S20 = arma::index_max(H2T);
+
+        hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H1, 2.0), 1));
+        for (unsigned int hIdx = 0; hIdx < H1.n_rows; ++hIdx) {
+            H1T.row(hIdx) *= hTempVec.at(hIdx);
+        }
+        S10 = arma::index_max(H1T);
+
         FC1.fill(arma::fill::zeros);
         FC2.fill(arma::fill::zeros);
         SSize = S10.n_elem;
@@ -257,9 +275,9 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             for (unsigned int poColIdx = 0; poColIdx < SSize; ++poColIdx) {
                 zeroPOVec = PeakO.col(poColIdx);
                 if (S10.at(poColIdx) == j) {
-                    tempSumS10 = tempSumS10 + zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
+                    tempSumS10 += zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
                 } else {
-                    tempSumNS10 = tempSumNS10 + zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
+                    tempSumNS10 += zeroPOVec.transform([](double val) { return (val > 0) ? 1. : 0.; });
                 }
             }
 
