@@ -32,6 +32,43 @@ Rcpp::List loadPeakNameIntersectFile(std::string path,
     }
 }
 
+
+template <typename T>
+/**
+ * ismember(A,B) returns an array containing
+ * logical 1 (true) where the data in A is found in B.
+ * Elsewhere, the array contains logical 0 (false).
+ * The second return value contains the index of the first
+ * instance found in array B.
+ * @tparam T
+ * @tparam T
+ * @param vecA
+ * @param vecB
+ * @return
+ */
+std::tuple<arma::uvec, arma::uvec> isMember(const T& vecA,
+                                          const T& vecB) {
+    auto ABegin = vecA.begin();
+    auto AEnd = vecA.end();
+    arma::vec lia = arma::vec(vecA.size(), arma::fill::zeros);
+    arma::vec locb = arma::vec(vecB.size(), arma::fill::zeros);
+
+    unsigned int insertIdx = 0;
+    for (auto t : vecA) {
+        auto p = std::find(ABegin, AEnd, t);
+        if (p != AEnd) {
+            lia.at(insertIdx) = 1;
+            locb.at(insertIdx) = std::distance(p, AEnd);
+        } else {
+            lia.at(insertIdx) = 0;
+            locb.at(insertIdx) = arma::datum::nan;
+        }
+        ++insertIdx;
+    }
+    return std::tuple<arma::uvec, arma::uvec>{lia, locb};
+}
+
+
 std::vector<std::string> intersection(std::vector<std::string> v1,
                                       std::vector<std::string> v2){
     std::vector<std::string> v3;
@@ -244,40 +281,6 @@ void parsePeakGenePrior(std::string filePath,
     free(b);
 }
 
-template <typename T>
-/**
- * ismember(A,B) returns an array containing
- * logical 1 (true) where the data in A is found in B.
- * Elsewhere, the array contains logical 0 (false).
- * The second return value contains the index of the first
- * instance found in array B.
- * @tparam T
- * @tparam T
- * @param vecA
- * @param vecB
- * @return
- */
-std::tuple<arma::vec, arma::vec> isMember(const T& vecA,
-                                          const T& vecB) {
-    auto ABegin = vecA.begin();
-    auto AEnd = vecA.end();
-    arma::vec lia = arma::vec(vecA.size(), arma::fill::zeros);
-    arma::vec locb = arma::vec(vecB.size(), arma::fill::zeros);
-
-    unsigned int insertIdx = 0;
-    for (auto t : vecA) {
-        auto p = std::find(ABegin, AEnd, t);
-        if (p != AEnd) {
-            lia.at(insertIdx) = 1.;
-            locb.at(insertIdx) = std::distance(p, AEnd);
-        } else {
-            lia.at(insertIdx) = 0.;
-            locb.at(insertIdx) = arma::datum::nan;
-        }
-        ++insertIdx;
-    }
-    return std::tuple<arma::vec, arma::vec>{lia, locb};
-}
 
 arma::mat uniqueRows(const arma::mat& m) {
     arma::uvec ulmt = arma::zeros<arma::uvec>(m.n_rows);
@@ -541,13 +544,13 @@ Rcpp::List compReg(arma::mat TFBinding,
 //            ++idx;
 //        }
 
-        std::tuple<arma::vec, arma::vec> tup = isMember(strVec1, elementName);
-        arma::vec d = std::get<0>(tup);
-        arma::vec f = std::get<1>(tup);
+        std::tuple<arma::uvec, arma::uvec> tup = isMember(strVec1, elementName);
+        arma::uvec d = std::get<0>(tup);
+        arma::uvec f = std::get<1>(tup);
 
-        std::tuple<arma::vec, arma::vec> tup2 = isMember(strVec2, symbol);
-        arma::vec d1 = std::get<0>(tup2);
-        arma::vec f1 = std::get<1>(tup2);
+        std::tuple<arma::uvec, arma::uvec> tup2 = isMember(strVec2, symbol);
+        arma::uvec d1 = std::get<0>(tup2);
+        arma::uvec f1 = std::get<1>(tup2);
 
         // TODO check whether the .* is outer product
         arma::mat ff = arma::join_horiz(f.elem(arma::find(d % d1 == 1)), f1.elem(arma::find(d % d1 == 1)));
@@ -585,7 +588,7 @@ Rcpp::List compReg(arma::mat TFBinding,
             tup = isMember(TFName, symbol);
             d = std::get<0>(tup);
             f = std::get<1>(tup);
-            TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)), TG2.rows(arma::conv_to<arma::uvec>::from(f)));
+            TF = arma::join_horiz(TG1.rows(f), TG2.rows(f));
             n1 = TG1.n_cols;
             n2 = TG2.n_cols;
             pTTest = ttest2(TG1.t(), TG2.t());
@@ -714,25 +717,37 @@ Rcpp::List subpopulationLink(arma::mat EMH,
 
 // [[Rcpp::export]]
 Rcpp::List clusterProfile(const arma::sp_mat& O1,
-                   const arma::sp_mat& E1,
-                   arma::uvec O1Idx,
-                   arma::uvec E1Idx,
-                   std::vector<std::string> symbol1,
-                   std::vector<std::string> peakName1,
-                   const arma::sp_mat& O2,
-                   const arma::sp_mat& E2,
-                   arma::uvec O2Idx,
-                   arma::uvec E2Idx,
-                   std::vector<std::string> symbol2,
-                   std::vector<std::string> peakName2,
-                   std::vector<std::vector<std::string>> peakNameIntersect) {
+                       const arma::sp_mat& E1,
+                       const arma::uvec& O1Idx,
+                       const arma::uvec& E1Idx,
+                       std::vector<std::string> symbol1,
+                       std::vector<std::string> peakName1,
+                       const arma::sp_mat& O2,
+                       const arma::sp_mat& E2,
+                       const arma::uvec& O2Idx,
+                       const arma::uvec& E2Idx,
+                       std::vector<std::string> symbol2,
+                       std::vector<std::string> peakName2,
+                       std::vector<std::vector<std::string>> peakNameIntersect) {
     try {
         std::vector<std::string> peakNameIntersect1 = peakNameIntersect.at(0);
         std::vector<std::string> peakNameIntersect2 = peakNameIntersect.at(1);
 
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
-        auto symbol = intersection(symbol1, symbol2);
+        std::vector<std::string> symbol = intersection(symbol1, symbol2);
+        std::tuple<arma::uvec, arma::uvec> tup = isMember(symbol, symbol1);
+        arma::uvec f1 = std::get<1>tup;
+        tup = isMember(symbol, symbol2);
+        arma::uvec f2 = std::get<1>tup;
+
+        for (unsignd int i = 0; i < K1; ++i) {
+            return;
+        }
+
+
+
+
         // TODO: sort will cause problem!!!
 //        std::sort(symbol1.begin(), symbol1.end());
         std::vector<std::string>::iterator s1Start= symbol1.begin();
