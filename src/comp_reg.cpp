@@ -33,7 +33,7 @@ Rcpp::List loadPeakNameIntersectFile(std::string path,
 }
 
 
-template <typename T>
+template <class T, class U>
 /**
  * ismember(A,B) returns an array containing
  * logical 1 (true) where the data in A is found in B.
@@ -47,11 +47,11 @@ template <typename T>
  * @return
  */
 std::tuple<arma::uvec, arma::uvec> isMember(const T& vecA,
-                                          const T& vecB) {
+                                          const U& vecB) {
     auto ABegin = vecA.begin();
     auto AEnd = vecA.end();
-    arma::vec lia = arma::vec(vecA.size(), arma::fill::zeros);
-    arma::vec locb = arma::vec(vecB.size(), arma::fill::zeros);
+    arma::uvec lia = arma::uvec(vecA.size(), arma::fill::zeros);
+    arma::uvec locb = arma::uvec(vecB.size(), arma::fill::zeros);
 
     unsigned int insertIdx = 0;
     for (auto t : vecA) {
@@ -68,15 +68,15 @@ std::tuple<arma::uvec, arma::uvec> isMember(const T& vecA,
     return std::tuple<arma::uvec, arma::uvec>{lia, locb};
 }
 
-
-std::vector<std::string> intersection(std::vector<std::string> v1,
-                                      std::vector<std::string> v2){
-    std::vector<std::string> v3;
+template <class T, class U>
+T intersection(T v1,
+               U v2){
+    T v3;
     std::sort(v1.begin(), v1.end());
     std::sort(v2.begin(), v2.end());
     std::set_intersection(v1.begin(),v1.end(),
                           v2.begin(),v2.end(),
-                          back_inserter(v3));
+                          std::back_inserter(v3));
     return v3;
 }
 
@@ -553,7 +553,8 @@ Rcpp::List compReg(arma::mat TFBinding,
         arma::uvec f1 = std::get<1>(tup2);
 
         // TODO check whether the .* is outer product
-        arma::mat ff = arma::join_horiz(f.elem(arma::find(d % d1 == 1)), f1.elem(arma::find(d % d1 == 1)));
+        arma::mat ff = arma::join_horiz(arma::conv_to<arma::vec>::from(f.elem(arma::find(d % d1 == 1))),
+                                        arma::conv_to<arma::vec>::from(f1.elem(arma::find(d % d1 == 1))));
         arma::mat f2 = uniqueRows(ff);
         arma::uvec ic = findUniqueRowIdx(ff, f2);
 
@@ -713,56 +714,50 @@ Rcpp::List subpopulationLink(arma::mat EMH,
     }
 }
 
-
+//// [[Rcpp::export]]
+//void clusterProfile(const arma::sp_mat& O1,
+//                          const arma::sp_mat& E1,
+//                          const arma::uvec& O1Idx,
+//                          const arma::uvec& E1Idx,
+//                          Rcpp::StringVector symbol1) {
+////                          Rcpp::StringVector peakName1,
+////                          const arma::sp_mat& O2,
+////                          const arma::sp_mat& E2,
+////                          const arma::uvec& O2Idx,
+////                          const arma::uvec& E2Idx,
+////                          Rcpp::StringVector symbol2,
+////                          Rcpp::StringVector peakName2,
+////                          Rcpp::StringVector peakNameIntersect1,
+////                          Rcpp::StringVector peakNameIntersect2) {
+//    return;
+//}
 
 // [[Rcpp::export]]
 Rcpp::List clusterProfile(const arma::sp_mat& O1,
                        const arma::sp_mat& E1,
                        const arma::uvec& O1Idx,
                        const arma::uvec& E1Idx,
-                       std::vector<std::string> symbol1,
-                       std::vector<std::string> peakName1,
+                       Rcpp::StringVector symbol1,
+                       Rcpp::StringVector peakName1,
                        const arma::sp_mat& O2,
                        const arma::sp_mat& E2,
                        const arma::uvec& O2Idx,
                        const arma::uvec& E2Idx,
-                       std::vector<std::string> symbol2,
-                       std::vector<std::string> peakName2,
-                       std::vector<std::vector<std::string>> peakNameIntersect) {
+                       Rcpp::StringVector symbol2,
+                       Rcpp::StringVector peakName2,
+                       Rcpp::StringVector peakNameIntersect1,
+                       Rcpp::StringVector peakNameIntersect2) {
     try {
-        std::vector<std::string> peakNameIntersect1 = peakNameIntersect.at(0);
-        std::vector<std::string> peakNameIntersect2 = peakNameIntersect.at(1);
-
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
-        std::vector<std::string> symbol = intersection(symbol1, symbol2);
+        Rcpp::StringVector symbol = intersection(symbol1, symbol2);
         std::tuple<arma::uvec, arma::uvec> tup = isMember(symbol, symbol1);
-        arma::uvec f1 = std::get<1>tup;
+        arma::uvec f1 = std::get<1>(tup);
         tup = isMember(symbol, symbol2);
-        arma::uvec f2 = std::get<1>tup;
+        arma::uvec f2 = std::get<1>(tup);
 
-        for (unsignd int i = 0; i < K1; ++i) {
-            return;
-        }
-
-
-
-
-        // TODO: sort will cause problem!!!
-//        std::sort(symbol1.begin(), symbol1.end());
-        std::vector<std::string>::iterator s1Start= symbol1.begin();
-//        std::sort(symbol2.begin(), symbol2.end());
-        std::vector<std::string>::iterator s2Start= symbol2.begin();
-
-        arma::uvec f2 = arma::uvec(symbol.size(), arma::fill::zeros);
-        arma::uvec f1 = arma::uvec(symbol.size(), arma::fill::zeros);
-        unsigned int ind = 0;
-        for (auto & t : symbol) {
-            // using lower_bound because t is always found in symbol1 and symbol2
-            f1(ind) = std::lower_bound(symbol1.begin(), symbol1.end(), t) - s1Start;
-            f2(ind) = std::lower_bound(symbol2.begin(), symbol2.end(), t) - s2Start;
-            ++ind;
-        }
+        f1.print();
+        f2.print();
 
         arma::mat E1Mean = arma::mat(f1.n_rows, K1, arma::fill::zeros);
         arma::mat E2Mean = arma::mat(f2.n_rows, K2, arma::fill::zeros);
@@ -791,44 +786,19 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     avg += E2.row(*it).at(*elemIt);
                 }
-                E2Mean.at(f1Idx, i) = avg / idx.n_elem;
+                E2Mean.at(f2Idx, i) = avg / idx.n_elem;
                 ++f2Idx;
             }
         }
 
-//        std::sort(peakName1.begin(), peakName1.end());
-        // std::vector<std::string>::iterator p1Start= peakName1.begin();
-//        std::sort(peakName2.begin(), peakName2.end());
-        // std::vector<std::string>::iterator p2Start= peakName2.begin();
-
-        f2 = arma::uvec(peakNameIntersect2.size(), arma::fill::zeros);
-        f1 = arma::uvec(peakNameIntersect1.size(), arma::fill::zeros);
-        ind = 0;
-        for (std::vector<std::string>::iterator t=peakNameIntersect1.begin(); t!=peakNameIntersect1.end(); ++t) {
-            f1(ind) = std::lower_bound(peakName1.begin(), peakName1.end(), *t) - s1Start;
-            ++ind;
-        }
-        ind = 0;
-        for (std::vector<std::string>::iterator t=peakNameIntersect2.begin(); t!=peakNameIntersect2.end(); ++t) {
-            f2(ind) = std::lower_bound(peakName2.begin(), peakName2.end(), *t) - s2Start;
-            ++ind;
-        }
-
-        // need to sort here for binary search, but won't affect index since peakNameIntersect1 is not used later
-        std::sort(peakNameIntersect1.begin(), peakNameIntersect1.end());
-        std::sort(peakNameIntersect2.begin(), peakNameIntersect2.end());
-        arma::uvec d1 = arma::uvec(peakName1.size(), arma::fill::zeros);
-        arma::uvec d2 = arma::uvec(peakName2.size(), arma::fill::zeros);
-        ind = 0;
-        for (std::vector<std::string>::iterator t=peakName1.begin(); t!=peakName1.end(); ++t) {
-            d1.at(ind) = std::binary_search(peakNameIntersect1.begin(), peakNameIntersect1.end(), *t);
-            ++ind;
-        }
-        ind = 0;
-        for (std::vector<std::string>::iterator t=peakName2.begin(); t!=peakName2.end(); ++t) {
-            d2.at(ind) = std::binary_search(peakNameIntersect2.begin(), peakNameIntersect2.end(), *t);
-            ++ind;
-        }
+        tup = isMember(peakNameIntersect1, peakName1);
+        f1 = std::get<1>(tup);
+        tup = isMember(peakNameIntersect2, peakName2);
+        f2 = std::get<1>(tup);
+        tup = isMember(peakName1, peakNameIntersect1);
+        arma::uvec d1 = std::get<0>(tup);
+        tup = isMember(peakName2, peakNameIntersect2);
+        arma::uvec d2 = std::get<0>(tup);
 
         unsigned int d1Zero, d2Zero;
         arma::uvec d1ZeroIdx = arma::find(d1 == 0);
@@ -900,11 +870,11 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         O2Mean /= arma::mean(O2Mean, 0);
 
         for (arma::uvec::iterator it = d1ZeroIdx.begin(); it != d1ZeroIdx.end(); ++it) {
-            peakNameIntersect1.push_back(peakName1.at(*it));
+            peakNameIntersect1.push_back(peakName1(*it));
         }
 
         for (arma::uvec::iterator it = d2ZeroIdx.begin(); it != d2ZeroIdx.end(); ++it) {
-            peakNameIntersect1.push_back(peakName2.at(*it));
+            peakNameIntersect1.push_back(peakName2(*it));
         }
 
         return Rcpp::List::create(Named("E1Mean") = E1Mean,

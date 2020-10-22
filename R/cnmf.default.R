@@ -2,13 +2,31 @@ cnmf.default <- function(PeakO,
                          X,
                          D,
                          k,
+                         beta_min,
                          alpha=0.5,
-                         beta_max_scale=5,
-                         beta_min=NULL) {
+                         beta_max_scale=5) {
     # TODO: input format checking
+    if (! is(PeakO, 'sparseMatrix')) {
+        PeakO <- Matrix(PeakO, sparse = T)
+    }
 
+    if (! is(X, 'sparseMatrix')) {
+        X <- Matrix(X, sparse = T)
+    }
 
-    if (!is.null(beta_min)) {
+    if (! is(D, 'sparseMatrix')) {
+        D <- Matrix(D, sparse = T)
+    }
+
+    if (! is(k, 'numeric')) {
+        k <- as.integer(k)
+        stop('k must be an integer.')
+    }
+
+    if (!missing(beta_min)) {
+        if (! is(beta_min, numeric)) {
+            stop('User must supply a valid beta_min of type numeric, or supply nothing at all.')
+        }
         beta <- beta_min * 10.0^seq(beta_max_scale, 0, -1)
     } else {
         beta <- 10.0^seq(beta_max_scale, -3, -1)
@@ -62,9 +80,9 @@ cnmf.default <- function(PeakO,
         H2 <- update.ret$H2
         W1 <- update.ret$W1
         W2 <- update.ret$W2
-        score <- update.ret$score
-        c1 <- update.ret$C1
-        c2 <- update.ret$C2
+        score <- nmf.ret$score
+        c1 <- nmf.ret$C1
+        c2 <- nmf.ret$C2
     }
     return(list("W1" = W1,
                 "W2" = W2,

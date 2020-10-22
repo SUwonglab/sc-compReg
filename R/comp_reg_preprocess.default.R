@@ -9,7 +9,6 @@ comp_reg_preprocess.default <- function(peak.name.intersect.dir,
     #     # load sample2 from directory
     #     sample2 = readMat(sample2)
     # }
-    file = load_pn_intersect_file(peak.name.intersect.dir, token)
-    peak.name.intersect = cbind(file$vo, file$vt)
-    return(peak.name.intersect)
+    file <- load_pn_intersect_file(peak.name.intersect.dir, token)
+    return(file)
 }

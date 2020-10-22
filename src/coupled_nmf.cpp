@@ -282,8 +282,8 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                                   Named("W2") = W2,
                                   Named("H1") = H1,
                                   Named("H2") = H2,
-                                  Named("S1") = C1,
-                                  Named("S2") = C2,
+                                  Named("C1") = C1,
+                                  Named("C2") = C2,
                                   Named("score") = score);
     } catch(...) {
         ::Rf_error("c++ exception");

@@ -8,16 +8,13 @@ X <- Matrix(file.mat[['X']], sparse=TRUE)
 A <- Matrix(file.mat[['D']], sparse=TRUE)
 peakO <- Matrix(log10(file.mat[['PeakO']] + 1), sparse=TRUE)
 
-
-
 tic('cnmf')
 output = cnmf(peakO,
          X,
          A,
          k=3,
          alpha=0.5,
-         beta_max_scale=5,
-         beta_min=NULL)
+         beta_max_scale=5)
 toc()
 
 
