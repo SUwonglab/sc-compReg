@@ -15,7 +15,7 @@ output = cnmf(peakO,
          k=3,
          alpha=0.5,
          beta_max_scale=5,
-         verbose=F)
+         verbose=T)
 toc()
 
 rm(list=ls())

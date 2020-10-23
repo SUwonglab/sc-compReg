@@ -1,9 +1,13 @@
 pni = comp_reg_preprocess('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', token='\t')
+s2 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample2.mat')
+s1 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample1.mat')
+library(scCompReg)
 library(R.matlab)
 library(Matrix)
-s1 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample1.mat')
-s2 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample2.mat')
-clusterProfile(Matrix(s1$O1, sparse=T),
+library(tictoc)
+
+tic()
+output = clusterProfile(Matrix(s1$O1, sparse=T),
                Matrix(s1$E1, sparse=T),
                 as.integer(s1$O1.idx) - 1,
                as.integer(s1$E1.idx) - 1,
@@ -18,8 +22,9 @@ clusterProfile(Matrix(s1$O1, sparse=T),
                 pni$vo,
                pni$vt
                )
+toc()
 
-library(scCompReg)
+
 
 as.integer(s1$O1.idx)
 

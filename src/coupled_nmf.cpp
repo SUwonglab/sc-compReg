@@ -129,30 +129,29 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         arma::vec hTempVec;
         arma::mat H1T, H2T;
         for (int iter = 1; iter <= maxIter; ++iter) {
-            if (verbose) std::cout<< "On iteration " << iter << "." << std::endl;
             Rcpp::checkUserInterrupt();
             S1 = 0.5 * lambda2 * D.t() * W20 * s;
             numer = W10.t() * PeakO;
-            H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer) + arma::datum::eps));
+            H1 = H10 % (numer / ((W10.t() * W10) * H10 + arma::eps(numer + arma::datum::eps)));
             H1.elem(arma::find(H1 < 0)).fill(0.);
             numer = PeakO * H1.t() + S1;
             numer.elem(arma::find(numer < 0.)).fill(0.);
             mu11 = arma::diagmat(arma::sum(0.5 * W10 % numer));
             mu12 = arma::diagmat(arma::sum(0.5 * W10 % (W10 * (H1 * H1.t()))));
             W1 = W10 % ((numer + 2 * W10 * mu12) /
-                        (W10 * (H1 * H1.t()) + 2 * W10 * mu11 + arma::eps(numer) + arma::datum::eps));
+                        (W10 * (H1 * H1.t()) + 2 * W10 * mu11 + arma::eps(numer + arma::datum::eps)));
 
             W1.elem(arma::find(W1 < 0.)).fill(0.);
             S2 = 0.5 * (lambda2 / (lambda1 + arma::datum::eps)) * (D * W1 * s);
             numer = W20.t() * X;
-            H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer) + arma::datum::eps));
+            H2 = H20 % (numer / ((W20.t() * W20) * H20 + arma::eps(numer + arma::datum::eps)));
             H2.elem(arma::find(H2 < 0.)).fill(0.);
             numer = X * H2.t() + S2;
             numer.elem(arma::find(numer<0.)).fill(0.);
             mu21 = arma::diagmat(arma::sum(0.5 * W20 % numer));
             mu22 = arma::diagmat(arma::sum(0.5 * W20 % (W20 * (H2 * H2.t()))));
             W2 = W20 % ((numer + 2 * W20 * mu22) /
-                 (W20 * (H2 * H2.t()) + 2 * W20 * mu21 + arma::eps(numer) + arma::datum::eps));
+                 (W20 * (H2 * H2.t()) + 2 * W20 * mu21 + arma::eps(numer + arma::datum::eps)));
             W2.elem(arma::find(W2 < 0.)).fill(0.);
 
             dnorm = pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + lambda1 * pow(arma::norm(X - W2 * H2, "fro"), 2.0);
@@ -183,18 +182,13 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
             H20 = H2;
 
             if (iter % loopUpdate == 0) {
+                if (verbose) std::cout<< "On iteration " << iter << "." << std::endl;
                 hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1));
-                H2T = H20;
                 // row-wise scalar multiplication
-                for (unsigned int hIdx = 0; hIdx < H20.n_rows; ++hIdx) {
-                    H2T.row(hIdx) *= hTempVec.at(hIdx);
-                }
+                H2T = H2.each_col() % hTempVec;
                 S20 = arma::index_max(H2T);
                 hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1));
-                H1T = H10;
-                for (unsigned int hIdx = 0; hIdx < H10.n_rows; ++hIdx) {
-                    H1T.row(hIdx) *= hTempVec.at(hIdx);
-                }
+                H1T = H10.each_col() % hTempVec;
                 S10 = arma::index_max(H1T);
                 SSize = S10.n_elem;
                 XSize = S20.n_elem;
@@ -244,18 +238,12 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                 pow(arma::norm(PeakO - W1 * H1, "fro"), 2.0) + lambda1 * pow(arma::norm(X - W2 * H2, "fro"), 2.0) -
                 lambda2 * arma::trace(W2.t() * D * W1);
 
-        H1T = H1;
-        H2T = H2;
         hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H2, 2.0), 1));
-        for (unsigned int hIdx = 0; hIdx < H2.n_rows; ++hIdx) {
-            H2T.row(hIdx) *= hTempVec.at(hIdx);
-        }
+        H2T = H2.each_col() % hTempVec;
         S20 = arma::index_max(H2T);
 
         hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H1, 2.0), 1));
-        for (unsigned int hIdx = 0; hIdx < H1.n_rows; ++hIdx) {
-            H1T.row(hIdx) *= hTempVec.at(hIdx);
-        }
+        H1T = H1.each_col() % hTempVec;
         S10 = arma::index_max(H1T);
 
         FC1.fill(arma::fill::zeros);
