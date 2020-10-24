@@ -859,7 +859,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         arma::rowvec OMM = arma::mean(O1Mean, 0);
         O1Mean.each_row() /= OMM;
         OMM = arma::mean(O2Mean, 0);
-        O2Mean.each_row() /= O2Mean;
+        O2Mean.each_row() /= OMM;
         for (arma::uvec::iterator it = d1ZeroIdx.begin(); it != d1ZeroIdx.end(); ++it) {
             peakNameIntersect1.push_back(peakName1(*it));
         }
