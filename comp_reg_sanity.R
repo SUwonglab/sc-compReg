@@ -11,20 +11,20 @@ output = clusterProfile(Matrix(s1$O1, sparse=T),
                Matrix(s1$E1, sparse=T),
                 as.integer(s1$O1.idx) - 1,
                as.integer(s1$E1.idx) - 1,
-               unlist(s1$Symbol1, use.names = F),
-                unlist(s1$PeakName1, use.names = F),
+               as.vector(unlist(s1$Symbol1, use.names = F)),
+                as.vector(unlist(s1$PeakName1, use.names = F)),
                Matrix(s2$O2, sparse=T),
                Matrix(s2$E2, sparse=T),
                as.integer(s2$O2.idx) - 1,
                as.integer(s2$E2.idx) - 1,
-               unlist(s2$Symbol2, use.names = F),
-               unlist(s2$PeakName2, use.names = F),
-                pni$vo,
-               pni$vt
+               as.vector(unlist(s2$Symbol2, use.names = F)),
+               as.vector(unlist(s2$PeakName2, use.names = F)),
+                as.vector(pni$vo),
+               as.vector(pni$vt)
                )
 toc()
 
-
+output$E2Mean
 
 as.integer(s1$O1.idx)
 

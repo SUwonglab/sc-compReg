@@ -509,7 +509,11 @@ Rcpp::List compReg(arma::mat TFBinding,
                    std::string peakGenePriorPath
                    ) {
     try {
-        arma::umat TFIdx = arma::sort_index(TFBinding, 2);
+        arma::umat TFIdx = arma::umat(TFBinding.n_rows, TFBinding.n_cols, arma::fill::zeros);
+        for (unsigned int row = 0; row < TFBinding.n_rows; ++row) {
+            TFIdx.row(row) = arma::sort_index(TFBinding.row(row), "descend");
+        }
+
         TFIdx = TFIdx.cols(0, 4999); // indices are inclusive
         arma::mat a = arma::mat(TFIdx.n_rows, TFIdx.n_cols, arma::fill::zeros);
         arma::urowvec TFRow;
