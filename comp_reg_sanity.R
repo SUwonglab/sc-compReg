@@ -7,7 +7,7 @@ library(Matrix)
 library(tictoc)
 
 tic()
-output = clusterProfile(Matrix(s1$O1, sparse=T),
+output = cluster.profile(Matrix(s1$O1, sparse=T),
                Matrix(s1$E1, sparse=T),
                 as.integer(s1$O1.idx) - 1,
                as.integer(s1$E1.idx) - 1,

@@ -750,6 +750,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         double avg = 0.;
         unsigned int f1Idx;
         for (unsigned int i = 0; i < K1; ++i) {
+            Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E1Idx == i);
             f1Idx = 0;
             for (arma::uvec::iterator it = f1.begin(); it != f1.end(); ++it) {
@@ -765,6 +766,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
 
         unsigned int f2Idx;
         for (unsigned int i = 0; i < K2; ++i) {
+            Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E2Idx == i);
             f2Idx = 0;
             for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {
@@ -803,6 +805,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         double loopElem;
         arma::uvec idx;
         for (unsigned int i = 0; i < K1; ++i) {
+            Rcpp::checkUserInterrupt();
             idx = arma::find(O1Idx == i);
             f1Idx = 0;
             // compute mean of each row
@@ -834,6 +837,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         avg = 0.;
         loopElem;
         for (unsigned int i = 0; i < K2; ++i) {
+            Rcpp::checkUserInterrupt();
             idx = arma::find(O2Idx == i);
             f2Idx = 0;
             for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {
