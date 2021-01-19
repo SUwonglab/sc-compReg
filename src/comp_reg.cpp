@@ -672,10 +672,17 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::mat r1 = arma::cor(EMH, EMC);
         arma::mat r2 = arma::cor(OMH, OMC);
         // outer product
-        arma::mat rr1 = r1 - arma::sum(r1, 0).t() * arma::sum(r1, 1).t() / arma::accu(r1);
-        arma::mat rr2 = r2 - arma::sum(r2, 0).t() * arma::sum(r2, 1).t() / arma::accu(r2);
+        arma::mat temp = arma::sum(r1, 0);
+        std::cout<<temp.n_rows << " " << temp.n_cols << std::endl;
+        temp = arma::sum(r1, 1);
+        std::cout<<temp.n_rows << " " << temp.n_cols << std::endl;
+
+        arma::mat rr1 = r1 - arma::as_scalar(arma::sum(r1, 0) * arma::sum(r1, 1)) / arma::accu(r1);
+        arma::mat rr2 = r2 - arma::as_scalar(arma::sum(r2, 0) * arma::sum(r2, 1)) / arma::accu(r2);
         arma::mat rr = rr1 + rr2;
+        rr.print();
         arma::uvec b = arma::find(rr > 0);
+        b.print();
 
         arma::uvec rrPos = arma::find(rr > 0);
         unsigned int rrNRows = rr.n_rows;
@@ -701,8 +708,8 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::vec S1 = arma::vec(aNRows, arma::fill::zeros);
         arma::vec S2 = arma::vec(aNRows, arma::fill::zeros);
         arma::mat match = arma::mat(aNRows, a.n_cols, arma::fill::zeros);
-        unsigned int matchIdx;
-        unsigned int idx;
+        int matchIdx;
+        int idx;
         for (int i = 0; i < aNRows; ++i) {
             idx = arma::any(S1 == a.at(i, 0)) + arma::any(S2 == a.at(i, 1));
             S1.at(i) = a.at(i, 0);
@@ -712,10 +719,11 @@ Rcpp::List subpopulationLink(arma::mat EMH,
                 ++matchIdx;
             }
         }
+        std::cout<<matchIdx<< " " << aNRows << std::endl;
         if (matchIdx < aNRows - 1) {
             match.shed_rows(matchIdx, aNRows - 1);
         }
-        
+
         return Rcpp::List::create(Named("match") = match);
     } catch (...) {
         ::Rf_error("c++ exception");
