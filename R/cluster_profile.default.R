@@ -13,23 +13,35 @@ cluster.profile.default <- function(O1,
                             pk.name.intersect1,
                             pk.name.intersect2) {
 
-    if (! is(O1, 'sparseMatrix') | ! is(O1, 'sparseMatrix')) {
-        if (! is(O1, 'matrix') | ! is(O2, 'matrix')) {
-            stop('O1 and O2 must be a matrix or sparseMatrix. Please check your format.')
+    if (! is(O1, 'sparseMatrix')) {
+        if (! is(O1, 'matrix')) {
+            stop('O1 must be a matrix or sparseMatrix. Please check your format.')
         }
         O1 = Matrix(O1, sparse = T)
+    }
+
+    if (! is(O2, 'sparseMatrix')) {
+        if (! is(O2, 'matrix')) {
+            stop('O2 must be a matrix or sparseMatrix. Please check your format.')
+        }
         O2 = Matrix(O2, sparse = T)
     }
 
-    if (! is(E1, 'sparseMatrix') | ! is(E2, 'sparseMatrix')) {
-        if (! is(E1, 'matrix') | ! is(E2, 'matrix')) {
-            stop('E1 and E2 must be a matrix or sparseMatrix. Please check your format.')
+    if (! is(E1, 'sparseMatrix')) {
+        if (! is(E1, 'matrix')) {
+            stop('E1 must be a matrix or sparseMatrix. Please check your format.')
         }
         E1 = Matrix(E1, sparse = T)
+    }
+
+    if (! is(E2, 'sparseMatrix')) {
+        if ( ! is(E2, 'matrix')) {
+            stop('E2 must be a matrix or sparseMatrix. Please check your format.')
+        }
         E2 = Matrix(E2, sparse = T)
     }
 
-    if (! is(O1.idx, 'numeric') | ! is(O1.idx, 'vector')) {
+    if (! is(O1.idx, 'numeric')) {
         stop('O1.idx must be a vector of integer (indices).')
     }
 

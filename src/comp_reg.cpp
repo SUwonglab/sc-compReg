@@ -670,6 +670,11 @@ Rcpp::List subpopulationLink(arma::mat EMH,
     // OMC - OMeanCll
     try {
         // r1 is K1 x K2
+        std::cout<<EMH.n_rows << " " << EMH.n_cols << std::endl;
+        std::cout<<EMC.n_rows << " " << EMC.n_cols << std::endl;
+        std::cout<<OMH.n_rows << " " << OMH.n_cols << std::endl;
+        std::cout<<OMC.n_rows << " " << OMC.n_cols << std::endl;
+
         arma::mat r1 = arma::cor(EMH, EMC);
         arma::mat r2 = arma::cor(EMH, EMC);
         // outer product
