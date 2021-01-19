@@ -658,7 +658,6 @@ Rcpp::List compReg(arma::mat TFBinding,
 }
 
 
-
 // [[Rcpp::export]]
 Rcpp::List subpopulationLink(arma::mat EMH,
                              arma::mat EMC,
@@ -702,18 +701,21 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::vec S1 = arma::vec(aNRows, arma::fill::zeros);
         arma::vec S2 = arma::vec(aNRows, arma::fill::zeros);
         arma::mat match = arma::mat(aNRows, a.n_cols, arma::fill::zeros);
-        unsigned int idx;
         unsigned int matchIdx;
-        for (int i = 0; i < aNRows; ++ i) {
-            idx = arma::any(S1 == a.at(i, 1)) + arma::any(S2 == a.at(i, 2));
-            S1.at(i) = a.at(i, 1);
-            S2.at(i) = a.at(i, 2);
+        unsigned int idx;
+        for (int i = 0; i < aNRows; ++i) {
+            idx = arma::any(S1 == a.at(i, 0)) + arma::any(S2 == a.at(i, 1));
+            S1.at(i) = a.at(i, 0);
+            S2.at(i) = a.at(i, 1);
             if (idx < 2) {
                 match.row(matchIdx) = a.row(i);
                 ++matchIdx;
             }
         }
-        match.shed_rows(matchIdx, aNRows - 1);
+        if (matchIdx < aNRows - 1) {
+            match.shed_rows(matchIdx, aNRows - 1);
+        }
+        
         return Rcpp::List::create(Named("match") = match);
     } catch (...) {
         ::Rf_error("c++ exception");
