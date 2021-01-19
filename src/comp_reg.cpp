@@ -676,7 +676,7 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         std::cout<<OMC.n_rows << " " << OMC.n_cols << std::endl;
 
         arma::mat r1 = arma::cor(EMH, EMC);
-        arma::mat r2 = arma::cor(EMH, EMC);
+        arma::mat r2 = arma::cor(OMH, OMC);
         // outer product
         arma::mat rr1 = r1 - arma::sum(r1, 0).t() * arma::sum(r1, 1) / arma::accu(r1);
         arma::mat rr2 = r2 - arma::sum(r2, 0).t() * arma::sum(r2, 1) / arma::accu(r2);
