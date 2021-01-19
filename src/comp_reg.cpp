@@ -670,25 +670,21 @@ Rcpp::List subpopulationLink(arma::mat EMH,
     // OMC - OMeanCll
     try {
         // r1 is K1 x K2
-        std::cout<<EMH.n_rows << " " << EMH.n_cols << std::endl;
-        std::cout<<EMC.n_rows << " " << EMC.n_cols << std::endl;
-        std::cout<<OMH.n_rows << " " << OMH.n_cols << std::endl;
-        std::cout<<OMC.n_rows << " " << OMC.n_cols << std::endl;
-
         arma::mat r1 = arma::cor(EMH, EMC);
         arma::mat r2 = arma::cor(OMH, OMC);
         // outer product
-        arma::mat rr1 = r1 - arma::sum(r1, 0).t() * arma::sum(r1, 1) / arma::accu(r1);
-        arma::mat rr2 = r2 - arma::sum(r2, 0).t() * arma::sum(r2, 1) / arma::accu(r2);
+        arma::mat rr1 = r1 - arma::sum(r1, 0).t() * arma::sum(r1, 1).t() / arma::accu(r1);
+        arma::mat rr2 = r2 - arma::sum(r2, 0).t() * arma::sum(r2, 1).t() / arma::accu(r2);
         arma::mat rr = rr1 + rr2;
         arma::uvec b = arma::find(rr > 0);
 
-        arma::mat a;
         arma::uvec rrPos = arma::find(rr > 0);
         unsigned int rrNRows = rr.n_rows;
         arma::umat idxMat = arma::umat(rrPos.n_elem, 2, arma::fill::zeros);
         convertIdxToRowCol(rrPos, idxMat, rrNRows);
+
         //row
+        arma::mat a = arma::mat(idxMat.n_rows, 7, arma::fill::zeros);
         a.col(0) = arma::conv_to<arma::vec>::from(idxMat.col(0));
         // col
         a.col(1) = arma::conv_to<arma::vec>::from(idxMat.col(1));
