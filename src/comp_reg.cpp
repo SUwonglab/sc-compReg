@@ -683,6 +683,8 @@ Rcpp::List subpopulationLink(arma::mat EMH,
         arma::mat r1 = arma::cor(EMH, EMC);
         arma::mat r2 = arma::cor(OMH, OMC);
         // outer product
+        r1.print();
+        r2.print();
         arma::mat temp = arma::sum(r1, 0);
         std::cout<<temp.n_rows << " " << temp.n_cols << std::endl;
         temp = arma::sum(r1, 1);
@@ -827,11 +829,13 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             idx = arma::find(O1Idx == i);
             O1MeanRowIdx = 0;
             // compute mean of each row
-            for (arma::vec::iterator it = f1.begin(); it != f1.end(); ++it) {
+            // using index instead of iterator because we need to go through
+            // the elements sequentially
+            for (unsigned int it = 0; it < f1.n_elem; ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    loopElem = O1.row(*it).at(*elemIt);
+                    loopElem = O1.row(f1.at(it)).at(*elemIt);
                     if (loopElem > 0) avg += 1.;
                 }
                 O1Mean.at(O1MeanRowIdx, i) = avg / idx.n_elem;
@@ -839,11 +843,13 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             }
 
             O1MeanRowIdx = m;
-            for (arma::uvec::iterator it = d1ZeroIdx.begin(); it != d1ZeroIdx.end(); ++it) {
+            // using index instead of iterator because we need to go through
+            // the elements sequentially
+            for (unsigned int it = 0; it < d1ZeroIdx.n_elem; ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    loopElem = O1.row(*it).at(*elemIt);
+                    loopElem = O1.row(d1ZeroIdx.at(it)).at(*elemIt);
                     if (loopElem > 0) avg += 1.;
                 }
                 O1Mean.at(O1MeanRowIdx, i) = avg / idx.n_elem;
@@ -858,11 +864,13 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             Rcpp::checkUserInterrupt();
             idx = arma::find(O2Idx == i);
             O2RowIdx = 0;
-            for (arma::vec::iterator it = f2.begin(); it != f2.end(); ++it) {
+            // using index instead of iterator because we need to go through
+            // the elements sequentially
+            for (unsigned int it = 0; it < f2.n_elem; ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    loopElem = O2.row(*it).at(*elemIt);
+                    loopElem = O2.row(f2.at(it)).at(*elemIt);
                     if (loopElem > 0) avg += 1.;
                 }
                 O2Mean.at(O2RowIdx, i) = avg / idx.n_elem;
@@ -870,11 +878,13 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             }
 
             O2RowIdx = m;
-            for (arma::uvec::iterator it = d2ZeroIdx.begin(); it != d2ZeroIdx.end(); ++it) {
+            // using index instead of iterator because we need to go through
+            // the elements sequentially
+            for (unsigned int it = 0; it < d2ZeroIdx.n_elem>; ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    loopElem = O2.row(*it).at(*elemIt);
+                    loopElem = O2.row(d2ZeroIdx.at(it)).at(*elemIt);
                     if (loopElem > 0) avg += 1.;
                 }
                 O2Mean.at(O2RowIdx, i) = avg / idx.n_elem;

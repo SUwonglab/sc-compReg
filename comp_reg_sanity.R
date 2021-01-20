@@ -25,9 +25,12 @@ output = cluster.profile(Matrix(s1$O1, sparse=T),
                )
 toc()
 
+
 new.output = subpopulation.link(output$E1.mean,
                                 output$E2.mean,
                                 output$O1.mean,
                                 output$O2.mean)
-
-
+write.csv(output$E1.mean, 'E1mean.csv')
+write.csv(output$E2.mean, 'E2mean.csv')
+write.csv(output$O1.mean, 'O1mean.csv')
+write.csv(output$O2.mean, 'O2mean.csv')
