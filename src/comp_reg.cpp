@@ -47,12 +47,12 @@ template <class T, class U>
  * @param vecB
  * @return
  */
-std::tuple<arma::uvec, arma::uvec> isMember(const T& vecA,
+std::tuple<arma::uvec, arma::vec> isMember(const T& vecA,
                                           const U& vecB) {
     auto BBegin = vecB.begin();
     auto BEnd = vecB.end();
     arma::uvec lia = arma::uvec(vecA.size(), arma::fill::zeros);
-    arma::uvec locb = arma::uvec(vecA.size(), arma::fill::zeros);
+    arma::vec locb = arma::vec(vecA.size(), arma::fill::zeros);
 
     unsigned int insertIdx = 0;
     for (auto t : vecA) {
@@ -66,7 +66,7 @@ std::tuple<arma::uvec, arma::uvec> isMember(const T& vecA,
         }
         ++insertIdx;
     }
-    return std::tuple<arma::uvec, arma::uvec>{lia, locb};
+    return std::tuple<arma::uvec, arma::vec>{lia, locb};
 }
 
 template <class T, class U>
@@ -118,6 +118,16 @@ void parseMotifTarget(std::string filePath,
     fclose(f);
     free(a);
     free(b);
+}
+
+// [[Rcpp::export]]
+Rcpp::List isMemberTest(arma::vec A,
+                        arma::vec B) {
+    std::tuple<arma::uvec, arma::vec> tup= isMember(A, B);
+    arma::uvec d = std::get<0>(tup);
+    arma::vec f = std::get<1>(tup);
+    return Rcpp::List::create(Named("lia") = d,
+                              Named("locb") = f);
 }
 
 // [[Rcpp::export]]
@@ -549,13 +559,13 @@ Rcpp::List compReg(arma::mat TFBinding,
 //            ++idx;
 //        }
 
-        std::tuple<arma::uvec, arma::uvec> tup = isMember(strVec1, elementName);
+        std::tuple<arma::uvec, arma::vec> tup = isMember(strVec1, elementName);
         arma::uvec d = std::get<0>(tup);
-        arma::uvec f = std::get<1>(tup);
+        arma::vec f = std::get<1>(tup);
 
-        std::tuple<arma::uvec, arma::uvec> tup2 = isMember(strVec2, symbol);
+        std::tuple<arma::uvec, arma::vec> tup2 = isMember(strVec2, symbol);
         arma::uvec d1 = std::get<0>(tup2);
-        arma::uvec f1 = std::get<1>(tup2);
+        arma::vec f1 = std::get<1>(tup2);
 
         // TODO check whether the .* is outer product
         arma::mat ff = arma::join_horiz(arma::conv_to<arma::vec>::from(f.elem(arma::find(d % d1 == 1))),
@@ -594,7 +604,8 @@ Rcpp::List compReg(arma::mat TFBinding,
             tup = isMember(TFName, symbol);
             d = std::get<0>(tup);
             f = std::get<1>(tup);
-            TF = arma::join_horiz(TG1.rows(f), TG2.rows(f));
+            TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)),
+                                  TG2.rows(arma::conv_to<arma::uvec>::from(f)));
             n1 = TG1.n_cols;
             n2 = TG2.n_cols;
             pTTest = ttest2(TG1.t(), TG2.t());
@@ -750,10 +761,10 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
         Rcpp::StringVector symbol = intersection(symbol1, symbol2);
-        std::tuple<arma::uvec, arma::uvec> tup = isMember(symbol, symbol1);
-        arma::uvec f1 = std::get<1>(tup);
+        std::tuple<arma::uvec, arma::vec> tup = isMember(symbol, symbol1);
+        arma::vec f1 = std::get<1>(tup);
         tup = isMember(symbol, symbol2);
-        arma::uvec f2 = std::get<1>(tup);
+        arma::vec f2 = std::get<1>(tup);
 
         arma::mat E1Mean = arma::mat(f1.n_rows, K1, arma::fill::zeros);
         arma::mat E2Mean = arma::mat(f2.n_rows, K2, arma::fill::zeros);
@@ -764,7 +775,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E1Idx == i);
             f1Idx = 0;
-            for (arma::uvec::iterator it = f1.begin(); it != f1.end(); ++it) {
+            for (arma::vec::iterator it = f1.begin(); it != f1.end(); ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
@@ -780,7 +791,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E2Idx == i);
             f2Idx = 0;
-            for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {
+            for (arma::vec::iterator it = f2.begin(); it != f2.end(); ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
@@ -820,7 +831,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             idx = arma::find(O1Idx == i);
             f1Idx = 0;
             // compute mean of each row
-            for (arma::uvec::iterator it = f1.begin(); it != f1.end(); ++it) {
+            for (arma::vec::iterator it = f1.begin(); it != f1.end(); ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
@@ -851,7 +862,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             Rcpp::checkUserInterrupt();
             idx = arma::find(O2Idx == i);
             f2Idx = 0;
-            for (arma::uvec::iterator it = f2.begin(); it != f2.end(); ++it) {
+            for (arma::vec::iterator it = f2.begin(); it != f2.end(); ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();

@@ -31,6 +31,3 @@ new.output = subpopulation.link(output$E1.mean,
                                 output$O2.mean)
 
 
-
-
-

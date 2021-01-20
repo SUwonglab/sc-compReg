@@ -5,6 +5,10 @@ loadPeakNameIntersectFile <- function(path, token) {
     .Call(`_scCompReg_loadPeakNameIntersectFile`, path, token)
 }
 
+isMemberTest <- function(A, B) {
+    .Call(`_scCompReg_isMemberTest`, A, B)
+}
+
 mfbs <- function(TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath) {
     .Call(`_scCompReg_mfbs`, TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath)
 }
