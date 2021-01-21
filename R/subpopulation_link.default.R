@@ -18,12 +18,43 @@ subpopulation.link.default <- function(E.mean.healthy,
         stop('O.mean.cll must be a matrix. Please check your format.')
     }
 
-    output <- subpopulationLink(E.mean.healthy,
-                                E.mean.cll,
-                                O.mean.healthy,
-                                O.mean.cll)
+    r1 <- cor(E.mean.healthy, E.mean.cll)
+    r2 <- cor(O.mean.healthy, O.mean.cll)
+    rr1 <- r1 - colSums(r1) %*% t(rowSums(r1)) /sum(r1)
+    rr2 <- r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
+    rr <- rr1 + rr2
 
-    output$call = this.call
+    b <- which(rr > 0)
+    a <- matrix(0, length(b),7)
+    a[, 1:2] <- which(rr > 0, arr.ind = T)
+    a[, 3] <- r1[b]
+    a[, 4] <- r2[b]
+    a[, 5] <- rr1[b]
+    a[, 6] <- rr2[b]
+    a[, 7] <- rr[b]
+    f <- order(a[, 7], decreasing = T)
+    a <- a[f, ]
+    a <- a[(a[, 5] > 0) * ((a[, 6] > 0) == 1),  ]
+
+    a.dim <- dim(a)[1]
+    match <- matrix(NA, 7, a.dim)
+    S1 <- matrix(NA, a.dim)
+    S2 <- matrix(NA, a.dim)
+    match.idx <- 1
+    for (i in 1:a.dim) {
+        idx <- is.element(a[i, 1], S1) + is.element(a[i, 2], S2)
+        S1[i] <- a[i, 1]
+        S2[i] <- a[i, 2]
+        if (idx < 2) {
+            match[, match.idx] <- a[i, ]
+            match.idx = match.idx + 1
+        }
+    }
+    match <- match[, colSums(is.na(match)) != nrow(match)]
+
+    output$match <- match
+
+    output$call <- this.call
 
     return(output)
 }

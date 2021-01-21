@@ -46,14 +46,12 @@ cluster_profile.default <- function(O1,
     }
 
     O1.idx <- as.integer(O1.idx)
-    O1.idx <- normalize.index(O1.idx) #scale down with starting index of 0
 
     if (! is(E1.idx, 'numeric') | ! is(E1.idx, 'vector')) {
         stop('E1.idx must be a vector of integer (indices).')
     }
 
     E1.idx <- as.integer(E1.idx)
-    E1.idx <- normalize.index(E1.idx) #scale down to have index starting at 0
 
     if (! is(symb1, 'vector')) {
         stop('symb1 must be a vector of characters.')
@@ -73,14 +71,12 @@ cluster_profile.default <- function(O1,
     }
 
     O2.idx <- as.integer(O2.idx)
-    O2.idx <- normalize.index(O2.idx) #scale down with starting index of 0
 
     if (! is(E2.idx, 'numeric') | ! is(E2.idx, 'vector')) {
         stop('E2.idx must be a vector of integer (indices).')
     }
 
     E2.idx <- as.integer(E2.idx)
-    E2.idx <- normalize.index(E2.idx) #scale down to have index starting at 0
 
     if (! is(symb2, 'vector')) {
         stop('symb2 must be a vector of characters.')
@@ -107,7 +103,7 @@ cluster_profile.default <- function(O1,
     K1 <- max(max(O1.idx), max(E1.idx))
     symbol <- intersect(symb1, symb2)
     f1 <- match(symbol, symb1)
-    E1.mean <- matrix(NA, length(f1), K1)
+    E1.mean <- matrix(0, length(f1), K1)
     for (i in 1:K1) {
         gp <- which(E1.idx == i)
         if (length(gp) == 0) next
@@ -116,7 +112,7 @@ cluster_profile.default <- function(O1,
 
     K2 <- max(max(O2.idx), max(E2.idx))
     f2 <- match(symbol, symb2)
-    E2.mean <- matrix(NA, length(f2), K2)
+    E2.mean <- matrix(0, length(f2), K2)
     for (i in 1:K2) {
         gp = which(E2.idx == i)
         if (length(gp) == 0) next
@@ -132,8 +128,8 @@ cluster_profile.default <- function(O1,
 
     m <- length(pk.name.intersect1)
     elem.len <- length(elem.name)
-    O1.mean <- matrix(NA, elem.len, K1)
-    O2.mean <- matrix(NA, elem.len, K2)
+    O1.mean <- matrix(0, elem.len, K1)
+    O2.mean <- matrix(0, elem.len, K2)
 
     for (i in 1:K1) {
         gp = which(O1.idx == i)

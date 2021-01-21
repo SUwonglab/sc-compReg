@@ -10,14 +10,14 @@ s1 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample1.mat')
 tic()
 output = cluster_profile(Matrix(s1$O1, sparse=T),
                Matrix(s1$E1, sparse=T),
-                as.integer(s1$O1.idx) - 1,
-               as.integer(s1$E1.idx) - 1,
+                as.integer(s1$O1.idx),
+               as.integer(s1$E1.idx),
                as.vector(unlist(s1$Symbol1, use.names = F)),
                 as.vector(unlist(s1$PeakName1, use.names = F)),
                Matrix(s2$O2, sparse=T),
                Matrix(s2$E2, sparse=T),
-               as.integer(s2$O2.idx) - 1,
-               as.integer(s2$E2.idx) - 1,
+               as.integer(s2$O2.idx),
+               as.integer(s2$E2.idx),
                as.vector(unlist(s2$Symbol2, use.names = F)),
                as.vector(unlist(s2$PeakName2, use.names = F)),
                 pni$vo,
@@ -49,6 +49,9 @@ for (i in 1:K1) {
     if (length(gp) == 0) next
     E1.mean[, i] = Matrix::rowMeans(E1[f1, gp])
 }
+
+write.csv(E1.mean, 'E1_mean_r.csv')
+
 
 K2 = max(max(O2.idx), max(E2.idx))
 f2 = match(symbol, symb2)
@@ -86,8 +89,6 @@ for (i in 1:K2) {
     gp = which(O2.idx == i)
     if (length(gp) == 0) next
     O2.mean[1:m, i] = Matrix::rowMeans(O2[pf2, gp] > 0)
-    print(sum(d2 == 0))
-    print(elem.len - (m + sum(d1==0) + 1))
     O2.mean[(m + sum(d1 == 0) + 1) : elem.len, i] = Matrix::rowMeans(O2[d2 == 0, gp] > 0)
 }
 
@@ -95,28 +96,65 @@ O1.mean = O1.mean / Matrix::colMeans(O1.mean)
 O2.mean = O2.mean / Matrix::colMeans(O2.mean)
 
 
-# K1 = max(max(s1$O1.idx), max(s1$E1.idx))
-# K2 = max(max(s2$O2.idx), max(s2$E2.idx))
-# symbol = intersect(s1$Symbol1, s2$Symbol2)
-# f1 = match(symbol, s1$Symbol1)
-# f2 = match(symbol, s2$Symbol2)
-# E1.mean = matrix(NA, length(f1), K1)
-# for (i in 1:K1) {
-#     E1.mean[, i] = apply(s1$E1[f1, s1$E1.idx == i], 1, mean)
-# }
+K1 = max(max(s1$O1.idx), max(s1$E1.idx))
+K2 = max(max(s2$O2.idx), max(s2$E2.idx))
+symbol = intersect(s1$Symbol1, s2$Symbol2)
+f1 = match(symbol, s1$Symbol1)
+f2 = match(symbol, s2$Symbol2)
+E1.mean = matrix(NA, length(f1), K1)
+for (i in 1:K1) {
+    E1.mean[, i] = apply(s1$E1[f1, s1$E1.idx == i], 1, mean)
+}
 
-write.csv(E1.mean, 'E1mean_r.csv')
 
+output$E1.mean == E1.mean
 
 new.output = subpopulation.link(output$E1.mean,
                                 output$E2.mean,
                                 output$O1.mean,
                                 output$O2.mean)
-write.csv(output$E1.mean, 'E1mean.csv')
-write.csv(output$E2.mean, 'E2mean.csv')
 write.csv(output$O1.mean, 'O1mean.csv')
 write.csv(output$O2.mean, 'O2mean.csv')
 
 pkname = read.table('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', header=F)
 length(pkname$V1)
 length(pkname$V2)
+
+EMH = output$E1.mean
+EMC = output$E2.mean
+OMH = output$O1.mean
+OMC = output$O2.mean
+
+r1 = cor(EMH, EMC)
+r2 = cor(OMH, OMC)
+rr1 = r1 - colSums(r1) %*% t(rowSums(r1)) /sum(r1)
+rr2 = r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
+rr = rr1 + rr2
+
+b = which(rr > 0)
+a = matrix(0, length(b),7)
+a[, 1:2] = which(rr > 0, arr.ind = T)
+a[, 3] = r1[b]
+a[, 4] = r2[b]
+a[, 5] = rr1[b]
+a[, 6] = rr2[b]
+a[, 7] = rr[b]
+f = order(a[, 7], decreasing = T)
+a = a[f, ]
+a = a[(a[, 5] > 0) * ((a[, 6] > 0) == 1),  ]
+
+a.dim = dim(a)[1]
+match = matrix(NA, 7, a.dim)
+S1 = matrix(NA, a.dim)
+S2 = matrix(NA, a.dim)
+match.idx = 1
+for (i in 1:a.dim) {
+    idx = is.element(a[i, 1], S1) + is.element(a[i, 2], S2)
+    S1[i] = a[i, 1]
+    S2[i] = a[i, 2]
+    if (idx < 2) {
+        match[, match.idx] = a[i, ]
+        match.idx = match.idx + 1
+    }
+}
+match = match[, colSums(is.na(match)) != nrow(match)]
