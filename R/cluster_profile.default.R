@@ -96,6 +96,7 @@ cluster.profile.default <- function(O1,
 
     this.call = match.call()
 
+    print('here')
     K1 = max(max(O1.idx), max(E1.idx))
     symbol = intersect(Symbol1, Symbol2)
     f1 = match(symbol, Symbol1)

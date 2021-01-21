@@ -5,10 +5,6 @@ loadPeakNameIntersectFile <- function(path, token) {
     .Call(`_scCompReg_loadPeakNameIntersectFile`, path, token)
 }
 
-isMemberTest <- function(A, B) {
-    .Call(`_scCompReg_isMemberTest`, A, B)
-}
-
 mfbs <- function(TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath) {
     .Call(`_scCompReg_mfbs`, TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath)
 }
@@ -19,10 +15,6 @@ compReg <- function(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symb
 
 subpopulationLink <- function(EMH, EMC, OMH, OMC) {
     .Call(`_scCompReg_subpopulationLink`, EMH, EMC, OMH, OMC)
-}
-
-clusterProfile <- function(O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect1, peakNameIntersect2) {
-    .Call(`_scCompReg_clusterProfile`, O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect1, peakNameIntersect2)
 }
 
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {

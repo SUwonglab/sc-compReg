@@ -18,18 +18,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// isMemberTest
-Rcpp::List isMemberTest(arma::vec A, arma::vec B);
-RcppExport SEXP _scCompReg_isMemberTest(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type A(ASEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(isMemberTest(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
 // mfbs
 Rcpp::List mfbs(std::vector<std::string> TFName, std::vector<std::string> motifName, arma::vec motifWeight, std::vector<std::string> elementName, std::vector<std::string> match2TF, std::vector<std::string> match2Motif, std::string motifTargetPath);
 RcppExport SEXP _scCompReg_mfbs(SEXP TFNameSEXP, SEXP motifNameSEXP, SEXP motifWeightSEXP, SEXP elementNameSEXP, SEXP match2TFSEXP, SEXP match2MotifSEXP, SEXP motifTargetPathSEXP) {
@@ -80,30 +68,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type OMH(OMHSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type OMC(OMCSEXP);
     rcpp_result_gen = Rcpp::wrap(subpopulationLink(EMH, EMC, OMH, OMC));
-    return rcpp_result_gen;
-END_RCPP
-}
-// clusterProfile
-Rcpp::List clusterProfile(const arma::sp_mat& O1, const arma::sp_mat& E1, const arma::uvec& O1Idx, const arma::uvec& E1Idx, Rcpp::StringVector symbol1, Rcpp::StringVector peakName1, const arma::sp_mat& O2, const arma::sp_mat& E2, const arma::uvec& O2Idx, const arma::uvec& E2Idx, Rcpp::StringVector symbol2, Rcpp::StringVector peakName2, Rcpp::StringVector peakNameIntersect1, Rcpp::StringVector peakNameIntersect2);
-RcppExport SEXP _scCompReg_clusterProfile(SEXP O1SEXP, SEXP E1SEXP, SEXP O1IdxSEXP, SEXP E1IdxSEXP, SEXP symbol1SEXP, SEXP peakName1SEXP, SEXP O2SEXP, SEXP E2SEXP, SEXP O2IdxSEXP, SEXP E2IdxSEXP, SEXP symbol2SEXP, SEXP peakName2SEXP, SEXP peakNameIntersect1SEXP, SEXP peakNameIntersect2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type O1(O1SEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E1(E1SEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type O1Idx(O1IdxSEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type E1Idx(E1IdxSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type symbol1(symbol1SEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type peakName1(peakName1SEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type O2(O2SEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E2(E2SEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type O2Idx(O2IdxSEXP);
-    Rcpp::traits::input_parameter< const arma::uvec& >::type E2Idx(E2IdxSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type symbol2(symbol2SEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type peakName2(peakName2SEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type peakNameIntersect1(peakNameIntersect1SEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type peakNameIntersect2(peakNameIntersect2SEXP);
-    rcpp_result_gen = Rcpp::wrap(clusterProfile(O1, E1, O1Idx, E1Idx, symbol1, peakName1, O2, E2, O2Idx, E2Idx, symbol2, peakName2, peakNameIntersect1, peakNameIntersect2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -196,11 +160,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
-    {"_scCompReg_isMemberTest", (DL_FUNC) &_scCompReg_isMemberTest, 2},
     {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
     {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
     {"_scCompReg_subpopulationLink", (DL_FUNC) &_scCompReg_subpopulationLink, 4},
-    {"_scCompReg_clusterProfile", (DL_FUNC) &_scCompReg_clusterProfile, 14},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},
