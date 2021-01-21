@@ -772,16 +772,19 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         arma::mat E2Mean = arma::mat(f2.n_rows, K2, arma::fill::zeros);
 
         double avg = 0.;
+        arma::sp_rowvec temp;
         for (unsigned int i = 0; i < K1; ++i) {
             Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E1Idx == i);
+            if (idx.n_elem == 0) continue;
             // TODO bug here double check
             for (unsigned int it = 0; it < f1.n_elem; ++it) {
                 avg = 0;
+                temp = E1.row(f1.at(it));
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    avg += E1.row(f1.at(it)).at(*elemIt);
-                }
+                    avg += temp.at(*elemIt);
+                 }
                 E1Mean.at(it, i) = avg / idx.n_elem;
             }
         }
@@ -791,6 +794,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             arma::uvec idx = arma::find(E2Idx == i);
             for (unsigned int it = 0; it < f2.n_elem; ++it) {
                 avg = 0;
+                temp = E2.row(f2.at(it));
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
                     avg += E2.row(f2.at(it)).at(*elemIt);
@@ -880,7 +884,7 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             O2RowIdx = m;
             // using index instead of iterator because we need to go through
             // the elements sequentially
-            for (unsigned int it = 0; it < d2ZeroIdx.n_elem>; ++it) {
+            for (unsigned int it = 0; it < d2ZeroIdx.n_elem; ++it) {
                 avg = 0;
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
