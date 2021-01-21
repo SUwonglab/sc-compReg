@@ -25,6 +25,18 @@ output = cluster.profile(Matrix(s1$O1, sparse=T),
                )
 toc()
 
+# K1 = max(max(s1$O1.idx), max(s1$E1.idx))
+# K2 = max(max(s2$O2.idx), max(s2$E2.idx))
+# symbol = intersect(s1$Symbol1, s2$Symbol2)
+# f1 = match(symbol, s1$Symbol1)
+# f2 = match(symbol, s2$Symbol2)
+# E1.mean = matrix(NA, length(f1), K1)
+# for (i in 1:K1) {
+#     E1.mean[, i] = apply(s1$E1[f1, s1$E1.idx == i], 1, mean)
+# }
+
+write.csv(E1.mean, 'E1mean_r.csv')
+
 
 new.output = subpopulation.link(output$E1.mean,
                                 output$E2.mean,

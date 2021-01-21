@@ -768,13 +768,8 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         std::tuple<arma::uvec, arma::vec> tupF2 = isMember(symbol, symbol2);
         arma::vec f2 = std::get<1>(tupF2);
 
-        bool check = f1.at(0) == f2.at(0);
+        bool check = arma::approx_equal(f1, f2, "absdiff", 0.001);
         std::cout<< check << std::endl;
-        check = f1.at(2) == f2.at(2);
-        std::cout<< check << std::endl;
-        check = f1.at(10) == f2.at(10);
-        std::cout<< check << std::endl;
-
 
         arma::mat E1Mean = arma::mat(f1.n_rows, K1 + 1, arma::fill::zeros);
         arma::mat E2Mean = arma::mat(f2.n_rows, K2 + 1, arma::fill::zeros);
@@ -812,7 +807,11 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         }
 
         return Rcpp::List::create(Named("E1Mean") = E1Mean,
-                                  Named("E2Mean") = E2Mean);
+                                  Named("E2Mean") = E2Mean,
+                                  Named("symbol") = 0,
+                                  Named("O1Mean") = 0,
+                                  Named("O2Mean") = 0,
+                                  Named("elementName") = 0);
 
         std::tuple<arma::uvec, arma::vec> tupPI1 = isMember(peakNameIntersect1, peakName1);
         f1 = std::get<1>(tupPI1);
