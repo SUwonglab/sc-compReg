@@ -54,8 +54,8 @@ subpopulation.link.default <- function(E.mean.healthy,
     }
     match <- match[, colSums(is.na(match)) != nrow(match)]
 
+    output = list()
     output$match <- match
-
     output$call <- this.call
 
     return(output)
