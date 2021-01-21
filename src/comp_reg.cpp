@@ -763,21 +763,28 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
         unsigned int K1 = std::max(arma::max(O1Idx), arma::max(E1Idx));
         unsigned int K2 = std::max(arma::max(O2Idx), arma::max(E2Idx));
         Rcpp::StringVector symbol = intersection(symbol1, symbol2);
-        std::tuple<arma::uvec, arma::vec> tup = isMember(symbol, symbol1);
-        arma::vec f1 = std::get<1>(tup);
-        tup = isMember(symbol, symbol2);
-        arma::vec f2 = std::get<1>(tup);
+        std::tuple<arma::uvec, arma::vec> tupF1 = isMember(symbol, symbol1);
+        arma::vec f1 = std::get<1>(tupF1);
+        std::tuple<arma::uvec, arma::vec> tupF2 = isMember(symbol, symbol2);
+        arma::vec f2 = std::get<1>(tupF2);
 
-        arma::mat E1Mean = arma::mat(f1.n_rows, K1, arma::fill::zeros);
-        arma::mat E2Mean = arma::mat(f2.n_rows, K2, arma::fill::zeros);
+        bool check = f1.at(0) == f2.at(0);
+        std::cout<< check << std::endl;
+        check = f1.at(2) == f2.at(2);
+        std::cout<< check << std::endl;
+        check = f1.at(10) == f2.at(10);
+        std::cout<< check << std::endl;
+
+
+        arma::mat E1Mean = arma::mat(f1.n_rows, K1 + 1, arma::fill::zeros);
+        arma::mat E2Mean = arma::mat(f2.n_rows, K2 + 1, arma::fill::zeros);
 
         double avg = 0.;
         arma::sp_rowvec temp;
-        for (unsigned int i = 0; i < K1; ++i) {
+        for (unsigned int i = 0; i <= K1; ++i) {
             Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E1Idx == i);
             if (idx.n_elem == 0) continue;
-            // TODO bug here double check
             for (unsigned int it = 0; it < f1.n_elem; ++it) {
                 avg = 0;
                 temp = E1.row(f1.at(it));
@@ -789,31 +796,35 @@ Rcpp::List clusterProfile(const arma::sp_mat& O1,
             }
         }
 
-        for (unsigned int i = 0; i < K2; ++i) {
+        for (unsigned int i = 0; i <= K2; ++i) {
             Rcpp::checkUserInterrupt();
             arma::uvec idx = arma::find(E2Idx == i);
+            if (idx.n_elem == 0) continue;
             for (unsigned int it = 0; it < f2.n_elem; ++it) {
                 avg = 0;
                 temp = E2.row(f2.at(it));
                 for (arma::uvec::iterator elemIt = idx.begin(); elemIt != idx.end(); ++elemIt) {
                     Rcpp::checkUserInterrupt();
-                    avg += E2.row(f2.at(it)).at(*elemIt);
+                    avg += temp.at(*elemIt);
                 }
                 E2Mean.at(it, i) = avg / idx.n_elem;
             }
         }
 
-        tup = isMember(peakNameIntersect1, peakName1);
-        f1 = std::get<1>(tup);
+        return Rcpp::List::create(Named("E1Mean") = E1Mean,
+                                  Named("E2Mean") = E2Mean);
+
+        std::tuple<arma::uvec, arma::vec> tupPI1 = isMember(peakNameIntersect1, peakName1);
+        f1 = std::get<1>(tupPI1);
         Rcpp::checkUserInterrupt();
-        tup = isMember(peakNameIntersect2, peakName2);
-        f2 = std::get<1>(tup);
+        std::tuple<arma::uvec, arma::vec> tupPI2 = isMember(peakNameIntersect2, peakName2);
+        f2 = std::get<1>(tupPI2);
         Rcpp::checkUserInterrupt();
-        tup = isMember(peakName1, peakNameIntersect1);
-        arma::uvec d1 = std::get<0>(tup);
+        std::tuple<arma::uvec, arma::vec> tupPN1 = isMember(peakName1, peakNameIntersect1);
+        arma::uvec d1 = std::get<0>(tupPN1);
         Rcpp::checkUserInterrupt();
-        tup = isMember(peakName2, peakNameIntersect2);
-        arma::uvec d2 = std::get<0>(tup);
+        std::tuple<arma::uvec, arma::vec> tupPN2 = isMember(peakName2, peakNameIntersect2);
+        arma::uvec d2 = std::get<0>(tupPN2);
         Rcpp::checkUserInterrupt();
 
         unsigned int d1Zero, d2Zero;
