@@ -1,4 +1,4 @@
-cluster_profile.default <- function(O1,
+cluster.profile.default <- function(O1,
                             E1,
                             O1.idx,
                             E1.idx,

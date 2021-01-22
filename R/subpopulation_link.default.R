@@ -22,7 +22,7 @@ subpopulation.link.default <- function(E.mean.healthy,
 
     r1 <- cor(E.mean.healthy, E.mean.cll)
     r2 <- cor(O.mean.healthy, O.mean.cll)
-    rr1 <- r1 - colSums(r1) %*% t(rowSums(r1)) /sum(r1)
+    rr1 <- r1 - colSums(r1) %*% t(rowSums(r1)) / sum(r1)
     rr2 <- r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
     rr <- rr1 + rr2
 
@@ -36,23 +36,23 @@ subpopulation.link.default <- function(E.mean.healthy,
     a[, 7] <- rr[b]
     f <- order(a[, 7], decreasing = T)
     a <- a[f, ]
-    a <- a[(a[, 5] > 0) * ((a[, 6] > 0) == 1),  ]
+    a <- a[(((a[, 5] > 0) * (a[, 6] > 0)) == 1),  ]
 
     a.dim <- dim(a)[1]
-    match <- matrix(NA, 7, a.dim)
-    S1 <- matrix(NA, a.dim)
-    S2 <- matrix(NA, a.dim)
+    match <- matrix(NA, a.dim, 7)
+    S1 <- matrix(NA, a.dim, 1)
+    S2 <- matrix(NA, a.dim, 1)
     match.idx <- 1
     for (i in 1:a.dim) {
         idx <- is.element(a[i, 1], S1) + is.element(a[i, 2], S2)
         S1[i] <- a[i, 1]
         S2[i] <- a[i, 2]
         if (idx < 2) {
-            match[, match.idx] <- a[i, ]
+            match[match.idx, ] <- a[i, ]
             match.idx = match.idx + 1
         }
     }
-    match <- match[, colSums(is.na(match)) != nrow(match)]
+    match <- match[rowSums(is.na(match)) != ncol(match), ]
 
     output = list()
     output$match <- match

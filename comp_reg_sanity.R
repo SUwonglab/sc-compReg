@@ -115,46 +115,54 @@ new.output = subpopulation.link(output$E1.mean,
                                 output$O2.mean)
 write.csv(output$O1.mean, 'O1mean.csv')
 write.csv(output$O2.mean, 'O2mean.csv')
+write.csv(output$E1.mean, 'E1mean.csv')
+write.csv(output$E2.mean, 'E2mean.csv')
 
 pkname = read.table('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', header=F)
 length(pkname$V1)
 length(pkname$V2)
 
-EMH = output$E1.mean
-EMC = output$E2.mean
-OMH = output$O1.mean
-OMC = output$O2.mean
+E.mean.healthy = output$E1.mean
+E.mean.cll = output$E2.mean
+O.mean.healthy = output$O1.mean
+O.mean.cll = output$O2.mean
 
-r1 = cor(EMH, EMC)
-r2 = cor(OMH, OMC)
-rr1 = r1 - colSums(r1) %*% t(rowSums(r1)) /sum(r1)
-rr2 = r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
-rr = rr1 + rr2
+r1 <- cor(E.mean.healthy, E.mean.cll)
+r2 <- cor(O.mean.healthy, O.mean.cll)
+rr1 <- r1 - colSums(r1) %*% t(rowSums(r1)) / sum(r1)
+rr2 <- r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
+rr <- rr1 + rr2
 
-b = which(rr > 0)
-a = matrix(0, length(b),7)
-a[, 1:2] = which(rr > 0, arr.ind = T)
-a[, 3] = r1[b]
-a[, 4] = r2[b]
-a[, 5] = rr1[b]
-a[, 6] = rr2[b]
-a[, 7] = rr[b]
-f = order(a[, 7], decreasing = T)
-a = a[f, ]
-a = a[(a[, 5] > 0) * ((a[, 6] > 0) == 1),  ]
+b <- which(rr > 0)
+a <- matrix(0, length(b),7)
+a[, 1:2] <- which(rr > 0, arr.ind = T)
+a[, 3] <- r1[b]
+a[, 4] <- r2[b]
+a[, 5] <- rr1[b]
+a[, 6] <- rr2[b]
+a[, 7] <- rr[b]
+f <- order(a[, 7], decreasing = T)
+a <- a[f, ]
+a <- a[(((a[, 5] > 0) * (a[, 6] > 0)) == 1),  ]
 
-a.dim = dim(a)[1]
-match = matrix(NA, 7, a.dim)
-S1 = matrix(NA, a.dim)
-S2 = matrix(NA, a.dim)
-match.idx = 1
+a.dim <- dim(a)[1]
+match <- matrix(NA, a.dim, 7)
+S1 <- matrix(NA, a.dim, 1)
+S2 <- matrix(NA, a.dim, 1)
+match.idx <- 1
 for (i in 1:a.dim) {
-    idx = is.element(a[i, 1], S1) + is.element(a[i, 2], S2)
-    S1[i] = a[i, 1]
-    S2[i] = a[i, 2]
+    idx <- is.element(a[i, 1], S1) + is.element(a[i, 2], S2)
+    S1[i] <- a[i, 1]
+    S2[i] <- a[i, 2]
     if (idx < 2) {
-        match[, match.idx] = a[i, ]
+        match[match.idx, ] <- a[i, ]
         match.idx = match.idx + 1
     }
 }
-match = match[, colSums(is.na(match)) != nrow(match)]
+
+match <- match[rowSums(is.na(match)) != ncol(match), ]
+write.csv(match, 'match.csv')
+
+output = list()
+output$match <- match
+output$call <- this.call
