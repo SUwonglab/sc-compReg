@@ -166,3 +166,22 @@ write.csv(match, 'match.csv')
 output = list()
 output$match <- match
 output$call <- this.call
+
+
+
+
+
+
+
+
+motif.files
+
+
+tic()
+motif.files <- mfbs.load('/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt')
+toc()
+
+
+
+
+
