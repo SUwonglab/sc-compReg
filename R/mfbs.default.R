@@ -57,14 +57,14 @@ mfbs.default <- function(TF.name,
                                       ncol = motif.weight.len), sparse=T), motif.binding)
     motif.binding@x <- log(motif.binding@x)
 
-    tf.name <- intersect(symbol, unique(match2$b))
-    tf.name.len <- length(tf.name)
-    tf.binding <- matrix(0, tf.name.len, length(elem.name))
+    TF.name <- intersect(symbol, unique(match2$b))
+    TF.name.len <- length(TF.name)
+    tf.binding <- matrix(0, TF.name.len, length(elem.name))
 
     mf1 <- match(match2$a, motif.name, nomatch=0)
-    mf2 <- match(match2$b, tf.name, nomatch=0)
+    mf2 <- match(match2$b, TF.name, nomatch=0)
 
-    for (i in 1:tf.name.len) {
+    for (i in 1:TF.name.len) {
         print(i)
         a <- which(mf2 == i)
         if (length(a) > 1) {
