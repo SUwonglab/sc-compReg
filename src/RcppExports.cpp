@@ -18,6 +18,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mult
+arma::sp_mat mult(arma::sp_mat A, arma::sp_mat B);
+RcppExport SEXP _scCompReg_mult(SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::sp_mat >::type A(ASEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(mult(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mfbsLoad
 Rcpp::List mfbsLoad(std::string motifTargetPath);
 RcppExport SEXP _scCompReg_mfbsLoad(SEXP motifTargetPathSEXP) {
@@ -157,6 +169,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
+    {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
     {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
     {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},

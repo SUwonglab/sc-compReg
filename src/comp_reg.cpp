@@ -94,6 +94,18 @@ T mod(T a, int n)
 }
 
 
+/** For fast rcpp sparse matrix multiplication.
+ *
+ * @param A - sp_mat
+ * @param B - sp_mat
+ * @return - A * B, sp_mat
+ */
+// [[Rcpp::export]]
+arma::sp_mat mult(arma::sp_mat A, arma::sp_mat B) {
+    return A * B;
+}
+
+
 
 void parseMotifTarget(std::string filePath,
                       std::vector<std::string>& stringVec1,
