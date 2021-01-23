@@ -5,16 +5,16 @@ loadPeakNameIntersectFile <- function(path, token) {
     .Call(`_scCompReg_loadPeakNameIntersectFile`, path, token)
 }
 
+mfbsLoad <- function(motifTargetPath) {
+    .Call(`_scCompReg_mfbsLoad`, motifTargetPath)
+}
+
 mfbs <- function(TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath) {
     .Call(`_scCompReg_mfbs`, TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath)
 }
 
 compReg <- function(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath) {
     .Call(`_scCompReg_compReg`, TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath)
-}
-
-subpopulationLink <- function(EMH, EMC, OMH, OMC) {
-    .Call(`_scCompReg_subpopulationLink`, EMH, EMC, OMH, OMC)
 }
 
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {

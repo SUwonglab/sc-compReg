@@ -120,6 +120,20 @@ void parseMotifTarget(std::string filePath,
     free(b);
 }
 
+// [[Rcpp::export]]
+Rcpp::List mfbsLoad(std::string motifTargetPath) {
+    try {
+        std::vector<std::string> strVec1, strVec2;
+        std::vector<float> floatVec3;
+        unsigned int index;
+        parseMotifTarget(motifTargetPath, strVec1, strVec2, floatVec3);
+        return List::create(Named("C1") = strVec1,
+                            Named("C2") = strVec2,
+                            Named("C3") = floatVec3);
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
+}
 
 // [[Rcpp::export]]
 Rcpp::List mfbs(std::vector<std::string> TFName,
@@ -654,81 +668,6 @@ Rcpp::List compReg(arma::mat TFBinding,
             arma::mat LRTempMat = LRSummary.cols(2, 5);
             LRTempMat = LRTempMat.rows(id1);
         }
-    } catch (...) {
-        ::Rf_error("c++ exception");
-    }
-}
-
-
-// [[Rcpp::export]]
-Rcpp::List subpopulationLink(arma::mat EMH,
-                             arma::mat EMC,
-                             arma::mat OMH,
-                             arma::mat OMC) {
-    // EMH - EMeanHealthy
-    // EMC - EMeanCll
-    // OMH - OMeanHealthy
-    // OMC - OMeanCll
-    try {
-        // r1 is K1 x K2
-        arma::mat r1 = arma::cor(EMH, EMC);
-        arma::mat r2 = arma::cor(OMH, OMC);
-        // outer product
-        r1.print();
-        r2.print();
-        arma::mat temp = arma::sum(r1, 0);
-        std::cout<<temp.n_rows << " " << temp.n_cols << std::endl;
-        temp = arma::sum(r1, 1);
-        std::cout<<temp.n_rows << " " << temp.n_cols << std::endl;
-
-        arma::mat rr1 = r1 - arma::as_scalar(arma::sum(r1, 0) * arma::sum(r1, 1)) / arma::accu(r1);
-        arma::mat rr2 = r2 - arma::as_scalar(arma::sum(r2, 0) * arma::sum(r2, 1)) / arma::accu(r2);
-        arma::mat rr = rr1 + rr2;
-        rr.print();
-        arma::uvec b = arma::find(rr > 0);
-        b.print();
-
-        arma::uvec rrPos = arma::find(rr > 0);
-        unsigned int rrNRows = rr.n_rows;
-        arma::umat idxMat = arma::umat(rrPos.n_elem, 2, arma::fill::zeros);
-        convertIdxToRowCol(rrPos, idxMat, rrNRows);
-
-        //row
-        arma::mat a = arma::mat(idxMat.n_rows, 7, arma::fill::zeros);
-        a.col(0) = arma::conv_to<arma::vec>::from(idxMat.col(0));
-        // col
-        a.col(1) = arma::conv_to<arma::vec>::from(idxMat.col(1));
-        a.col(2) = r1.elem(b);
-        a.col(3) = r2.elem(b);
-        a.col(4) = rr1.elem(b);
-        a.col(5) = rr2.elem(b);
-        a.col(6) = rr.elem(b);
-        arma::uvec f = arma::sort_index(a.col(6), "descend");
-        a = a.rows(f);
-        arma::uvec aRows =  arma::find(((a.col(4) > 0) % (a.col(5) > 0)) == 1);
-        a = a.rows(aRows);
-
-        unsigned int aNRows = a.n_rows;
-        arma::vec S1 = arma::vec(aNRows, arma::fill::zeros);
-        arma::vec S2 = arma::vec(aNRows, arma::fill::zeros);
-        arma::mat match = arma::mat(aNRows, a.n_cols, arma::fill::zeros);
-        int matchIdx;
-        int idx;
-        for (int i = 0; i < aNRows; ++i) {
-            idx = arma::any(S1 == a.at(i, 0)) + arma::any(S2 == a.at(i, 1));
-            S1.at(i) = a.at(i, 0);
-            S2.at(i) = a.at(i, 1);
-            if (idx < 2) {
-                match.row(matchIdx) = a.row(i);
-                ++matchIdx;
-            }
-        }
-        std::cout<<matchIdx<< " " << aNRows << std::endl;
-        if (matchIdx < aNRows - 1) {
-            match.shed_rows(matchIdx, aNRows - 1);
-        }
-
-        return Rcpp::List::create(Named("match") = match);
     } catch (...) {
         ::Rf_error("c++ exception");
     }

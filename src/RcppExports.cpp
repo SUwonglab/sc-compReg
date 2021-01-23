@@ -18,6 +18,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mfbsLoad
+Rcpp::List mfbsLoad(std::string motifTargetPath);
+RcppExport SEXP _scCompReg_mfbsLoad(SEXP motifTargetPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type motifTargetPath(motifTargetPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(mfbsLoad(motifTargetPath));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mfbs
 Rcpp::List mfbs(std::vector<std::string> TFName, std::vector<std::string> motifName, arma::vec motifWeight, std::vector<std::string> elementName, std::vector<std::string> match2TF, std::vector<std::string> match2Motif, std::string motifTargetPath);
 RcppExport SEXP _scCompReg_mfbs(SEXP TFNameSEXP, SEXP motifNameSEXP, SEXP motifWeightSEXP, SEXP elementNameSEXP, SEXP match2TFSEXP, SEXP match2MotifSEXP, SEXP motifTargetPathSEXP) {
@@ -54,20 +65,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type elementName(elementNameSEXP);
     Rcpp::traits::input_parameter< std::string >::type peakGenePriorPath(peakGenePriorPathSEXP);
     rcpp_result_gen = Rcpp::wrap(compReg(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath));
-    return rcpp_result_gen;
-END_RCPP
-}
-// subpopulationLink
-Rcpp::List subpopulationLink(arma::mat EMH, arma::mat EMC, arma::mat OMH, arma::mat OMC);
-RcppExport SEXP _scCompReg_subpopulationLink(SEXP EMHSEXP, SEXP EMCSEXP, SEXP OMHSEXP, SEXP OMCSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type EMH(EMHSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type EMC(EMCSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type OMH(OMHSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type OMC(OMCSEXP);
-    rcpp_result_gen = Rcpp::wrap(subpopulationLink(EMH, EMC, OMH, OMC));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -160,9 +157,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
+    {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
     {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
     {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
-    {"_scCompReg_subpopulationLink", (DL_FUNC) &_scCompReg_subpopulationLink, 4},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},
