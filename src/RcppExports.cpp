@@ -41,38 +41,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// maxk
-arma::sp_mat maxk(arma::sp_mat A, unsigned int k, unsigned int dim);
-RcppExport SEXP _scCompReg_maxk(SEXP ASEXP, SEXP kSEXP, SEXP dimSEXP) {
+// compRegLoad
+Rcpp::List compRegLoad(std::string peakGenePriorPath);
+RcppExport SEXP _scCompReg_compRegLoad(SEXP peakGenePriorPathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::sp_mat >::type A(ASEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type dim(dimSEXP);
-    rcpp_result_gen = Rcpp::wrap(maxk(A, k, dim));
-    return rcpp_result_gen;
-END_RCPP
-}
-// compReg
-Rcpp::List compReg(arma::mat TFBinding, arma::mat match, const arma::sp_mat& E1, arma::uvec E1Idx, const arma::sp_mat& E2, arma::uvec E2Idx, const arma::mat& O1Mean, const arma::mat& O2Mean, std::vector<std::string> symbol, std::vector<std::string> TFName, std::vector<std::string> elementName, std::string peakGenePriorPath);
-RcppExport SEXP _scCompReg_compReg(SEXP TFBindingSEXP, SEXP matchSEXP, SEXP E1SEXP, SEXP E1IdxSEXP, SEXP E2SEXP, SEXP E2IdxSEXP, SEXP O1MeanSEXP, SEXP O2MeanSEXP, SEXP symbolSEXP, SEXP TFNameSEXP, SEXP elementNameSEXP, SEXP peakGenePriorPathSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type TFBinding(TFBindingSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type match(matchSEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E1(E1SEXP);
-    Rcpp::traits::input_parameter< arma::uvec >::type E1Idx(E1IdxSEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type E2(E2SEXP);
-    Rcpp::traits::input_parameter< arma::uvec >::type E2Idx(E2IdxSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O1Mean(O1MeanSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type O2Mean(O2MeanSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type symbol(symbolSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type TFName(TFNameSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type elementName(elementNameSEXP);
     Rcpp::traits::input_parameter< std::string >::type peakGenePriorPath(peakGenePriorPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(compReg(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath));
+    rcpp_result_gen = Rcpp::wrap(compRegLoad(peakGenePriorPath));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -167,8 +143,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
-    {"_scCompReg_maxk", (DL_FUNC) &_scCompReg_maxk, 3},
-    {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
+    {"_scCompReg_compRegLoad", (DL_FUNC) &_scCompReg_compRegLoad, 1},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},

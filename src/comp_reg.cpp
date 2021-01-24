@@ -147,25 +147,6 @@ Rcpp::List mfbsLoad(std::string motifTargetPath) {
     }
 }
 
-// [[Rcpp::export]]
-arma::sp_mat maxk(arma::sp_mat A, unsigned int k, unsigned int dim) {
-    try {
-        if (dim == 0) {
-            for (unsigned int j = 0; j < A.n_cols; ++j) {
-                A.col(j) = arma::sort_index(A.col(j), "descend");
-            }
-            return A.rows(0, k-1);
-        } else { // return maxk of each row
-            for (unsigned int i = 0; i < A.n_rows; ++i) {
-                A.row(i) = arma::sort_index(A.row(i), "descend");
-            }
-            return A.cols(0, k - 1);
-        }
-    } catch(...) {
-        ::Rf_error("c++ exception")
-    }
-}
-
 void parsePeakGenePrior(std::string filePath,
                         std::vector<std::string>& stringVec1,
                         std::vector<std::string>& stringVec2,
@@ -407,168 +388,199 @@ T extractElems(T& input,
 
 
 // [[Rcpp::export]]
-Rcpp::List compReg(arma::mat TFBinding,
-                   arma::mat match,
-                   const arma::sp_mat& E1,
-                   arma::uvec E1Idx,
-                   const arma::sp_mat& E2,
-                   arma::uvec E2Idx,
-                   const arma::mat& O1Mean,
-                   const arma::mat& O2Mean,
-                   std::vector<std::string> symbol,
-                   std::vector<std::string> TFName,
-                   std::vector<std::string> elementName,
-                   std::string peakGenePriorPath
-                   ) {
+Rcpp::List compRegLoad(std::string peakGenePriorPath) {
     try {
-        arma::umat TFIdx = arma::umat(TFBinding.n_rows, TFBinding.n_cols, arma::fill::zeros);
-        for (unsigned int row = 0; row < TFBinding.n_rows; ++row) {
-            TFIdx.row(row) = arma::sort_index(TFBinding.row(row), "descend");
-        }
-
-        TFIdx = TFIdx.cols(0, 4999); // indices are inclusive
-        arma::mat a = arma::mat(TFIdx.n_rows, TFIdx.n_cols, arma::fill::zeros);
-        arma::urowvec TFRow;
-        arma::rowvec TFBindingRow;
-        for (unsigned int rowIdx=0; rowIdx < TFIdx.n_rows; ++rowIdx) {
-            TFRow = TFIdx.row(rowIdx);
-            TFBindingRow = TFBinding.row(rowIdx);
-            a.row(rowIdx) = TFBindingRow.elem(TFRow);
-        }
-        TFBinding.elem(arma::find(TFBinding - a.col(a.n_cols - 1) < 0)).fill(0);
-
-        std::vector<std::string> strVec1, strVec2;
+        std::vector<std::string> stringVec1, stringVec2;
         std::vector<float> floatVec3, floatVec4;
-        parsePeakGenePrior(peakGenePriorPath, strVec1, strVec2, floatVec3, floatVec4);
-        arma::vec fv3 = arma::conv_to<arma::vec>::from(floatVec3);
-        arma::vec fv4 = arma::conv_to<arma::vec>::from(floatVec4);
-
-//        auto elemBegin = elementName.begin();
-//        auto elemEnd = elementName.end();
-//
-//        arma::vec d = arma::vec(strVec1.size(), arma::fill::zeros);
-//        arma::vec f = arma::vec(strVec1.size(), arma::fill::zeros);
-//        unsigned int idx = 0;
-//        for (auto t : strVec1) {
-//            auto p = std::find(elemBegin, elemEnd, t);
-//            if (p != elemEnd) {
-//                d.at(idx) = 1.;
-//                f.at(idx) = std::distance(p, elemEnd);
-//            } else {
-//                d.at(idx) = 0.;
-//                f.at(idx) = NAN;
-//            }
-//            ++idx;
-//        }
-
-        std::tuple<arma::uvec, arma::vec> tup = isMember(strVec1, elementName);
-        arma::uvec d = std::get<0>(tup);
-        arma::vec f = std::get<1>(tup);
-
-        std::tuple<arma::uvec, arma::vec> tup2 = isMember(strVec2, symbol);
-        arma::uvec d1 = std::get<0>(tup2);
-        arma::vec f1 = std::get<1>(tup2);
-
-        // TODO check whether the .* is outer product
-        arma::mat ff = arma::join_horiz(arma::conv_to<arma::vec>::from(f.elem(arma::find(d % d1 == 1))),
-                                        arma::conv_to<arma::vec>::from(f1.elem(arma::find(d % d1 == 1))));
-        arma::mat f2 = uniqueRows(ff);
-        arma::uvec ic = findUniqueRowIdx(ff, f2);
-
-        arma::vec c3 = accumArrayMin(ic, fv3.elem(arma::find(d % d1 == 1)));
-        arma::vec c4 = accumArrayMin(ic, fv4.elem(arma::find(d % d1 == 1)));
-
-        c4.elem(arma::find(c4 < 0.2)).fill(0.);
-        arma::vec c = arma::exp(-1. * c3 / 500000.) % c4;
-        arma::umat temp = arma::conv_to<arma::umat>::from(f2);
-        arma::umat loc = arma::join_cols(temp.col(1), temp.col(0));
-        arma::sp_mat beta = arma::sp_mat(loc, c, symbol.size(), elementName.size());
-
-        double i1, i2;
-        arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine;
-        arma::mat OTF1, OTF2, X1, X2;
-        unsigned int n1, n2;
-        arma::vec pTTest, adjPTTest, LRi, phat, pGamma, LRSColTwo, adjPGamma;
-        arma::uvec diffGene, id1, id, tempIdx, sortedIdx;
-        arma::umat netIdx;
-        std::tuple<double, double, double, double> bivarRetTup;
-        arma::mat LRSummary = arma::mat(1, 4, arma::fill::zeros);
-        double tenSixteenthPow = (double) pow(10, -16);
-        for (unsigned int ii = 0; ii < match.n_rows; ++ii) {
-            i1 = match.at(ii, 0);
-            i2 = match.at(ii, 2);
-            BO1 = (TFBinding % O1Mean.col(i1).t()) * beta.t();
-            BO2 = (TFBinding % O2Mean.col(i2).t()) * beta.t();
-            TG1 = selectCols(E1, arma::find(E1Idx == i1));
-            TG2 = selectCols(E2, arma::find(E2Idx == i2));
-            // mean of TG1 and mean of TG2
-            TG2 = TG2 * (arma::accu(TG1) / TG1.n_elem) / (arma::accu(TG2) / TG2.n_elem);
-            tup = isMember(TFName, symbol);
-            d = std::get<0>(tup);
-            f = std::get<1>(tup);
-            TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)),
-                                  TG2.rows(arma::conv_to<arma::uvec>::from(f)));
-            n1 = TG1.n_cols;
-            n2 = TG2.n_cols;
-            pTTest = ttest2(TG1.t(), TG2.t());
-            adjPTTest = fdrBH(pTTest);
-            diffGene = arma::find(adjPTTest < ALPHA_THRESH * 2);
-            corrP1 = corr(TF.cols(0, n1-1).t(), TG1.t());
-            corrP2 = corr(TF.cols(n1, n1+n2-1).t(), TG2.t());
-            pCombine = arma::min(corrP1, corrP2);
-            tempIdx = arma::find(pCombine < ALPHA_THRESH);
-            netIdx = arma::umat(tempIdx.n_elem, 2, arma::fill::zeros);
-            convertIdxToRowCol(tempIdx, netIdx, pCombine.n_rows);
-
-            for (unsigned int j = 0; j < diffGene.n_elem; ++j) {
-                OTF1 = BO1.col(diffGene.at(j)) % TF.cols(0, n1 - 1);
-                OTF2 = BO2.col(diffGene.at(j)) % TF.cols(n1, n1+n2-1);
-                temp = netIdx.rows(arma::find(netIdx.col(1) == diffGene.at(j)));
-                id1 = temp.col(0);
-                id = arma::find(arma::sum(arma::abs(OTF1.t())) + arma::sum(arma::abs(OTF2.t())) > 0);
-                id = arma::intersect(id1, id);
-
-                for (unsigned int i = 0; i < id.n_elem; ++i) {
-                    X1 = arma::join_horiz(OTF1.row(id.at(i)).t(), TG1.row(diffGene.at(j)).t());
-                    X2 = arma::join_horiz(OTF2.row(id.at(i)).t(), TG2.row(diffGene.at(j)).t());
-                    bivarRetTup = bivariateNormalConditionalLR(X1, X2);
-                    LRi = {(double) id.at(i), (double) diffGene.at(j), std::get<3>(bivarRetTup), std::get<2>(bivarRetTup)};
-                    LRSummary = arma::join_vert(LRSummary, LRi);
-                }
-            }
-            // remove the first filler row added previously
-            LRSummary.shed_row(0);
-            // find NaN and +-Inf
-            LRSummary.shed_rows(arma::find_nonfinite(LRSummary.col(2)));
-            // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
-            LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
-
-            LRSColTwo = LRSummary.col(2);
-            phat = gammaQuantileMatch(LRSColTwo, arma::regspace(0.1, 0.1, 0.2));
-            boost::math::gamma_distribution<> gammaDist(phat.at(0), phat.at(1));
-            pGamma = arma::vec(LRSummary.n_rows, arma::fill::zeros);
-            for (unsigned int k = 0; k < LRSummary.n_rows; ++k) {
-                pGamma.at(k) = 1 - boost::math::cdf(gammaDist, LRSColTwo.at(k));
-            }
-            adjPGamma = fdrBH(pGamma);
-            LRSummary = arma::join_horiz(LRSummary, pGamma, adjPGamma);
-            id = arma::find(adjPGamma < 0.1);
-            id1 = arma::uvec(id.n_elem).fill(2);
-
-            sortedIdx = arma::sort_index(LRSummary.elem(arr2ind(id, id1, LRSummary.n_rows)), "descend");
-            id1 = id.elem(sortedIdx);
-            id = arma::uvec(id1.n_elem, arma::fill::zeros);
-
-            extractElems(TFName, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
-            id.ones();
-            extractElems(symbol, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
-            arma::mat LRTempMat = LRSummary.cols(2, 5);
-            LRTempMat = LRTempMat.rows(id1);
+        char buffer[BUFFER_SIZE];
+        char *a = (char *)malloc(BUFFER_SIZE);
+        char *b = (char *)malloc(BUFFER_SIZE);
+        float c, d;
+        int scanRet;
+        FILE* f = fopen(peakGenePriorPath.c_str(), "r");
+        std::string temp;
+        while (true) {
+            if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
+            scanRet = sscanf(buffer, "%s %s %f %f", a, b, &c, &d);
+            temp = a;
+            stringVec1.push_back(temp);
+            temp = b;
+            stringVec2.push_back(temp);
+            floatVec3.push_back(c);
+            floatVec4.push_back(d);
         }
+        fclose(f);
+        free(a);
+        free(b);
+        return Rcpp::List::create(Named("C1") = stringVec1,
+                                  Named("C2") = stringVec2,
+                                  Named("C3") = floatVec3,
+                                  Named("C4") = floatVec4);
     } catch (...) {
         ::Rf_error("c++ exception");
     }
 }
+
+
+//// [[Rcpp::export]]
+//Rcpp::List compReg(arma::mat TFBinding,
+//                   arma::mat match,
+//                   const arma::sp_mat& E1,
+//                   arma::uvec E1Idx,
+//                   const arma::sp_mat& E2,
+//                   arma::uvec E2Idx,
+//                   const arma::mat& O1Mean,
+//                   const arma::mat& O2Mean,
+//                   std::vector<std::string> symbol,
+//                   std::vector<std::string> TFName,
+//                   std::vector<std::string> elementName,
+//                   std::string peakGenePriorPath
+//                   ) {
+//    try {
+//        arma::umat TFIdx = arma::umat(TFBinding.n_rows, TFBinding.n_cols, arma::fill::zeros);
+//        for (unsigned int row = 0; row < TFBinding.n_rows; ++row) {
+//            TFIdx.row(row) = arma::sort_index(TFBinding.row(row), "descend");
+//        }
+//
+//        TFIdx = TFIdx.cols(0, 4999); // indices are inclusive
+//        arma::mat a = arma::mat(TFIdx.n_rows, TFIdx.n_cols, arma::fill::zeros);
+//        arma::urowvec TFRow;
+//        arma::rowvec TFBindingRow;
+//        for (unsigned int rowIdx=0; rowIdx < TFIdx.n_rows; ++rowIdx) {
+//            TFRow = TFIdx.row(rowIdx);
+//            TFBindingRow = TFBinding.row(rowIdx);
+//            a.row(rowIdx) = TFBindingRow.elem(TFRow);
+//        }
+//        TFBinding.elem(arma::find(TFBinding - a.col(a.n_cols - 1) < 0)).fill(0);
+//
+//
+//
+////        auto elemBegin = elementName.begin();
+////        auto elemEnd = elementName.end();
+////
+////        arma::vec d = arma::vec(strVec1.size(), arma::fill::zeros);
+////        arma::vec f = arma::vec(strVec1.size(), arma::fill::zeros);
+////        unsigned int idx = 0;
+////        for (auto t : strVec1) {
+////            auto p = std::find(elemBegin, elemEnd, t);
+////            if (p != elemEnd) {
+////                d.at(idx) = 1.;
+////                f.at(idx) = std::distance(p, elemEnd);
+////            } else {
+////                d.at(idx) = 0.;
+////                f.at(idx) = NAN;
+////            }
+////            ++idx;
+////        }
+//
+//        std::tuple<arma::uvec, arma::vec> tup = isMember(strVec1, elementName);
+//        arma::uvec d = std::get<0>(tup);
+//        arma::vec f = std::get<1>(tup);
+//
+//        std::tuple<arma::uvec, arma::vec> tup2 = isMember(strVec2, symbol);
+//        arma::uvec d1 = std::get<0>(tup2);
+//        arma::vec f1 = std::get<1>(tup2);
+//
+//        // TODO check whether the .* is outer product
+//        arma::mat ff = arma::join_horiz(arma::conv_to<arma::vec>::from(f.elem(arma::find(d % d1 == 1))),
+//                                        arma::conv_to<arma::vec>::from(f1.elem(arma::find(d % d1 == 1))));
+//        arma::mat f2 = uniqueRows(ff);
+//        arma::uvec ic = findUniqueRowIdx(ff, f2);
+//
+//        arma::vec c3 = accumArrayMin(ic, fv3.elem(arma::find(d % d1 == 1)));
+//        arma::vec c4 = accumArrayMin(ic, fv4.elem(arma::find(d % d1 == 1)));
+//
+//        c4.elem(arma::find(c4 < 0.2)).fill(0.);
+//        arma::vec c = arma::exp(-1. * c3 / 500000.) % c4;
+//        arma::umat temp = arma::conv_to<arma::umat>::from(f2);
+//        arma::umat loc = arma::join_cols(temp.col(1), temp.col(0));
+//        arma::sp_mat beta = arma::sp_mat(loc, c, symbol.size(), elementName.size());
+//
+//        double i1, i2;
+//        arma::mat BO1, BO2, TG1, TG2, TF, corrP1, corrP2, pCombine;
+//        arma::mat OTF1, OTF2, X1, X2;
+//        unsigned int n1, n2;
+//        arma::vec pTTest, adjPTTest, LRi, phat, pGamma, LRSColTwo, adjPGamma;
+//        arma::uvec diffGene, id1, id, tempIdx, sortedIdx;
+//        arma::umat netIdx;
+//        std::tuple<double, double, double, double> bivarRetTup;
+//        arma::mat LRSummary = arma::mat(1, 4, arma::fill::zeros);
+//        double tenSixteenthPow = (double) pow(10, -16);
+//        for (unsigned int ii = 0; ii < match.n_rows; ++ii) {
+//            i1 = match.at(ii, 0);
+//            i2 = match.at(ii, 2);
+//            BO1 = (TFBinding % O1Mean.col(i1).t()) * beta.t();
+//            BO2 = (TFBinding % O2Mean.col(i2).t()) * beta.t();
+//            TG1 = selectCols(E1, arma::find(E1Idx == i1));
+//            TG2 = selectCols(E2, arma::find(E2Idx == i2));
+//            // mean of TG1 and mean of TG2
+//            TG2 = TG2 * (arma::accu(TG1) / TG1.n_elem) / (arma::accu(TG2) / TG2.n_elem);
+//            tup = isMember(TFName, symbol);
+//            d = std::get<0>(tup);
+//            f = std::get<1>(tup);
+//            TF = arma::join_horiz(TG1.rows(arma::conv_to<arma::uvec>::from(f)),
+//                                  TG2.rows(arma::conv_to<arma::uvec>::from(f)));
+//            n1 = TG1.n_cols;
+//            n2 = TG2.n_cols;
+//            pTTest = ttest2(TG1.t(), TG2.t());
+//            adjPTTest = fdrBH(pTTest);
+//            diffGene = arma::find(adjPTTest < ALPHA_THRESH * 2);
+//            corrP1 = corr(TF.cols(0, n1-1).t(), TG1.t());
+//            corrP2 = corr(TF.cols(n1, n1+n2-1).t(), TG2.t());
+//            pCombine = arma::min(corrP1, corrP2);
+//            tempIdx = arma::find(pCombine < ALPHA_THRESH);
+//            netIdx = arma::umat(tempIdx.n_elem, 2, arma::fill::zeros);
+//            convertIdxToRowCol(tempIdx, netIdx, pCombine.n_rows);
+//
+//            for (unsigned int j = 0; j < diffGene.n_elem; ++j) {
+//                OTF1 = BO1.col(diffGene.at(j)) % TF.cols(0, n1 - 1);
+//                OTF2 = BO2.col(diffGene.at(j)) % TF.cols(n1, n1+n2-1);
+//                temp = netIdx.rows(arma::find(netIdx.col(1) == diffGene.at(j)));
+//                id1 = temp.col(0);
+//                id = arma::find(arma::sum(arma::abs(OTF1.t())) + arma::sum(arma::abs(OTF2.t())) > 0);
+//                id = arma::intersect(id1, id);
+//
+//                for (unsigned int i = 0; i < id.n_elem; ++i) {
+//                    X1 = arma::join_horiz(OTF1.row(id.at(i)).t(), TG1.row(diffGene.at(j)).t());
+//                    X2 = arma::join_horiz(OTF2.row(id.at(i)).t(), TG2.row(diffGene.at(j)).t());
+//                    bivarRetTup = bivariateNormalConditionalLR(X1, X2);
+//                    LRi = {(double) id.at(i), (double) diffGene.at(j), std::get<3>(bivarRetTup), std::get<2>(bivarRetTup)};
+//                    LRSummary = arma::join_vert(LRSummary, LRi);
+//                }
+//            }
+//            // remove the first filler row added previously
+//            LRSummary.shed_row(0);
+//            // find NaN and +-Inf
+//            LRSummary.shed_rows(arma::find_nonfinite(LRSummary.col(2)));
+//            // m.elem((colInd - 1) * m.n_rows + (rowInd - 1));
+//            LRSummary.elem(LRSummary.n_rows + (arma::find(LRSummary.col(2) < tenSixteenthPow) - 1)).fill(tenSixteenthPow);
+//
+//            LRSColTwo = LRSummary.col(2);
+//            phat = gammaQuantileMatch(LRSColTwo, arma::regspace(0.1, 0.1, 0.2));
+//            boost::math::gamma_distribution<> gammaDist(phat.at(0), phat.at(1));
+//            pGamma = arma::vec(LRSummary.n_rows, arma::fill::zeros);
+//            for (unsigned int k = 0; k < LRSummary.n_rows; ++k) {
+//                pGamma.at(k) = 1 - boost::math::cdf(gammaDist, LRSColTwo.at(k));
+//            }
+//            adjPGamma = fdrBH(pGamma);
+//            LRSummary = arma::join_horiz(LRSummary, pGamma, adjPGamma);
+//            id = arma::find(adjPGamma < 0.1);
+//            id1 = arma::uvec(id.n_elem).fill(2);
+//
+//            sortedIdx = arma::sort_index(LRSummary.elem(arr2ind(id, id1, LRSummary.n_rows)), "descend");
+//            id1 = id.elem(sortedIdx);
+//            id = arma::uvec(id1.n_elem, arma::fill::zeros);
+//
+//            extractElems(TFName, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
+//            id.ones();
+//            extractElems(symbol, arma::conv_to<arma::uvec>::from(LRSummary.elem(arr2ind(id1, id, LRSummary.n_rows))));
+//            arma::mat LRTempMat = LRSummary.cols(2, 5);
+//            LRTempMat = LRTempMat.rows(id1);
+//        }
+//    } catch (...) {
+//        ::Rf_error("c++ exception");
+//    }
+//}
 
 
 std::vector<std::string> parseSymbol(std::string filePath) {

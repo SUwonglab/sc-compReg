@@ -238,3 +238,21 @@ for (i in 1:tf.name.len) {
 tf.binding <- Matrix(tf.binding, sparse = T)
 
 
+a <- maxk(tf.binding, 5000, 2)
+
+
+tf.binding[tf.binding - a[, ncol(a)] < 0] <- 0
+
+file = compRegLoad('/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
+
+
+
+
+
+
+
+
+
+
+
+
