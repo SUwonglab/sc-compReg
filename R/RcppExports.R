@@ -13,8 +13,8 @@ mfbsLoad <- function(motifTargetPath) {
     .Call(`_scCompReg_mfbsLoad`, motifTargetPath)
 }
 
-mfbs <- function(TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath) {
-    .Call(`_scCompReg_mfbs`, TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath)
+maxk <- function(A, k, dim) {
+    .Call(`_scCompReg_maxk`, A, k, dim)
 }
 
 compReg <- function(TFBinding, match, E1, E1Idx, E2, E2Idx, O1Mean, O2Mean, symbol, TFName, elementName, peakGenePriorPath) {

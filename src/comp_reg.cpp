@@ -147,6 +147,24 @@ Rcpp::List mfbsLoad(std::string motifTargetPath) {
     }
 }
 
+// [[Rcpp::export]]
+arma::sp_mat maxk(arma::sp_mat A, unsigned int k, unsigned int dim) {
+    try {
+        if (dim == 0) {
+            for (unsigned int j = 0; j < A.n_cols; ++j) {
+                A.col(j) = arma::sort_index(A.col(j), "descend");
+            }
+            return A.rows(0, k-1);
+        } else { // return maxk of each row
+            for (unsigned int i = 0; i < A.n_rows; ++i) {
+                A.row(i) = arma::sort_index(A.row(i), "descend");
+            }
+            return A.cols(0, k - 1);
+        }
+    } catch(...) {
+        ::Rf_error("c++ exception")
+    }
+}
 
 void parsePeakGenePrior(std::string filePath,
                         std::vector<std::string>& stringVec1,

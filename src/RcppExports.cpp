@@ -41,20 +41,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mfbs
-Rcpp::List mfbs(std::vector<std::string> TFName, std::vector<std::string> motifName, arma::vec motifWeight, std::vector<std::string> elementName, std::vector<std::string> match2TF, std::vector<std::string> match2Motif, std::string motifTargetPath);
-RcppExport SEXP _scCompReg_mfbs(SEXP TFNameSEXP, SEXP motifNameSEXP, SEXP motifWeightSEXP, SEXP elementNameSEXP, SEXP match2TFSEXP, SEXP match2MotifSEXP, SEXP motifTargetPathSEXP) {
+// maxk
+arma::sp_mat maxk(arma::sp_mat A, unsigned int k, unsigned int dim);
+RcppExport SEXP _scCompReg_maxk(SEXP ASEXP, SEXP kSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type TFName(TFNameSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type motifName(motifNameSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type motifWeight(motifWeightSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type elementName(elementNameSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type match2TF(match2TFSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type match2Motif(match2MotifSEXP);
-    Rcpp::traits::input_parameter< std::string >::type motifTargetPath(motifTargetPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(mfbs(TFName, motifName, motifWeight, elementName, match2TF, match2Motif, motifTargetPath));
+    Rcpp::traits::input_parameter< arma::sp_mat >::type A(ASEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(maxk(A, k, dim));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -171,7 +167,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
-    {"_scCompReg_mfbs", (DL_FUNC) &_scCompReg_mfbs, 7},
+    {"_scCompReg_maxk", (DL_FUNC) &_scCompReg_maxk, 3},
     {"_scCompReg_compReg", (DL_FUNC) &_scCompReg_compReg, 12},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
