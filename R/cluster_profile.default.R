@@ -102,7 +102,7 @@ cluster.profile.default <- function(O1,
 
     K1 <- max(max(O1.idx), max(E1.idx))
     symbol <- intersect(symb1, symb2)
-    f1 <- match(symbol, symb1)
+    f1 <- match(symbol, symb1, nomatch=0)
     E1.mean <- matrix(0, length(f1), K1)
     for (i in 1:K1) {
         gp <- which(E1.idx == i)
@@ -111,7 +111,7 @@ cluster.profile.default <- function(O1,
     }
 
     K2 <- max(max(O2.idx), max(E2.idx))
-    f2 <- match(symbol, symb2)
+    f2 <- match(symbol, symb2, nomatch=0)
     E2.mean <- matrix(0, length(f2), K2)
     for (i in 1:K2) {
         gp = which(E2.idx == i)
@@ -119,8 +119,8 @@ cluster.profile.default <- function(O1,
         E2.mean[, i] <- Matrix::rowMeans(E2[f2, gp])
     }
 
-    pf1 <- match(pk.name.intersect1, pk.name1)
-    pf2 <- match(pk.name.intersect2, pk.name2)
+    pf1 <- match(pk.name.intersect1, pk.name1, nomatch=0)
+    pf2 <- match(pk.name.intersect2, pk.name2, nomatch=0)
     d1 <- is.element(pk.name1, pk.name.intersect1)
     d2 <- is.element(pk.name2, pk.name.intersect2)
     elem.name <- c(pk.name.intersect1, pk.name1[d1 == 0],

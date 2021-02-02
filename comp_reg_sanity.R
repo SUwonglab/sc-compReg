@@ -35,8 +35,8 @@ O2 = s2$O2
 E2 = s2$E2
 E2.idx = s2$E2.idx
 O2.idx = s2$E2.idx
-pk.name1 = s1$PeakName1
-pk.name2 = s2$PeakName2
+pk.name1 = unlist(s1$PeakName1, use.names = F)
+pk.name2 = unlist(s2$PeakName2, use.names = F)
 pk.name.intersect1 = pni$vo
 pk.name.intersect2 = pni$vt
 
@@ -61,21 +61,23 @@ for (i in 1:K2) {
     E2.mean[, i] = Matrix::rowMeans(E2[f2, gp])
 }
 
-pf1 = match(pk.name.intersect1, pk.name1)
-pf2 = match(pk.name.intersect2, pk.name2)
+pk.name1 = unlist(pk.name1, use.names = F)
+pk.name2 = unlist(pk.name2, use.names=F)
+
+pf1 = match(pk.name.intersect1, pk.name1, nomatch=0)
+pf2 = match(pk.name.intersect2, pk.name2, nomatch=0)
 d1 = is.element(pk.name1, pk.name.intersect1)
 d2 = is.element(pk.name2, pk.name.intersect2)
 print(length(d1))
 print(length(d2))
-pk.name1 = unlist(pk.name1, use.names = F)
-pk.name2 = unlist(pk.name2, use.names=F)
+
 elem.name = c(pk.name.intersect1, pk.name1[d1 == 0],
                   pk.name2[d2 == 0])
 
 m = length(pk.name.intersect1)
 elem.len = length(elem.name)
-O1.mean = matrix(NA, elem.len, K1)
-O2.mean = matrix(NA, elem.len, K2)
+O1.mean = matrix(0, elem.len, K1)
+O2.mean = matrix(0, elem.len, K2)
 
 for (i in 1:K1) {
     gp = which(O1.idx == i)
@@ -93,7 +95,8 @@ for (i in 1:K2) {
 
 O1.mean = O1.mean / Matrix::colMeans(O1.mean)
 O2.mean = O2.mean / Matrix::colMeans(O2.mean)
-
+write.csv(O1.mean, 'O1m.csv')
+write.csv(O2.mean, 'O2m.csv')
 
 K1 = max(max(s1$O1.idx), max(s1$E1.idx))
 K2 = max(max(s2$O2.idx), max(s2$E2.idx))
@@ -238,12 +241,39 @@ for (i in 1:tf.name.len) {
 tf.binding <- Matrix(tf.binding, sparse = T)
 
 
-a <- maxk(tf.binding, 5000, 2)
 
+library(pracma)
+
+
+############# comp reg #############
+symbol = unlist(symbol, use.names = F)
+a <- maxk(tf.binding, 5000, 2)
 
 tf.binding[tf.binding - a[, ncol(a)] < 0] <- 0
 
-file = compRegLoad('/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
+file <- compRegLoad('/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
+f <- match(file$C1, elem.name, nomatch=0)
+d <- f > 0
+f1 <- match(file$C2, symbol, nomatch=0)
+d1 <- f1 > 0
+
+fc <- cbind(f[(d * d1) == 1], f1[(d * d1) == 1])
+
+f2 <- unique(fc, orient = 'r')
+ic <- matrix(match(fc, f2, nomatch=0), nrow(fc), ncol(fc))
+c3 <- accumarray(ic, file$C3[(d * d1) == 1], func = min)
+c4 <- accumarray(ic, file$C4[(d * d1) == 1], func = min)
+thresh <- 0.2
+c4[c4 < thresh] <- 0
+d0 <- 500000
+c <- exp(-1 * c3 / d0) * c4
+beta <- sparseMatrix(dims = c(length(symbol),length(elem.name)),
+                     i = f2[, 2],
+                     j = f2[, 1],
+                     x = c)
+
+
+
 
 
 

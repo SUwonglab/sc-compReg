@@ -388,6 +388,28 @@ T extractElems(T& input,
 
 
 // [[Rcpp::export]]
+arma::mat accumarray (arma::mat& subs, arma::vec& val, arma::rowvec& sz)
+{
+    arma::u32 ar = sz.col(0)(0);
+    arma::u32 ac = sz.col(1)(0);
+    arma::mat A; A.set_size(ar, ac);
+    for (arma::u32 r = 0; r < ar; ++r)
+    {
+        for (arma::u32 c = 0; c < ac; ++c)
+        {
+            arma::uvec idx = arma::find(subs.col(0) == r &&
+                                        subs.col(1) == c);
+            if (!idx.is_empty())
+                A(r, c) = arma::sum(val.elem(idx));
+            else
+                A(r, c) = 0;
+        }
+    }
+    return A;
+}
+
+
+// [[Rcpp::export]]
 Rcpp::List compRegLoad(std::string peakGenePriorPath) {
     try {
         std::vector<std::string> stringVec1, stringVec2;

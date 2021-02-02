@@ -41,6 +41,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// accumarray
+arma::mat accumarray(arma::mat& subs, arma::vec& val, arma::rowvec& sz);
+RcppExport SEXP _scCompReg_accumarray(SEXP subsSEXP, SEXP valSEXP, SEXP szSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type subs(subsSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type val(valSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type sz(szSEXP);
+    rcpp_result_gen = Rcpp::wrap(accumarray(subs, val, sz));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compRegLoad
 Rcpp::List compRegLoad(std::string peakGenePriorPath);
 RcppExport SEXP _scCompReg_compRegLoad(SEXP peakGenePriorPathSEXP) {
@@ -143,6 +156,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
+    {"_scCompReg_accumarray", (DL_FUNC) &_scCompReg_accumarray, 3},
     {"_scCompReg_compRegLoad", (DL_FUNC) &_scCompReg_compRegLoad, 1},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},

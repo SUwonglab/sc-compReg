@@ -27,11 +27,12 @@ mfbs.default <- function(TF.name,
 
     motif.file <- mfbs.load(motif.target.path)
     f3 <- motif.file$C3
-    d1 <- is.element(motif.file$C1, elem.name)
-    f1 <- match(motif.file$C1, elem.name, nomatch = 0)
 
-    d2 <- is.element(motif.file$C2, motif.name)
+    f1 <- match(motif.file$C1, elem.name, nomatch = 0)
+    d1 <- f1 > 0
+
     f2 <- match(motif.file$C2, motif.name, nomatch = 0)
+    d2 <- f2 > 0
 
     t1 <- setdiff(seq(1, length(motif.name), 1), unique(f2))
     f2 <- c(f2[(d1 * d2) == 1], t1)
