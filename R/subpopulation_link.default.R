@@ -22,8 +22,8 @@ subpopulation.link.default <- function(E.mean.healthy,
 
     r1 <- cor(E.mean.healthy, E.mean.cll)
     r2 <- cor(O.mean.healthy, O.mean.cll)
-    rr1 <- r1 - colSums(r1) %*% t(rowSums(r1)) / sum(r1)
-    rr2 <- r2 - colSums(r2) %*% t(rowSums(r2)) / sum(r2)
+    rr1 <- r1 - t(colSums(r1) %*% t(rowSums(r1))) / sum(r1)
+    rr2 <- r2 - t(colSums(r2) %*% t(rowSums(r2))) / sum(r2)
     rr <- rr1 + rr2
 
     b <- which(rr > 0)
@@ -39,7 +39,7 @@ subpopulation.link.default <- function(E.mean.healthy,
     a <- a[(((a[, 5] > 0) * (a[, 6] > 0)) == 1),  ]
 
     a.dim <- dim(a)[1]
-    match <- matrix(NA, a.dim, 7)
+    match.mat <- matrix(NA, a.dim, 7)
     S1 <- matrix(NA, a.dim, 1)
     S2 <- matrix(NA, a.dim, 1)
     match.idx <- 1
@@ -48,14 +48,14 @@ subpopulation.link.default <- function(E.mean.healthy,
         S1[i] <- a[i, 1]
         S2[i] <- a[i, 2]
         if (idx < 2) {
-            match[match.idx, ] <- a[i, ]
+            match.mat[match.idx, ] <- a[i, ]
             match.idx = match.idx + 1
         }
     }
-    match <- match[rowSums(is.na(match)) != ncol(match), ]
+    match.mat <- match.mat[rowSums(is.na(match.mat)) != ncol(match.mat), ]
 
     output = list()
-    output$match <- match
+    output$match <- match.mat
     output$call <- this.call
 
     return(output)

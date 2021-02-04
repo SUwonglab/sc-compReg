@@ -131,22 +131,23 @@ cluster.profile.default <- function(O1,
     O1.mean <- matrix(0, elem.len, K1)
     O2.mean <- matrix(0, elem.len, K2)
 
+    sum.d1 <- sum(d1 == 0)
     for (i in 1:K1) {
         gp = which(O1.idx == i)
         if (length(gp) == 0) next
-        O1.mean[1:m, i] <- Matrix::rowMeans(O1[pf1, gp] > 0)
-        O1.mean[(1+m) : (m + sum(d1 == 0)), i] <- Matrix::rowMeans(O1[d1 == 0, gp] > 0)
+        O1.mean[1:m, i] = Matrix::rowMeans(O1[pf1, gp] > 0)
+        O1.mean[(1+m) : (m + sum.d1), i] = Matrix::rowMeans(O1[d1 == 0, gp] > 0)
     }
 
     for (i in 1:K2) {
         gp = which(O2.idx == i)
         if (length(gp) == 0) next
-        O2.mean[1:m, i]  <-  Matrix::rowMeans(O2[pf2, gp] > 0)
-        O2.mean[(m + sum(d1 == 0) + 1) : elem.len, i] = Matrix::rowMeans(O2[d2 == 0, gp] > 0)
+        O2.mean[1:m, i] = Matrix::rowMeans(O2[pf2, gp] > 0)
+        O2.mean[(m + sum.d1 + 1) : elem.len, i] = Matrix::rowMeans(O2[d2 == 0, gp] > 0)
     }
 
-    O1.mean <- O1.mean / Matrix::colMeans(O1.mean)
-    O2.mean = O2.mean / Matrix::colMeans(O2.mean)
+    O1.mean = sweep(O1.mean, 2, Matrix::colMeans(O1.mean), '/')
+    O2.mean = sweep(O2.mean, 2, Matrix::colMeans(O2.mean), '/')
 
     output <- list('E1.mean' = E1.mean,
                   'E2.mean' = E2.mean,

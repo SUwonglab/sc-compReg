@@ -200,19 +200,40 @@ arma::uvec findUniqueRowIdx(const arma::mat& origMat,
     return ic;
 }
 
-
-arma::mat accumArrayMin(const arma::uvec& subs,
-                        const arma::mat& val) {
-    int maxSubs = arma::max(subs);
-    arma::vec retVec = arma::vec(maxSubs, arma::fill::zeros);
-    arma::uvec idx;
-    for (int i = 0; i < maxSubs; ++i) {
-        idx = arma::find(subs == i);
-        if (idx.n_elem > 0) {
-            retVec.at(i) = arma::min(val.elem(idx));
-        }
+// [[Rcpp::export]]
+arma::mat corrTest(const arma::mat& X,
+                   const arma::mat& Y) {
+    try {
+        arma::mat testStat = arma::cor(X, Y);
+        double num = sqrt(X.n_rows - 2);
+        testStat = testStat * num / arma::sqrt(1 - arma::pow(testStat, 2));
+        return testStat;
+    } catch(...) {
+        ::Rf_error("c++ exception");
     }
-    return retVec;
+}
+
+
+
+// [[Rcpp::export]]
+arma::vec accumArrayMin(const arma::vec& subs,
+                        const arma::vec& val) {
+    try{
+        unsigned int maxSubs = (unsigned int) subs.max() + 1;
+        unsigned int subsNRows = subs.n_rows;
+        arma::vec ret = arma::vec(maxSubs, arma::fill::zeros);
+        arma::uvec idx;
+        for (unsigned int i = 0; i < maxSubs; ++i) {
+            idx = arma::find(subs == i);
+            if (idx.n_elem > 0) {
+                ret.at(i) = arma::min(val.elem(idx));
+            }
+        }
+        return ret;
+    } catch(...) {
+        ::Rf_error("c++ exception");
+    }
+
 }
 
 double ttest(const arma::vec& x,
@@ -384,28 +405,6 @@ T extractElems(T& input,
         retVec.push_back(input[indices.at(i)]);
     }
     return retVec;
-}
-
-
-// [[Rcpp::export]]
-arma::mat accumarray (arma::mat& subs, arma::vec& val, arma::rowvec& sz)
-{
-    arma::u32 ar = sz.col(0)(0);
-    arma::u32 ac = sz.col(1)(0);
-    arma::mat A; A.set_size(ar, ac);
-    for (arma::u32 r = 0; r < ar; ++r)
-    {
-        for (arma::u32 c = 0; c < ac; ++c)
-        {
-            arma::uvec idx = arma::find(subs.col(0) == r &&
-                                        subs.col(1) == c);
-            if (!idx.is_empty())
-                A(r, c) = arma::sum(val.elem(idx));
-            else
-                A(r, c) = 0;
-        }
-    }
-    return A;
 }
 
 

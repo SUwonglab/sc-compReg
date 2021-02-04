@@ -41,16 +41,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// accumarray
-arma::mat accumarray(arma::mat& subs, arma::vec& val, arma::rowvec& sz);
-RcppExport SEXP _scCompReg_accumarray(SEXP subsSEXP, SEXP valSEXP, SEXP szSEXP) {
+// corrTest
+arma::mat corrTest(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP _scCompReg_corrTest(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type subs(subsSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type val(valSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec& >::type sz(szSEXP);
-    rcpp_result_gen = Rcpp::wrap(accumarray(subs, val, sz));
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(corrTest(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// accumArrayMin
+arma::vec accumArrayMin(const arma::vec& subs, const arma::vec& val);
+RcppExport SEXP _scCompReg_accumArrayMin(SEXP subsSEXP, SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type subs(subsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type val(valSEXP);
+    rcpp_result_gen = Rcpp::wrap(accumArrayMin(subs, val));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -156,7 +167,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
-    {"_scCompReg_accumarray", (DL_FUNC) &_scCompReg_accumarray, 3},
+    {"_scCompReg_corrTest", (DL_FUNC) &_scCompReg_corrTest, 2},
+    {"_scCompReg_accumArrayMin", (DL_FUNC) &_scCompReg_accumArrayMin, 2},
     {"_scCompReg_compRegLoad", (DL_FUNC) &_scCompReg_compRegLoad, 1},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},

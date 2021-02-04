@@ -13,8 +13,12 @@ mfbsLoad <- function(motifTargetPath) {
     .Call(`_scCompReg_mfbsLoad`, motifTargetPath)
 }
 
-accumarray <- function(subs, val, sz) {
-    .Call(`_scCompReg_accumarray`, subs, val, sz)
+corrTest <- function(X, Y) {
+    .Call(`_scCompReg_corrTest`, X, Y)
+}
+
+accumArrayMin <- function(subs, val) {
+    .Call(`_scCompReg_accumArrayMin`, subs, val)
 }
 
 compRegLoad <- function(peakGenePriorPath) {
