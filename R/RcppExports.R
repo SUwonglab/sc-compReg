@@ -5,8 +5,16 @@ loadPeakNameIntersectFile <- function(path, token) {
     .Call(`_scCompReg_loadPeakNameIntersectFile`, path, token)
 }
 
+threshK <- function(A, thresh) {
+    .Call(`_scCompReg_threshK`, A, thresh)
+}
+
 mult <- function(A, B) {
     .Call(`_scCompReg_mult`, A, B)
+}
+
+colMax <- function(X) {
+    .Call(`_scCompReg_colMax`, X)
 }
 
 mfbsLoad <- function(motifTargetPath) {

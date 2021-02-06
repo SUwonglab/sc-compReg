@@ -65,11 +65,10 @@ mfbs.default <- function(TF.name,
     mf1 <- match(match2$a, motif.name, nomatch=0)
     mf2 <- match(match2$b, TF.name, nomatch=0)
 
-    for (i in 1:TF.name.len) {
-        print(i)
+    for (i in 1:tf.name.len) {
         a <- which(mf2 == i)
         if (length(a) > 1) {
-            tf.binding[i, ] <- max(motif.binding[mf1[a], ])
+            tf.binding[i, ] <- colMax(motif.binding[mf1[a], ])
         } else if (length(a) == 1) {
             tf.binding[i, ] <- motif.binding[mf1[a], ]
         }

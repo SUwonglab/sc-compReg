@@ -93,6 +93,21 @@ T mod(T a, int n)
     return a - floor(a/n)*n;
 }
 
+// [[Rcpp::export]]
+arma::vec threshK(const arma::mat& A,
+                     unsigned int thresh) {
+    try {
+        arma::vec retVec = arma::vec(A.n_rows, arma::fill::zeros);
+        arma::rowvec sortedVec;
+        for (unsigned int i = 0; i < A.n_rows; ++i) {
+            sortedVec = arma::sort(A.row(i), "descend");
+            retVec.at(i) = sortedVec.at(thresh);
+        }
+        return retVec;
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
+}
 
 /** For fast rcpp sparse matrix multiplication.
  *
@@ -101,10 +116,17 @@ T mod(T a, int n)
  * @return - A * B, sp_mat
  */
 // [[Rcpp::export]]
-arma::sp_mat mult(arma::sp_mat A, arma::sp_mat B) {
+arma::sp_mat mult(const arma::sp_mat& A,
+                  const arma::sp_mat& B) {
     return A * B;
 }
 
+
+// [[Rcpp::export]]
+arma::rowvec colMax(const arma::sp_mat& X) {
+    arma::mat Y(X);
+    return arma::max(Y, 0);
+}
 
 
 void parseMotifTarget(std::string filePath,
@@ -120,7 +142,7 @@ void parseMotifTarget(std::string filePath,
     std::string temp;
     while (true) {
         if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
-        scanRet = sscanf(buffer, "%s %s %f", a, b, &c);
+        scanRet = sscanf(buffer, "%s\t%s\t%f", a, b, &c);
         temp = a;
         stringVec1.push_back(temp);
         temp = b;

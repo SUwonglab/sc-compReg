@@ -18,15 +18,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// threshK
+arma::vec threshK(const arma::mat& A, unsigned int thresh);
+RcppExport SEXP _scCompReg_threshK(SEXP ASEXP, SEXP threshSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type thresh(threshSEXP);
+    rcpp_result_gen = Rcpp::wrap(threshK(A, thresh));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mult
-arma::sp_mat mult(arma::sp_mat A, arma::sp_mat B);
+arma::sp_mat mult(const arma::sp_mat& A, const arma::sp_mat& B);
 RcppExport SEXP _scCompReg_mult(SEXP ASEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::sp_mat >::type A(ASEXP);
-    Rcpp::traits::input_parameter< arma::sp_mat >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type B(BSEXP);
     rcpp_result_gen = Rcpp::wrap(mult(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
+// colMax
+arma::rowvec colMax(const arma::sp_mat& X);
+RcppExport SEXP _scCompReg_colMax(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(colMax(X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -165,7 +188,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_loadPeakNameIntersectFile", (DL_FUNC) &_scCompReg_loadPeakNameIntersectFile, 2},
+    {"_scCompReg_threshK", (DL_FUNC) &_scCompReg_threshK, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
+    {"_scCompReg_colMax", (DL_FUNC) &_scCompReg_colMax, 1},
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
     {"_scCompReg_corrTest", (DL_FUNC) &_scCompReg_corrTest, 2},
     {"_scCompReg_accumArrayMin", (DL_FUNC) &_scCompReg_accumArrayMin, 2},

@@ -165,7 +165,6 @@ for (i in 1:a.dim) {
 match.mat <- match.mat[rowSums(is.na(match.mat)) != ncol(match.mat), ]
 
 
-
 m = readMat('/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat')
 
 
@@ -176,19 +175,23 @@ motif.file <- mfbs.load('/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt'
 # toc()
 
 f3 <- motif.file$C3
-d1 <- is.element(motif.file$C1, elem.name)
 f1 <- match(motif.file$C1, elem.name, nomatch = 0)
+d1 <- f1 > 0
+
 motif.name <- unlist(m$motifName, use.names=F)
 motif.weight <- as.numeric(unlist(m$motifWeight, use.names=F))
 
-d2 <- is.element(motif.file$C2, motif.name)
 f2 <- match(motif.file$C2, motif.name, nomatch = 0)
+d2 <- f2 > 0
 
 t1 <- setdiff(seq(1, length(motif.name), 1), unique(f2))
+
+
 f2 <- c(f2[(d1 * d2) == 1], t1)
 t1.len <- length(t1)
 f1 <- c(f1[(d1 * d2) == 1], rep(1, t1.len))
 f3 <- c(f3[(d1 * d2) == 1], rep(0, t1.len))
+
 t1 <- setdiff(seq(1, length(elem.name), 1), unique(f1))
 f1 <- c(f1, t1)
 t1.len <- length(t1)
@@ -202,15 +205,13 @@ motif.binding <- sparseMatrix(dims = c(length(motif.name),length(elem.name)),
                               i = f2,
                               j = f1,
                               x = f3)
-motif.weight.len <- length(motif.weight)
 
 
-motif.binding <- mult(Matrix(diag(1 / (motif.weight + 0.1),
-                      nrow = motif.weight.len,
-                      ncol = motif.weight.len), sparse=T), motif.binding)
-motif.binding@x <- log(motif.binding@x)
+motif.binding <- mult(Matrix(diag(1 / (motif.weight + 0.1)), sparse=T), motif.binding)
+motif.binding@x <- log(1 + motif.binding@x)
 
 match2 <- unlist(m$Match2, use.names = F)
+
 m2.half.idx <- length(match2) / 2
 match2 <- list('a' = match2[1: m2.half.idx],
                'b' = match2[(m2.half.idx + 1):length(match2)])
@@ -225,19 +226,20 @@ mf2 <- match(match2$b, tf.name, nomatch=0)
 for (i in 1:tf.name.len) {
     a <- which(mf2 == i)
     if (length(a) > 1) {
-        tf.binding[i, ] <- max(motif.binding[mf1[a], ])
+        tf.binding[i, ] <- colMax(motif.binding[mf1[a], ])
     } else if (length(a) == 1) {
         tf.binding[i, ] <- motif.binding[mf1[a], ]
     }
 }
 
-tf.binding <- Matrix(tf.binding, sparse = T)
+# tf.binding <- Matrix(tf.binding, sparse = T)
 
 
 
 ############# comp reg #############
 symbol = unlist(symbol, use.names = F)
-a <- maxk(tf.binding, 5000, 2)
+a <- threshK(tf.binding, 5000)
+
 
 tf.binding[tf.binding - a[, ncol(a)] < 0] <- 0
 
@@ -267,11 +269,12 @@ beta <- sparseMatrix(dims = c(length(elem.name), length(symbol)),
                      i = f2[, 1],
                      x = c)
 
+
 for (ii in 1:nrow(match.mat)) {
     i1 <- match.mat[ii, 1]
     i2 <- match.mat[ii, 2]
     B01 <- sweep(tf.binding, 2, O1.mean[, i1], '*') %*% beta
-    B02 <-sweep(tf.binding, 2, O2.mean[, i2], '*') %*% beta
+    B02 <- sweep(tf.binding, 2, O2.mean[, i2], '*') %*% beta
     TG1 <- E1[, E1.idx == i1]
     TG2 <- E2[, E2.idx == i2]
     TG2 <- TG2 * mean(TG1) / mean(TG2)
@@ -283,30 +286,47 @@ for (ii in 1:nrow(match.mat)) {
     TG2 <- t(TG2)
     p.val <- sapply(1:ncol(TG1),
                     function(x) t.test(TG1[,x], TG2[,x], var.equal = T)$p.value)
-    adjusted.p.val <- p.adjust(p.val, "BH")
+    adjusted.p.val <- p.adjust(p.val, "fdr")
+
+    # adjusted.p.val <- read.table('/Users/Sophia/Desktop/BioStats/scCompReg/adj_p.txt',
+    #                              header=F,
+    #                              sep='\t')
     diff.gene <- which(adjusted.p.val < p.val.thresh)
+
+
+
     corr.test.stat1 <- corrTest(t(TF[, 1:n1]), TG1)
     p1 <- 2 * pt(abs(corr.test.stat1), df = nrow(TG1) - 2, lower.tail = F)
     corr.test.stat2 <- corrTest(t(TF[, (1 + n1) : (n1 + n2)]), TG2)
     p2 <- 2 * pt(abs(corr.test.stat2), df = nrow(TG2) - 2, lower.tail = F)
     p.combine <- pmin(p1, p2, na.rm = T)
     net.idx <- which(p.combine < 0.05, arr.ind = T)
+    LR.summary.id <- c()
+    LR.summary.diff.gene <- c()
+    LR.summary.stat <- c()
+    LR.summary.p.val <- c()
+
 
     for (j in 1:length(diff.gene)) {
         OTF1 <- t(B01[, diff.gene[j]] * TF[, 1:n1])
         OTF2 <- t(B02[, diff.gene[j]] * TF[, (1 + n1) : (n1 + n2)])
-        id1 <- net.idx[net.idx[, 2] == diff.gene[j], 1]
+        diff.gene.j <- diff.gene[j]
+        id1 <- net.idx[net.idx[, 2] == diff.gene.j, 1]
         id <- which((colSums(abs(OTF1)) + colSums(abs(OTF2))) > 0)
         id <- intersect(id, id1)
+        if (length(id) == 0) next
+
         for (i in 1:length(id)) {
-            X1 <- cbind(OTF1[, id[i]], TG1[, diff.gene[j]])
-            X2 <- cbind(OTF2[, id[i]], TG2[, diff.gene[j]])
+            X1 <- cbind(OTF1[, id[i]], TG1[, diff.gene.j])
+            X2 <- cbind(OTF2[, id[i]], TG2[, diff.gene.j])
+            lr.ret <- bivariate.normal.conditional.lr(X1, X2)
+            LR.summary.id <- c(LR.summary.id[i])
+            LR.summary.diff.gene <- c(LR.summary.diff.gene, diff.gene.j)
+            LR.summary.stat <- c(LR.summary.stat, lr.ret$stat)
+            LR.summary.p.val <- c(LR.summary.p.val, lr.ret$p)
         }
     }
-
 }
-
-
 
 
 

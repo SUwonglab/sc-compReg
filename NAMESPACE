@@ -10,7 +10,7 @@ importFrom(NNLM, nnmf)
 importFrom(reader, is.file)
 importFrom(muRty, get_k_best)
 importFrom(R.matlab, readMat)
-importFrom(pracma, accumarray)
+importFrom(pracma, pinv)
 
 export(cnmf)
 S3method(cnmf, default)

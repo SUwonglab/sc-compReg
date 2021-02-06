@@ -25,7 +25,7 @@
 
 #include <iomanip>
 
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 200
 #define TOLERANCE 0.00000001
 #define ALPHA_THRESH 0.05
 
