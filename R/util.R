@@ -33,3 +33,37 @@ bivariate.normal.conditional.lr <- function(X1, X2) {
     return(list('p' = 1 - pchisq(stat, df = 3),
                 'stat' = stat))
 }
+
+fit.gamma.quantile.matching <- function(X,
+                               eta) {
+    cut <- quantile(X, probs = eta, names=F)
+    fun <- function(alpha) {
+        return(sum(
+            (pgamma(cut,
+                   shape = alpha[1],
+                   rate = (1 / alpha[2])) - eta) ^ 2 ) )
+    }
+
+    cut.end <- cut[length(cut)]
+    gamma.cut <- sapply(X,
+                        function(z) {min(z, cut.end)}
+                        )
+    x0 <- egamma(gamma.cut)$parameters
+    x <- fminunc(x0, fun,
+                maxiter = 400)
+    return(x$par)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
