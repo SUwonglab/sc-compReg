@@ -57,8 +57,8 @@ compreg.default <- function(symbol,
     for (ii in 1:nrow(match.mat)) {
         i1 <- match.mat[ii, 1]
         i2 <- match.mat[ii, 2]
-        B01 <- sweep(tf.binding, 2, O1.mean[, i1], '*') %*% beta.sparse
-        B02 <- sweep(tf.binding, 2, O2.mean[, i2], '*') %*% beta.sparse
+        B01 <- computeBZ(tf.binding, O1.mean[, i1], beta.sparse)
+        B02 <- computeBZ(tf.binding, O2.mean[, i2], beta.sparse)
         TG1 <- E1[, E1.idx == i1]
         TG2 <- E2[, E2.idx == i2]
         TG2 <- TG2 * mean(TG1) / mean(TG2)

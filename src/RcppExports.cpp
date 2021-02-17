@@ -88,6 +88,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// computeBZ
+arma::sp_mat computeBZ(const arma::mat& tfBinding, const arma::vec& OM, const arma::sp_mat& beta);
+RcppExport SEXP _scCompReg_computeBZ(SEXP tfBindingSEXP, SEXP OMSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type tfBinding(tfBindingSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type OM(OMSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeBZ(tfBinding, OM, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compRegLoad
 Rcpp::List compRegLoad(const std::string& peakGenePriorPath);
 RcppExport SEXP _scCompReg_compRegLoad(SEXP peakGenePriorPathSEXP) {
@@ -97,17 +110,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::string& >::type peakGenePriorPath(peakGenePriorPathSEXP);
     rcpp_result_gen = Rcpp::wrap(compRegLoad(peakGenePriorPath));
     return rcpp_result_gen;
-END_RCPP
-}
-// rowiseElemMult
-void rowiseElemMult(arma::mat& A, const arma::vec& B);
-RcppExport SEXP _scCompReg_rowiseElemMult(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type B(BSEXP);
-    rowiseElemMult(A, B);
-    return R_NilValue;
 END_RCPP
 }
 // initializeMatrix
@@ -205,8 +207,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
     {"_scCompReg_corrTest", (DL_FUNC) &_scCompReg_corrTest, 2},
     {"_scCompReg_accumArrayMin", (DL_FUNC) &_scCompReg_accumArrayMin, 2},
+    {"_scCompReg_computeBZ", (DL_FUNC) &_scCompReg_computeBZ, 3},
     {"_scCompReg_compRegLoad", (DL_FUNC) &_scCompReg_compRegLoad, 1},
-    {"_scCompReg_rowiseElemMult", (DL_FUNC) &_scCompReg_rowiseElemMult, 2},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},

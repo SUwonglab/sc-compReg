@@ -29,12 +29,12 @@ accumArrayMin <- function(subs, val) {
     .Call(`_scCompReg_accumArrayMin`, subs, val)
 }
 
-compRegLoad <- function(peakGenePriorPath) {
-    .Call(`_scCompReg_compRegLoad`, peakGenePriorPath)
+computeBZ <- function(tfBinding, OM, beta) {
+    .Call(`_scCompReg_computeBZ`, tfBinding, OM, beta)
 }
 
-rowiseElemMult <- function(A, B) {
-    invisible(.Call(`_scCompReg_rowiseElemMult`, A, B))
+compRegLoad <- function(peakGenePriorPath) {
+    .Call(`_scCompReg_compRegLoad`, peakGenePriorPath)
 }
 
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {

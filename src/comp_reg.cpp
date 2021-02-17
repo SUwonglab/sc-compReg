@@ -258,6 +258,26 @@ T extractElems(T& input,
 }
 
 
+arma::mat colwiseElemMult(arma::mat A, const arma::vec& B) {
+    for (unsigned int i = 0; i < A.n_cols; ++i) {
+        A.col(i) *= B.at(i);
+    }
+    return A;
+}
+
+
+// [[Rcpp::export]]
+arma::sp_mat computeBZ(const arma::mat& tfBinding, const arma::vec& OM,
+                    const arma::sp_mat& beta) {
+    try {
+        arma::mat rowMultTF = colwiseElemMult(tfBinding, OM);
+        return arma::sp_mat(rowMultTF) * beta;
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
+}
+
+
 // [[Rcpp::export]]
 Rcpp::List compRegLoad(const std::string& peakGenePriorPath) {
     try {
@@ -287,18 +307,6 @@ Rcpp::List compRegLoad(const std::string& peakGenePriorPath) {
                                   Named("C2") = stringVec2,
                                   Named("C3") = floatVec3,
                                   Named("C4") = floatVec4);
-    } catch (...) {
-        ::Rf_error("c++ exception");
-    }
-}
-
-
-// [[Rcpp::export]]
-void rowiseElemMult(arma::mat& A, const arma::vec& B) {
-    try {
-        for (unsigned int i = 0; i < A.n_rows; ++i) {
-            A.row(i) *= B.at(i);
-        }
     } catch (...) {
         ::Rf_error("c++ exception");
     }

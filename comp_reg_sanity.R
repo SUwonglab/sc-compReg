@@ -256,7 +256,6 @@ f2 <- unique(fc, orient = 'r')
 ic <- match(do.call(paste, data.frame(fc)), do.call(paste, data.frame(f2)), nomatch=0)
 ic <- as.numeric((ic - 1))
 
-library(scCompReg)
 c3 <- accumArrayMin(ic, as.numeric(file$C3[indices]))
 c4 <- accumArrayMin(ic, as.numeric(file$C4[indices]))
 
@@ -272,6 +271,19 @@ beta.sparse <- sparseMatrix(dims = c(length(elem.name), length(symbol)),
 
 diff.net <- list()
 hub.tf <- list()
+
+
+
+
+tic()
+a = sweep(tf.binding, 2, O1.mean[, i1], '*') %*% beta.sparse
+toc()
+sp = sweep(tf.binding, 2, O1.mean[, i1], '*')
+
+tic()
+a = computeBZ(tf.binding, O1.mean[, i1], beta.sparse)
+toc()
+
 
 for (ii in 1:nrow(match.mat)) {
     i1 <- match.mat[ii, 1]
