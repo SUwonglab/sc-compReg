@@ -18,7 +18,7 @@ subpopulation.link.default <- function(E.mean.healthy,
         stop('O.mean.cll must be a matrix. Please check your format.')
     }
 
-    this.call = match.call()
+    this.call <- match.call()
 
     r1 <- cor(E.mean.healthy, E.mean.cll)
     r2 <- cor(O.mean.healthy, O.mean.cll)
@@ -54,7 +54,7 @@ subpopulation.link.default <- function(E.mean.healthy,
     }
     match.mat <- match.mat[rowSums(is.na(match.mat)) != ncol(match.mat), ]
 
-    output = list()
+    output <- list()
     output$match <- match.mat
     output$call <- this.call
 

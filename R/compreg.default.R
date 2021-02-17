@@ -1,5 +1,4 @@
 compreg.default <- function(symbol,
-                            d0.default,
                             tf.binding,
                             elem.name,
                             peak.gene.prior.path,
@@ -13,7 +12,7 @@ compreg.default <- function(symbol,
                             thresh,
                             sig.level,
                             top.tf,
-                            ...) {
+                            d0.default) {
     if (is(symbol, 'list')) {
         symbol <- unlist(symbol, use.names=F)
     }
@@ -21,6 +20,8 @@ compreg.default <- function(symbol,
     if (!is(peak.gene.prior.path, 'character')) {
         stop('peak.gene.prior.path must be of class character.')
     }
+
+    this.call <- match.call()
 
     a <- threshK(tf.binding, top.tf)
 
@@ -72,9 +73,7 @@ compreg.default <- function(symbol,
                         function(x) t.test(TG1[,x], TG2[,x], var.equal = T)$p.value)
         adjusted.p.val <- p.adjust(p.val, "fdr")
 
-        diff.gene <- which(adjusted.p.val < p.val.thresh)
-
-
+        diff.gene <- which(adjusted.p.val < (2 * sig.level))
 
         corr.test.stat1 <- corrTest(t(TF[, 1:n1]), TG1)
         p1 <- 2 * pt(abs(corr.test.stat1), df = nrow(TG1) - 2, lower.tail = F)
@@ -86,7 +85,6 @@ compreg.default <- function(symbol,
         LR.summary.diff.gene <- c()
         LR.summary.stat <- c()
         LR.summary.p.val <- c()
-
 
         for (j in 1:length(diff.gene)) {
             OTF1 <- t(B01[, diff.gene[j]] * TF[, 1:n1])
@@ -144,4 +142,10 @@ compreg.default <- function(symbol,
         u.d1 <- u.count[u.f1]
         hub.tf[[ii]] <- cbind(u[u.f1], u.d1)
     }
+
+    output <- list()
+    output$call <- this.call
+    output$hub.tf <- hub.tf
+    output$diff.net <- diff.net
+    return(output)
 }
