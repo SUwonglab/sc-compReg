@@ -1,14 +1,28 @@
-compreg.default <- function(k,
+compreg.default <- function(symbol,
+                            d0.default,
+                            tf.binding,
+                            elem.name,
                             peak.gene.prior.path,
+                            E1,
+                            E1.idx,
+                            E2,
+                            E2.idx,
+                            O1.mean,
+                            O2.mean,
+                            match.mat,
                             thresh,
                             sig.level,
+                            top.tf,
                             ...) {
     if (is(symbol, 'list')) {
         symbol <- unlist(symbol, use.names=F)
     }
 
-    symbol = unlist(symbol, use.names = F)
-    a <- threshK(tf.binding, 5000)
+    if (!is(peak.gene.prior.path, 'character')) {
+        stop('peak.gene.prior.path must be of class character.')
+    }
+
+    a <- threshK(tf.binding, top.tf)
 
     tf.binding[tf.binding - a[, ncol(a)] < 0] <- 0
 
@@ -22,14 +36,15 @@ compreg.default <- function(k,
 
     f2 <- unique(fc, orient = 'r')
     ic <- match(do.call(paste, data.frame(fc)), do.call(paste, data.frame(f2)), nomatch=0)
+
+    # adjust for index starting off at one in R to call function in cpp
     ic <- as.numeric((ic - 1))
 
     c3 <- accumArrayMin(ic, as.numeric(file$C3[indices]))
     c4 <- accumArrayMin(ic, as.numeric(file$C4[indices]))
 
     c4[c4 < thresh] <- 0
-    d0 <- 500000
-    c <- as.numeric(exp(-1 * c3 / d0) * c4)
+    c <- as.numeric(exp(-1 * c3 / d0.default) * c4)
     beta.sparse <- sparseMatrix(dims = c(length(elem.name), length(symbol)),
                                 j = f2[, 2],
                                 i = f2[, 1],
@@ -66,7 +81,7 @@ compreg.default <- function(k,
         corr.test.stat2 <- corrTest(t(TF[, (1 + n1) : (n1 + n2)]), TG2)
         p2 <- 2 * pt(abs(corr.test.stat2), df = nrow(TG2) - 2, lower.tail = F)
         p.combine <- pmin(p1, p2, na.rm = T)
-        net.idx <- which(p.combine < 0.05, arr.ind = T)
+        net.idx <- which(p.combine < sig.level, arr.ind = T)
         LR.summary.id <- c()
         LR.summary.diff.gene <- c()
         LR.summary.stat <- c()
@@ -110,7 +125,7 @@ compreg.default <- function(k,
         LR.summary <- cbind(LR.summary,
                             p,
                             adj.p)
-        idx <- which(adj.p < 0.1)
+        idx <- which(adj.p < (sig.level*2))
         sorted.idx <- order(LR.summary[idx, 3], decreasing = T)
         idx1 <- idx[f]
 

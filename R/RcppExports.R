@@ -33,6 +33,10 @@ compRegLoad <- function(peakGenePriorPath) {
     .Call(`_scCompReg_compRegLoad`, peakGenePriorPath)
 }
 
+rowiseElemMult <- function(A, B) {
+    invisible(.Call(`_scCompReg_rowiseElemMult`, A, B))
+}
+
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {
     .Call(`_scCompReg_initializeMatrix`, POnRow, POnCol, XnCol, k, D)
 }
