@@ -6,7 +6,6 @@ cnmf.default <- function(PeakO,
                          alpha=0.5,
                          beta_max_scale=5,
                          verbose=T) {
-    # TODO: input format checking
     if (! is(PeakO, 'sparseMatrix')) {
         PeakO <- Matrix(PeakO, sparse = T)
     }

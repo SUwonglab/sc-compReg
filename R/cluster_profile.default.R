@@ -1,108 +1,22 @@
-cluster.profile.default <- function(O1,
-                            E1,
-                            O1.idx,
-                            E1.idx,
-                            symb1,
-                            pk.name1,
-                            O2,
-                            E2,
-                            O2.idx,
-                            E2.idx,
-                            symb2,
-                            pk.name2,
-                            pk.name.intersect1,
-                            pk.name.intersect2) {
-
-    if (! is(O1, 'sparseMatrix')) {
-        if (! is(O1, 'matrix')) {
-            stop('O1 must be a matrix or sparseMatrix. Please check your format.')
-        }
-        O1 <- Matrix(O1, sparse = T)
-    }
-
-    if (! is(O2, 'sparseMatrix')) {
-        if (! is(O2, 'matrix')) {
-            stop('O2 must be a matrix or sparseMatrix. Please check your format.')
-        }
-        O2 <- Matrix(O2, sparse = T)
-    }
-
-    if (! is(E1, 'sparseMatrix')) {
-        if (! is(E1, 'matrix')) {
-            stop('E1 must be a matrix or sparseMatrix. Please check your format.')
-        }
-        E1 <- Matrix(E1, sparse = T)
-    }
-
-    if (! is(E2, 'sparseMatrix')) {
-        if ( ! is(E2, 'matrix')) {
-            stop('E2 must be a matrix or sparseMatrix. Please check your format.')
-        }
-        E2 <- Matrix(E2, sparse = T)
-    }
-
-    if (! is(O1.idx, 'numeric')) {
-        stop('O1.idx must be a vector of integer (indices).')
-    }
-
-    O1.idx <- as.integer(O1.idx)
-
-    if (! is(E1.idx, 'numeric') | ! is(E1.idx, 'vector')) {
-        stop('E1.idx must be a vector of integer (indices).')
-    }
-
-    E1.idx <- as.integer(E1.idx)
-
-    if (! is(symb1, 'vector')) {
-        stop('symb1 must be a vector of characters.')
-    }
-
-    if (is(pk.name1, 'list')) {
-        pk.name1 <- unlist(pk.name1, use.names = F)
-    }
-
-    if (! is(pk.name1, 'vector')) {
-        stop('pk.name1 must be a vector of characters.')
-    }
-
-
-    if (! is(O2.idx, 'numeric') | ! is(O2.idx, 'vector')) {
-        stop('O2.idx must be a vector of integer (indices).')
-    }
-
-    O2.idx <- as.integer(O2.idx)
-
-    if (! is(E2.idx, 'numeric') | ! is(E2.idx, 'vector')) {
-        stop('E2.idx must be a vector of integer (indices).')
-    }
-
-    E2.idx <- as.integer(E2.idx)
-
-    if (! is(symb2, 'vector')) {
-        stop('symb2 must be a vector of characters.')
-    }
-
-    if (is(pk.name2, 'list')) {
-        pk.name2 <- unlist(pk.name2, use.names = F)
-    }
-
-    if (! is(pk.name2, 'vector')) {
-        stop('pk.name2 must be a vector of characters.')
-    }
-
-    if (! is(pk.name.intersect1, 'vector')) {
-        stop('pk.name.intersect1 must be a vector of characters.')
-    }
-
-    if (! is(pk.name.intersect2, 'vector')) {
-        stop('pk.name.intersect2 must be a vector of characters.')
-    }
-
+cluster_profile.default <- function(O1,
+                                    E1,
+                                    O1.idx,
+                                    E1.idx,
+                                    symbol1,
+                                    peak.name1,
+                                    O2,
+                                    E2,
+                                    O2.idx,
+                                    E2.idx,
+                                    symbol2,
+                                    peak.name2,
+                                    peak.name.intersect1,
+                                    peak.name.intersect2) {
     this.call <- match.call()
 
     K1 <- max(max(O1.idx), max(E1.idx))
-    symbol <- intersect(symb1, symb2)
-    f1 <- match(symbol, symb1, nomatch=0)
+    symbol <- intersect(symbol1, symbol2)
+    f1 <- match(symbol, symbol1, nomatch=0)
     E1.mean <- matrix(0, length(f1), K1)
     for (i in 1:K1) {
         gp <- which(E1.idx == i)
@@ -111,7 +25,7 @@ cluster.profile.default <- function(O1,
     }
 
     K2 <- max(max(O2.idx), max(E2.idx))
-    f2 <- match(symbol, symb2, nomatch=0)
+    f2 <- match(symbol, symbol2, nomatch=0)
     E2.mean <- matrix(0, length(f2), K2)
     for (i in 1:K2) {
         gp = which(E2.idx == i)
@@ -119,14 +33,14 @@ cluster.profile.default <- function(O1,
         E2.mean[, i] <- Matrix::rowMeans(E2[f2, gp])
     }
 
-    pf1 <- match(pk.name.intersect1, pk.name1, nomatch=0)
-    pf2 <- match(pk.name.intersect2, pk.name2, nomatch=0)
-    d1 <- is.element(pk.name1, pk.name.intersect1)
-    d2 <- is.element(pk.name2, pk.name.intersect2)
-    elem.name <- c(pk.name.intersect1, pk.name1[d1 == 0],
-                  pk.name2[d2 == 0])
+    pf1 <- match(peak.name.intersect1, peak.name1, nomatch=0)
+    pf2 <- match(peak.name.intersect2, peak.name2, nomatch=0)
+    d1 <- is.element(peak.name1, peak.name.intersect1)
+    d2 <- is.element(peak.name2, peak.name.intersect2)
+    elem.name <- c(peak.name.intersect1, peak.name1[d1 == 0],
+                  peak.name2[d2 == 0])
 
-    m <- length(pk.name.intersect1)
+    m <- length(peak.name.intersect1)
     elem.len <- length(elem.name)
     O1.mean <- matrix(0, elem.len, K1)
     O2.mean <- matrix(0, elem.len, K2)
@@ -150,11 +64,11 @@ cluster.profile.default <- function(O1,
     O2.mean = sweep(O2.mean, 2, Matrix::colMeans(O2.mean), '/')
 
     output <- list('E1.mean' = E1.mean,
-                  'E2.mean' = E2.mean,
-                  'symbol' = symbol,
-                  'O1.mean' = O1.mean,
-                  'O2.mean' = O2.mean,
-                  'elem.name' = elem.name)
+                   'E2.mean' = E2.mean,
+                   'symbol' = symbol,
+                   'O1.mean' = O1.mean,
+                   'O2.mean' = O2.mean,
+                   'elem.name' = elem.name)
     output$call <- this.call
 
     return(output)

@@ -7,8 +7,8 @@ mfbs.load <- function(motif.path) {
     return(motif.files)
 }
 
-bivariate.normal.conditional.lr <- function(X1, X2) {
-    sigma.min.pseudocount <- 0
+bivariate.normal.conditional.lr <- function(X1, X2,
+                                            sigma.min.pseudocount = 0) {
     XX <- rbind(X1, X2)
     beta <- pinv(cbind(rep(1, nrow(XX)), XX[, 2])) %*% XX[, 1]
     est.X <- beta[1] + beta[2] * XX[, 2]
@@ -35,9 +35,10 @@ bivariate.normal.conditional.lr <- function(X1, X2) {
 }
 
 fit.gamma.quantile.matching <- function(X,
-                               eta) {
+                                        eta) {
     cut <- quantile(X, probs = eta, names=F)
     fun <- function(alpha) {
+        alpha[2] <- abs(alpha[2])
         return(sum(
             (pgamma(cut,
                    shape = alpha[1],
@@ -50,7 +51,8 @@ fit.gamma.quantile.matching <- function(X,
                         )
     x0 <- egamma(gamma.cut)$parameters
     x <- fminunc(x0, fun,
-                maxiter = 400)
+                maxiter = 600)
+    x$par <- abs(x$par)
     return(x$par)
 }
 

@@ -3,9 +3,78 @@ library(R.matlab)
 library(Matrix)
 library(tictoc)
 
-pni = comp_reg_preprocess('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', token='\t')
+# rm(list = ls())
 s2 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample2.mat')
 s1 = readMat('/Users/Sophia/Desktop/BioStats/compreg/sample1.mat')
+
+O1=s1$O1
+O1.idx = s1$O1.idx
+symbol1 = s1$Symbol1
+O2 = s2$O2
+O2.idx = s2$O2.idx
+symbol2 = s2$Symbol2
+peak.name1 = s1$PeakName1
+E1.idx = s1$E1.idx
+E1 = s1$E1
+E2 = s2$E2
+E2.idx = s2$E2.idx
+peak.name2 = s2$PeakName2
+peak.name.intersect.dir='/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt'
+motif.mat.dir = '/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat'
+motif.target.dir ='/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt'
+peak.gene.prior.dir = '/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed'
+sep.char=' '
+
+motif.mat <- readMat(motif.mat.dir)
+motif.name <- unlist(motif.mat$motifName, use.names=F)
+motif.weight <- as.numeric(unlist(motif.mat$motifWeight, use.names=F))
+match2 <- unlist(motif.mat$Match2, use.names = F)
+m2.half.idx <- length(match2) / 2
+match2 <- list('a' = match2[1: m2.half.idx],
+               'b' = match2[(m2.half.idx + 1):length(match2)])
+
+
+sc_compreg(O1,
+           E1,
+           O1.idx,
+           E1.idx,
+           symbol1,
+           peak.name1,
+           O2,
+           E2,
+           O2.idx,
+           E2.idx,
+           symbol2,
+           peak.name2,
+           motif.name,
+           motif.weight,
+           match2,
+           '/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt',
+           '/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat',
+           '/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt',
+           '/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
+
+
+pni = comp_reg_preprocess('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', token='\t')
+
+symbol =clust.profile.output$symbol
+symbol = unlist(symbol, use.names=F)
+tf.binding = mfbs.output$tf.binding
+tf.name = mfbs.output$tf.name
+elem.name =clust.profile.output$elem.name
+peak.gene.prior.path =peak.gene.prior.dir
+E1 = s1$E1
+E1.idx=s1$E1.idx
+E2 =s2$E2
+E2.idx =s2$E2.idx
+O1.mean=clust.profile.output$O1.mean
+O2.mean=clust.profile.output$O2.mean
+match.mat=subpop.link.output$match
+thresh = 0.2
+sig.level = 0.05
+num.top.tf = 5000
+d0.default = 500000
+
 
 # tic()
 output = cluster.profile(Matrix(s1$O1, sparse=T),

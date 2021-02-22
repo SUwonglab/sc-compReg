@@ -1,10 +1,9 @@
-mfbs <- function(TF.name,
-                 elem.name,
-                 motif.target.path,
-                 motif.name,
-                 motif.weight,
-                 match2,
-                 motif.mat.path,
-                 ...) {
-    UseMethod("mfbs.default")
+"mfbs" <- function(elem.name,
+                   symbol,
+                   motif.name,
+                   motif.weight,
+                   match2,
+                   motif.file,
+                   ...) {
+    UseMethod("mfbs")
 }

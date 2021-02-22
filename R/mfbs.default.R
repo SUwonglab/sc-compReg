@@ -1,31 +1,14 @@
-mfbs.default <- function(TF.name,
-                         elem.name,
-                         motif.target.path,
+mfbs.default <- function(elem.name,
+                         symbol,
                          motif.name,
                          motif.weight,
                          match2,
-                         motif.mat.path) {
-
-    if (! is(motif.target.path, "character")) {
-        stop('motif.target.path must be character class. Pleaes check your input.')
-    }
-
-    if (! is(motif.mat.path, "character")) {
-        stop('motif.mat.path must be character class. Please check your input.')
-    }
-
-    motif.mat <- readMat(motif.mat.path)
-
-    motif.name <- unlist(motif.mat$motifName, use.names=F)
-    motif.weight <- as.numeric(unlist(motif.mat$motifWeight, use.names=F))
-    match2 <- unlist(motif.mat$Match2, use.names = F)
-    m2.half.idx <- length(match2) / 2
-    match2 <- list('a' = match2[1: m2.half.idx],
-                   'b' = match2[(m2.half.idx + 1):length(match2)])
-
+                         motif.file) {
     this.call <- match.call()
+    tf.name <- intersect(symbol, unique(match2$b))
+    tf.name.len <- length(tf.name)
+    tf.binding <- matrix(0, tf.name.len, length(elem.name))
 
-    motif.file <- mfbs.load(motif.target.path)
     f3 <- motif.file$C3
 
     f1 <- match(motif.file$C1, elem.name, nomatch = 0)
@@ -58,12 +41,8 @@ mfbs.default <- function(TF.name,
                                       ncol = motif.weight.len), sparse=T), motif.binding)
     motif.binding@x <- log(motif.binding@x)
 
-    TF.name <- intersect(symbol, unique(match2$b))
-    TF.name.len <- length(TF.name)
-    tf.binding <- matrix(0, TF.name.len, length(elem.name))
-
     mf1 <- match(match2$a, motif.name, nomatch=0)
-    mf2 <- match(match2$b, TF.name, nomatch=0)
+    mf2 <- match(match2$b, tf.name, nomatch=0)
 
     for (i in 1:tf.name.len) {
         a <- which(mf2 == i)
@@ -74,9 +53,9 @@ mfbs.default <- function(TF.name,
         }
     }
 
-    tf.binding <- Matrix(tf.binding, sparse = T)
-
-    output <- list('tf.binding' = tf.binding)
+    output <- list()
+    output$tf.binding <- tf.binding
+    output$tf.name <- tf.name
     output$call = this.call
     return(output)
 }

@@ -1,5 +1,6 @@
 compreg.default <- function(symbol,
                             tf.binding,
+                            tf.name,
                             elem.name,
                             peak.gene.prior.path,
                             E1,
@@ -11,19 +12,16 @@ compreg.default <- function(symbol,
                             match.mat,
                             thresh,
                             sig.level,
-                            top.tf,
-                            d0.default) {
-    if (is(symbol, 'list')) {
-        symbol <- unlist(symbol, use.names=F)
-    }
-
+                            num.top.tf,
+                            d0.default,
+                            verbose) {
     if (!is(peak.gene.prior.path, 'character')) {
         stop('peak.gene.prior.path must be of class character.')
     }
 
     this.call <- match.call()
 
-    a <- threshK(tf.binding, top.tf)
+    a <- threshK(tf.binding, num.top.tf)
 
     tf.binding[tf.binding - a[, ncol(a)] < 0] <- 0
 
@@ -56,6 +54,9 @@ compreg.default <- function(symbol,
     hub.tf <- list()
 
     for (ii in 1:nrow(match.mat)) {
+        if (verbose) {
+            message(paste('Running', ii, 'th link subpopulation.'))
+        }
         i1 <- match.mat[ii, 1]
         i2 <- match.mat[ii, 2]
         B01 <- computeBZ(tf.binding, O1.mean[, i1], beta.sparse)
@@ -73,7 +74,7 @@ compreg.default <- function(symbol,
                         function(x) t.test(TG1[,x], TG2[,x], var.equal = T)$p.value)
         adjusted.p.val <- p.adjust(p.val, "fdr")
 
-        diff.gene <- which(adjusted.p.val < (2 * sig.level))
+        diff.gene <- which(adjusted.p.val < sig.level)
 
         corr.test.stat1 <- corrTest(t(TF[, 1:n1]), TG1)
         p1 <- 2 * pt(abs(corr.test.stat1), df = nrow(TG1) - 2, lower.tail = F)
@@ -99,7 +100,7 @@ compreg.default <- function(symbol,
                 X1 <- cbind(OTF1[, id[i]], TG1[, diff.gene.j])
                 X2 <- cbind(OTF2[, id[i]], TG2[, diff.gene.j])
                 lr.ret <- bivariate.normal.conditional.lr(X1, X2)
-                LR.summary.id <- c(LR.summary.id, LR.summary.id[i])
+                LR.summary.id <- c(LR.summary.id, id[i])
                 LR.summary.diff.gene <- c(LR.summary.diff.gene, diff.gene.j)
                 LR.summary.stat <- c(LR.summary.stat, lr.ret$stat)
                 LR.summary.p.val <- c(LR.summary.p.val, lr.ret$p)
@@ -110,8 +111,7 @@ compreg.default <- function(symbol,
                             LR.summary.stat,
                             LR.summary.p.val)
 
-        LR.summary <- LR.summary[which(!is.na(LR.summary.stat)
-                                       & !is.infinite(LR.summary.stat)), ]
+        LR.summary <- LR.summary[which((!is.na(LR.summary.stat)) & (!is.infinite(LR.summary.stat))), ]
 
         LR.summary[LR.summary[, 3] < 10^(-16), 3] <- 10^(-16)
 
