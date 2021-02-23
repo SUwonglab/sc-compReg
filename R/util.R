@@ -38,7 +38,7 @@ fit.gamma.quantile.matching <- function(X,
                                         eta) {
     cut <- quantile(X, probs = eta, names=F)
     fun <- function(alpha) {
-        alpha[2] <- abs(alpha[2])
+        alpha <- abs(alpha)
         return(sum(
             (pgamma(cut,
                    shape = alpha[1],
