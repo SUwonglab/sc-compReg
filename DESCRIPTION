@@ -9,7 +9,8 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.2), RcppParallel
+Imports: 
+	Rcpp (>= 1.0.2), RcppParallel, graphics, stats, NNLM, reader, muRty, R.matlab, pracma, EnvStats, Matrix
 SystemRequirements: GNU make
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel, BH
 RoxygenNote: 6.1.1

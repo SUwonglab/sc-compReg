@@ -21,7 +21,7 @@ cluster_profile.default <- function(O1,
     for (i in 1:K1) {
         gp <- which(E1.idx == i)
         if (length(gp) == 0) next
-        E1.mean[, i] <- Matrix::rowMeans(E1[f1, gp])
+        E1.mean[, i] <- rowMeans(E1[f1, gp])
     }
 
     K2 <- max(max(O2.idx), max(E2.idx))
@@ -30,7 +30,7 @@ cluster_profile.default <- function(O1,
     for (i in 1:K2) {
         gp = which(E2.idx == i)
         if (length(gp) == 0) next
-        E2.mean[, i] <- Matrix::rowMeans(E2[f2, gp])
+        E2.mean[, i] <- rowMeans(E2[f2, gp])
     }
 
     pf1 <- match(peak.name.intersect1, peak.name1, nomatch=0)
@@ -49,19 +49,19 @@ cluster_profile.default <- function(O1,
     for (i in 1:K1) {
         gp = which(O1.idx == i)
         if (length(gp) == 0) next
-        O1.mean[1:m, i] = Matrix::rowMeans(O1[pf1, gp] > 0)
-        O1.mean[(1+m) : (m + sum.d1), i] = Matrix::rowMeans(O1[d1 == 0, gp] > 0)
+        O1.mean[1:m, i] = rowMeans(O1[pf1, gp] > 0)
+        O1.mean[(1+m) : (m + sum.d1), i] = rowMeans(O1[d1 == 0, gp] > 0)
     }
 
     for (i in 1:K2) {
         gp = which(O2.idx == i)
         if (length(gp) == 0) next
-        O2.mean[1:m, i] = Matrix::rowMeans(O2[pf2, gp] > 0)
-        O2.mean[(m + sum.d1 + 1) : elem.len, i] = Matrix::rowMeans(O2[d2 == 0, gp] > 0)
+        O2.mean[1:m, i] = rowMeans(O2[pf2, gp] > 0)
+        O2.mean[(m + sum.d1 + 1) : elem.len, i] = rowMeans(O2[d2 == 0, gp] > 0)
     }
 
-    O1.mean = sweep(O1.mean, 2, Matrix::colMeans(O1.mean), '/')
-    O2.mean = sweep(O2.mean, 2, Matrix::colMeans(O2.mean), '/')
+    O1.mean = sweep(O1.mean, 2, colMeans(O1.mean), '/')
+    O2.mean = sweep(O2.mean, 2, colMeans(O2.mean), '/')
 
     output <- list('E1.mean' = E1.mean,
                    'E2.mean' = E2.mean,
