@@ -2,15 +2,15 @@ Package: scCompReg
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Wenhui Sophia Lu, Duren Zhana
+Depends: R (>= 3.6.0)
+Maintainer: Wenhui Sophia Lu <sophialu@stanford.edu>
+Description: Provides joint modeling of scRNA-seq and scATAC-seq data: coupled clustering and comparative regulatory analysis between two conditions.
+License: GPL License
 Encoding: UTF-8
 LazyData: true
 Imports: 
-	Rcpp (>= 1.0.2), RcppParallel, graphics, stats, NNLM, reader, muRty, R.matlab, pracma, EnvStats, Matrix
+	Rcpp (>= 1.0.6), RcppParallel, graphics, stats, NNLM (>= 0.4.4), reader, muRty (>= 0.3.1), R.matlab (>= 3.6.2), pracma (>= 2.2.9), EnvStats (>= 2.3.0), Matrix (>= 1.2-18)
 SystemRequirements: GNU make
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel, BH
 RoxygenNote: 6.1.1
