@@ -53,8 +53,8 @@ output = sc_compreg(O1,
            '/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat',
            '/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt',
            '/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
-write.table(unlist(output$hub.tf, use.names = F), 'tf.txt')
-write.table(unlist(output$diff.net, use.names = F), 'diff_net.txt')
+write.table(output$hub.tf[[2]], 'tf2.txt')
+write.table(output$diff.net[[2]], 'diff_net2.txt')
 
 pni = comp_reg_preprocess('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', token='\t')
 
