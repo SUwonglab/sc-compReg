@@ -34,7 +34,7 @@ match2 <- list('a' = match2[1: m2.half.idx],
                'b' = match2[(m2.half.idx + 1):length(match2)])
 
 
-sc_compreg(O1,
+output = sc_compreg(O1,
            E1,
            O1.idx,
            E1.idx,
@@ -53,7 +53,8 @@ sc_compreg(O1,
            '/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat',
            '/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt',
            '/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
-
+write.table(unlist(output$hub.tf, use.names = F), 'tf.txt')
+write.table(unlist(output$diff.net, use.names = F), 'diff_net.txt')
 
 pni = comp_reg_preprocess('/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt', token='\t')
 
@@ -74,6 +75,7 @@ thresh = 0.2
 sig.level = 0.05
 num.top.tf = 5000
 d0.default = 500000
+verbose=T
 
 
 # tic()

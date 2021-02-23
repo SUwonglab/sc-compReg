@@ -171,5 +171,6 @@ sc_compreg.default <- function(O1,
                               verbose)
 
     compreg.output$call <- match.call()
+    compreg.output$n.pops <- nrow(subpop.link.output$match)
     return(compreg.output)
 }

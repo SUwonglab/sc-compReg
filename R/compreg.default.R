@@ -117,15 +117,16 @@ compreg.default <- function(symbol,
 
         p.hat <- fit.gamma.quantile.matching(LR.summary[, 3],
                                              seq(0.01, 0.2, 0.01))
-        p <- 1 - pgamma(LR.summary[, 3], p.hat[1], p.hat[2])
+        p <- 1 - pgamma(LR.summary[, 3], shape=p.hat[1], scale=p.hat[2])
         adj.p <- p.adjust(p, "fdr")
 
         LR.summary <- cbind(LR.summary,
                             p,
                             adj.p)
+
         idx <- which(adj.p < (sig.level*2))
         sorted.idx <- order(LR.summary[idx, 3], decreasing = T)
-        idx1 <- idx[f]
+        idx1 <- idx[sorted.idx]
 
         diff.net.ii <- cbind(tf.name[LR.summary[idx1, 1]],
                              symbol[LR.summary[idx1, 2]],
@@ -136,7 +137,7 @@ compreg.default <- function(symbol,
         u.len <- length(u)
         u.count <- numeric(u.len)
         for (i in 1:u.len) {
-            u.count[i] <- sum(f == i)
+            u.count[i] <- sum(u.f == i)
         }
         u.f1 <- order(u.count, decreasing=T)
         u.d1 <- u.count[u.f1]

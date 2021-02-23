@@ -45,11 +45,7 @@ fit.gamma.quantile.matching <- function(X,
                    rate = (1 / alpha[2])) - eta) ^ 2 ) )
     }
 
-    cut.end <- cut[length(cut)]
-    gamma.cut <- sapply(X,
-                        function(z) {min(z, cut.end)}
-                        )
-    x0 <- egamma(gamma.cut)$parameters
+    x0 <- egamma(cut)$parameters
     x <- fminunc(x0, fun,
                 maxiter = 600)
     x$par <- abs(x$par)
