@@ -131,6 +131,12 @@ compreg.default <- function(symbol,
         diff.net.ii <- cbind(tf.name[LR.summary[idx1, 1]],
                              symbol[LR.summary[idx1, 2]],
                              LR.summary[idx1, 3:6])
+        colnames(diff.net.ii) <- c('TF',
+                                   'TG',
+                                   'Likelihood_Ratio',
+                                   'p-value_Chi2',
+                                   'p-value_Gamma',
+                                   'FDR')
         u <- unique(diff.net.ii[, 1])
         u.f <- match(diff.net.ii[, 1], u, nomatch = 0)
         diff.net[[ii]] <- diff.net.ii
@@ -141,7 +147,9 @@ compreg.default <- function(symbol,
         }
         u.f1 <- order(u.count, decreasing=T)
         u.d1 <- u.count[u.f1]
-        hub.tf[[ii]] <- cbind(u[u.f1], u.d1)
+        hub.tf.ii <- cbind(u[u.f1], u.d1)
+        colnames(hub.tf.ii) <- c('TF_Name', 'Out-degree')
+        hub.tf[[ii]] <- hub.tf.ii
     }
 
     output <- list()
