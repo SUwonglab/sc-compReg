@@ -11,6 +11,8 @@ importFrom(R.matlab, readMat)
 importFrom(pracma, pinv, fminunc)
 importFrom(EnvStats, egamma)
 importFrom(Matrix, rowMeans, colMeans, sparseMatrix)
+importFrom(Rtsne, Rtsne)
+imoprtFrom(scales, hue_pal)
 
 export(cnmf)
 export(sc_compreg)
