@@ -14,7 +14,6 @@ sc_compreg.default <- function(O1,
                                motif.weight,
                                match2,
                                peak.name.intersect.dir,
-                               motif.mat.dir,
                                motif.target.dir,
                                peak.gene.prior.dir,
                                sep.char = '\t',
@@ -23,6 +22,8 @@ sc_compreg.default <- function(O1,
                                num.top.tf = 5000,
                                d0.default = 500000,
                                verbose = TRUE) {
+    # input checking
+
     if (! is(O1, 'sparseMatrix')) {
         if (! is(O1, 'matrix')) {
             stop('O1 must be a matrix or sparseMatrix. Please check your format.')
@@ -119,6 +120,70 @@ sc_compreg.default <- function(O1,
     if (! is(peak.name2, 'vector')) {
         stop('peak.name2 must be a vector of characters.')
     }
+
+    if (is(motif.name, 'list')) {
+        motif.name <- unlist(motif.name, use.names = F)
+    }
+
+    if (! is(motif.name, 'character')) {
+        stop('motif.name must be a character vectors.')
+    }
+
+    if (! is(motif.weight, 'numeric')) {
+        if (is(motif.weight, 'matrix')) {
+            motif.weight <- as.numeric(motif.weight)
+        } else {
+            stop('motif.weight must be a numeric vector.')
+        }
+    }
+
+    if (! is(match2, 'list')) {
+        stop('match2 must be a list of character vector.')
+    }
+
+    if (length(match2) != 2) {
+        stop('match2 must be a list of length 2 (with two elements, each element being a character vector).')
+    }
+
+    if (! is(peak.name.intersect.dir, 'charactr')) {
+        stop('peak.name.intersect.dir must be a character (a valid path of the peak name intersect file).')
+    }
+
+    if (! is(motif.target.dir, 'charactr')) {
+        stop('motif.target.dir must be a character.')
+    }
+
+    if (! is(peak.gene.prior.dir, 'charactr')) {
+        stop('peak.gene.prior.dir must be a character.')
+    }
+
+    if (! is(sep.char, 'charactr')) {
+        stop('sep.char must be a character indicating the separator for the files.')
+    }
+
+    if (! is(thresh, 'numeric')) {
+        stop('thresh must be a character indicating the threshold for identifying small entries in matrix c4 for compreg.')
+    }
+
+    if (! is(sig.level, 'numeric')) {
+        stop('sig.level must be a character indicating the alpha level for p-values.')
+    }
+
+    if (! is(num.top.tf, 'numeric')) {
+        stop('num.top.tf must be a numeric.')
+    }
+
+    num.top.tf <- as.integer(num.top.tf)
+
+    if (! is(d0.default, 'numeric')) {
+        stop('d0.default must be a numeric.')
+    }
+
+    if (! is(verbose, 'logical')) {
+        stop('verbose must be a logical')
+    }
+
+    # start of function
 
     pni.file <- comp_reg_preprocess(peak.name.intersect.dir, token=sep.char)
 

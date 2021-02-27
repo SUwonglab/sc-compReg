@@ -50,7 +50,6 @@ output = sc_compreg(O1,
            motif.weight,
            match2,
            '/Users/Sophia/Desktop/BioStats/compreg/PeakName_intersect.txt',
-           '/Users/Sophia/Desktop/BioStats/compreg/MotifMatch_human_rmdup.mat',
            '/Users/Sophia/Desktop/BioStats/compreg/MotifTarget.txt',
            '/Users/Sophia/Desktop/BioStats/compreg/peak_gene_prior_intersect.bed')
 write.table(output$hub.tf[[2]], 'tf2.txt')

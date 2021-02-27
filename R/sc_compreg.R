@@ -14,7 +14,6 @@
                          motif.weight,
                          match2,
                          peak.name.intersect.dir,
-                         motif.mat.dir,
                          motif.target.dir,
                          peak.gene.prior.dir,
                          sep.char,
