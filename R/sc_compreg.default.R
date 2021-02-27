@@ -145,19 +145,19 @@ sc_compreg.default <- function(O1,
         stop('match2 must be a list of length 2 (with two elements, each element being a character vector).')
     }
 
-    if (! is(peak.name.intersect.dir, 'charactr')) {
+    if (! is(peak.name.intersect.dir, 'character')) {
         stop('peak.name.intersect.dir must be a character (a valid path of the peak name intersect file).')
     }
 
-    if (! is(motif.target.dir, 'charactr')) {
+    if (! is(motif.target.dir, 'character')) {
         stop('motif.target.dir must be a character.')
     }
 
-    if (! is(peak.gene.prior.dir, 'charactr')) {
+    if (! is(peak.gene.prior.dir, 'character')) {
         stop('peak.gene.prior.dir must be a character.')
     }
 
-    if (! is(sep.char, 'charactr')) {
+    if (! is(sep.char, 'character')) {
         stop('sep.char must be a character indicating the separator for the files.')
     }
 
