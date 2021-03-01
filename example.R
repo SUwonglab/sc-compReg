@@ -23,7 +23,7 @@ E2 = s2$E2
 E2.idx = s2$E2.idx
 peak.name2 = s2$PeakName2
 peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
-motif.target.dir = paste(path, 'MotifMatch_human_rmdup.mat', sep='')
+motif.mat.dir = paste(path, 'MotifMatch_human_rmdup.mat', sep='')
 motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 sep.char=' '
