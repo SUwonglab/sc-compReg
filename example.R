@@ -7,7 +7,7 @@ rm(list = ls())
 # set the path to the document with all of the input files
 # path should end in '/'
 # for example, something like path = 'Desktop/compreg_input/'
-path = ''
+path = '/Users/Sophia/Desktop/BioStats/compreg/'
 s1 = readMat(paste(path, 'sample1.mat', sep=''))
 s2 = readMat(paste(path, 'sample2.mat', sep=''))
 O1 = s1$O1
@@ -56,9 +56,9 @@ compreg.output = sc_compreg(O1,
                             peak.gene.prior.dir)
 
 for (i in 1:compreg.output$n.pops) {
-    write.table(output$hub.tf[[i]], paste(path, 'tf_', i, '.txt', sep=''),
+    write.table(compreg.output$hub.tf[[i]], paste(path, 'tf_', i, '.txt', sep=''),
                 col.names = F)
-    write.table(output$diff.net[[i]], paste(path, 'diff_net_', i, '.txt', sep=''),
+    write.table(compreg.output$diff.net[[i]], paste(path, 'diff_net_', i, '.txt', sep=''),
                 col.names = F)
 }
 
