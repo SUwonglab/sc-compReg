@@ -7,34 +7,17 @@ rm(list = ls())
 # set the path to the document with all of the input files
 # path should end in '/'
 # for example, something like path = 'Desktop/compreg_input/'
-path = '/Users/Sophia/Desktop/BioStats/compreg/'
-s1 = readMat(paste(path, 'sample1.mat', sep=''))
-s2 = readMat(paste(path, 'sample2.mat', sep=''))
-O1 = s1$O1
-O1.idx = s1$O1.idx
-symbol1 = s1$Symbol1
-O2 = s2$O2
-O2.idx = s2$O2.idx
-symbol2 = s2$Symbol2
-peak.name1 = s1$PeakName1
-E1.idx = s1$E1.idx
-E1 = s1$E1
-E2 = s2$E2
-E2.idx = s2$E2.idx
-peak.name2 = s2$PeakName2
+path = './data/'
+sample1 = readRDS(paste(path, 'sample1.rds', ssep = ''))
+sample2 = readRDS(paste(path, 'sample2.rds', ssep = ''))
+
 peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
-motif.mat.dir = paste(path, 'MotifMatch_human_rmdup.mat', sep='')
 motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 sep.char=' '
 
-motif.mat = readMat(motif.mat.dir)
-motif.name = unlist(motif.mat$motifName, use.names=F)
-motif.weight = as.numeric(unlist(motif.mat$motifWeight, use.names=F))
-match2 = unlist(motif.mat$Match2, use.names = F)
-m2.half.idx = length(match2) / 2
-match2 = list('a' = match2[1: m2.half.idx],
-              'b' = match2[(m2.half.idx + 1):length(match2)])
+
+motif = readRDS(paste(path, 'motif.rds', sep=''))
 
 compreg.output = sc_compreg(O1,
                             E1,
@@ -57,8 +40,8 @@ compreg.output = sc_compreg(O1,
 
 for (i in 1:compreg.output$n.pops) {
     write.table(compreg.output$hub.tf[[i]], paste(path, 'tf_', i, '.txt', sep=''),
-                col.names = F)
+                row.names = F)
     write.table(compreg.output$diff.net[[i]], paste(path, 'diff_net_', i, '.txt', sep=''),
-                col.names = F)
+                row.names = F)
 }
 
