@@ -13,8 +13,8 @@ sc_compreg.default <- function(O1,
                                motif.name,
                                motif.weight,
                                match2,
+                               motif.file,
                                peak.name.intersect.dir,
-                               motif.target.dir,
                                peak.gene.prior.dir,
                                sep.char = '\t',
                                thresh = 0.2,
@@ -23,7 +23,6 @@ sc_compreg.default <- function(O1,
                                d0.default = 500000,
                                verbose = TRUE) {
     # input checking
-
     if (! is(O1, 'sparseMatrix')) {
         if (! is(O1, 'matrix')) {
             stop('O1 must be a matrix or sparseMatrix. Please check your format.')
@@ -42,14 +41,12 @@ sc_compreg.default <- function(O1,
         if (! is(E1, 'matrix')) {
             stop('E1 must be a matrix or sparseMatrix. Please check your format.')
         }
-        E1 <- Matrix(E1, sparse = T)
     }
 
     if (! is(E2, 'sparseMatrix')) {
         if ( ! is(E2, 'matrix')) {
             stop('E2 must be a matrix or sparseMatrix. Please check your format.')
         }
-        E2 <- Matrix(E2, sparse = T)
     }
 
     if (! is(O1.idx, 'numeric') &
@@ -149,10 +146,6 @@ sc_compreg.default <- function(O1,
         stop('peak.name.intersect.dir must be a character (a valid path of the peak name intersect file).')
     }
 
-    if (! is(motif.target.dir, 'character')) {
-        stop('motif.target.dir must be a character.')
-    }
-
     if (! is(peak.gene.prior.dir, 'character')) {
         stop('peak.gene.prior.dir must be a character.')
     }
@@ -209,7 +202,6 @@ sc_compreg.default <- function(O1,
 
     clust.profile.output$symbol <- unlist(clust.profile.output$symbol, use.names = F)
 
-    motif.file <- mfbs.load(motif.target.dir)
     mfbs.output <- mfbs(clust.profile.output$elem.name,
                         clust.profile.output$symbol,
                         motif.name,
@@ -222,10 +214,10 @@ sc_compreg.default <- function(O1,
                               mfbs.output$tf.name,
                               clust.profile.output$elem.name,
                               peak.gene.prior.dir,
-                              s1$E1,
-                              s1$E1.idx,
-                              s2$E2,
-                              s2$E2.idx,
+                              E1,
+                              E1.idx,
+                              E2,
+                              E2.idx,
                               clust.profile.output$O1.mean,
                               clust.profile.output$O2.mean,
                               subpop.link.output$match,
