@@ -17,6 +17,11 @@ peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 sep.char=' '
 
 motif = readRDS(paste(path, 'motif.rds', sep=''))
+# To load the MotifTarget file, use the following line
+# motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
+
+# To run through the example with example data
+# simply run the line below
 motif.file = readRDS(paste(path, 'motif_file.rds', sep=''))
 
 compreg.output = sc_compreg(sample1$O1,
@@ -39,9 +44,15 @@ compreg.output = sc_compreg(sample1$O1,
                             peak.gene.prior.dir)
 
 for (i in 1:compreg.output$n.pops) {
-    write.table(compreg.output$hub.tf[[i]], paste(path, 'tf_', i, '.txt', sep=''),
-                row.names = F)
-    write.table(compreg.output$diff.net[[i]], paste(path, 'diff_net_', i, '.txt', sep=''),
-                row.names = F)
+    write.table(compreg.output$hub.tf[[i]],
+                paste(path, 'tf_', i, '.txt', sep=''),
+                row.names = F,
+                quote = F,
+                sep = '\t')
+    write.table(compreg.output$diff.net[[i]],
+                paste(path, 'diff_net_', i, '.txt', sep=''),
+                row.names = F,
+                quote = F,
+                sep = '\t')
 }
 
