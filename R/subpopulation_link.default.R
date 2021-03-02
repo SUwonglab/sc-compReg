@@ -53,6 +53,13 @@ subpopulation_link.default <- function(E.mean.healthy,
         }
     }
     match.mat <- match.mat[rowSums(is.na(match.mat)) != ncol(match.mat), ]
+    colnames(match.mat) <- c('sample_1_cluster',
+                             'sample_2_cluster',
+                             'rna-seq_correlation',
+                             'atac-seq_correlation',
+                             'rna-seq mapping_score',
+                             'atac-seq_mapping_score',
+                             'mapping_score')
 
     output <- list()
     output$match <- match.mat

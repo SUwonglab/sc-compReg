@@ -229,5 +229,6 @@ sc_compreg.default <- function(O1,
 
     compreg.output$call <- match.call()
     compreg.output$n.pops <- nrow(subpop.link.output$match)
+    compreg.output$match <- subpop.link.output$match
     return(compreg.output)
 }
