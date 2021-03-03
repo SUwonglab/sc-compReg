@@ -57,10 +57,12 @@ cnmf.default <- function(peak.o,
     }
 
     # convert to matrix to use NNLM::nnmf function
+    message("Running non-negative matrix factorization on X.")
     X.nmf <- nnmf(as.matrix(X), k=k)
     w2 <- X.nmf$W
     h2 <- X.nmf$H
 
+    message("Running non-negative matrix factorization on peak.o.")
     PO.nmf <- nnmf(as.matrix(peak.o), k=k)
     w1 <- PO.nmf$W
     h1 <- PO.nmf$H
@@ -120,6 +122,6 @@ cnmf.default <- function(peak.o,
                 "lambda1" = lambda1,
                 "lambda2" = lambda2,
                 "score" = score,
-                "cluster1" = cluster.output$c1,
-                "cluster2" = cluster.output$c2))
+                "atac_cluster" = cluster.output$c1,
+                "rna_cluster" = cluster.output$c2))
 }

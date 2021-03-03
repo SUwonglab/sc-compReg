@@ -1,5 +1,4 @@
 library(scCompReg)
-library(R.matlab)
 library(Matrix)
 
 rm(list = ls())

@@ -36,8 +36,8 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
     \item{lambda1}{\code{numeric}.}
     \item{lambda2}{\code{numeric}.}
     \item{score}{\code{numeric}.}
-    \item{cluster1}{\code{vector}. A vector indicating cluster assignments for ATAC-seq data.}
-    \item{cluster2}{code{vector}. A vector indicating cluster assignments for RNA-seq data.}
+    \item{atac_cluster}{\code{numeric}. A vector indicating cluster assignments for ATAC-seq data.}
+    \item{rna_cluster}{code{numeric}. A vector indicating cluster assignments for RNA-seq data.}
 }
 
 
@@ -50,7 +50,7 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
     D <- Matrix(file.mat[['D']], sparse=TRUE)
     peak.o <- Matrix(log10(file.mat[['PeakO']] + 1), sparse=TRUE)
 
-    output = cnmf(peak.o,
+    cnmf.output <- cnmf(peak.o,
                   X,
                   D,
                   k=3,
