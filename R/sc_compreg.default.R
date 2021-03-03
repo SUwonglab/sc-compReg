@@ -19,9 +19,10 @@ sc_compreg.default <- function(O1,
                                sep.char = '\t',
                                thresh = 0.2,
                                sig.level = 0.05,
-                               num.top.tf = 5000,
-                               d0.default = 500000,
-                               verbose = TRUE) {
+                               num.top.tf = 5000L,
+                               d0.default = 500000L,
+                               verbose = TRUE,
+                               ...) {
     # input checking
     if (! is(O1, 'sparseMatrix')) {
         if (! is(O1, 'matrix')) {

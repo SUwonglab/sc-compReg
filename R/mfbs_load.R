@@ -1,4 +1,5 @@
-mfbs_load <- function(motif.target.dir) {
+mfbs_load <- function(motif.target.dir,
+                      ...) {
     if (! is(motif.target.dir, 'character')) {
         stop('motif.target.dir must be a character (a valid path of the motif target file).')
     }

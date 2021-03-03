@@ -1,6 +1,24 @@
-cnmf.tsne <- function(H1, H2,
+cnmf_tsne <- function(H1, H2,
                       save.plot=T,
-                      path='./') {
+                      path='./',
+                      ...) {
+    if (! is (H1, 'matrix')) {
+        stop("H1 must be a matrix (output from cnmf).")
+    }
+
+    if (! is (H1, 'matrix')) {
+        stop("H2 must be a matrix (output from cnmf).")
+    }
+
+    if (! is (save.plot, 'logical')) {
+        stop("save.plot must be a logical indicating whether or not plots should be saved.")
+    }
+
+    if (! is (path, 'character')) {
+        stop("path must be of type format indicating the directory where the plots should be saved.")
+    }
+
+
     S10 <- apply(H1, 2, function(x) {return(which(x == max(x))[1])})
     S20 <- apply(H2, 2, function(x) {return(which(x == max(x))[1])})
     clust.assignments <- cbind(S10, S20)

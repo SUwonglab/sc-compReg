@@ -1,7 +1,8 @@
 subpopulation_link.default <- function(E.mean.healthy,
                                        E.mean.cll,
                                        O.mean.healthy,
-                                       O.mean.cll) {
+                                       O.mean.cll,
+                                       ...) {
     if (! is(E.mean.healthy, 'matrix') & ! is(E.mean.healthy, 'Matrix')) {
         stop('E.mean.healthy must be a matrix. Please check your format.')
     }

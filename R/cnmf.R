@@ -1,4 +1,7 @@
-"cnmf" <- function(PeakO,X,D,k,
+"cnmf" <- function(peak.o,
+                   X,
+                   D,
+                   k,
                    ...){
     UseMethod("cnmf")
 }

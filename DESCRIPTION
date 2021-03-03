@@ -1,11 +1,11 @@
 Package: scCompReg
 Type: Package
 Title: Joint analysis of scRNA-seq and scATAC-seq Data
-Version: 0.1.0
+Version: 1.0.0
 Author: Wenhui Sophia Lu, Duren Zhana
 Depends: R (>= 3.6.0)
 Maintainer: Wenhui Sophia Lu <sophialu@stanford.edu>
-Description: scCompReg takes scRNA-seq and scATAC-seq as inputs, provides coupled clustering and joint embedding of scRNA-seq and scATAC-seq on one sample, and also performs comparative gene regulatory analysis between two conditions.
+Description: scCompReg takes scRNA-seq and scATAC-seq as inputs, provides coupled clustering and joint embedding of scRNA-seq and scATAC-seq on one sample, and performs comparative gene regulatory analysis between two conditions.
 License: GPL License
 Encoding: UTF-8
 LazyData: true

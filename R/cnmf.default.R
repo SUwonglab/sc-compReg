@@ -1,13 +1,26 @@
-cnmf.default <- function(PeakO,
+cnmf.default <- function(peak.o,
                          X,
                          D,
                          k,
-                         beta_min,
+                         beta.min,
                          alpha=0.5,
-                         beta_max_scale=5,
-                         verbose=T) {
-    if (! is(PeakO, 'sparseMatrix')) {
-        PeakO <- Matrix(PeakO, sparse = T)
+                         beta.max.scale=5,
+                         verbose=T,
+                         ...) {
+    if (! is(peak.o, 'matrix') & ! is(peak.o, 'sparseMatrix')) {
+        stop('peak.o must be of format matrix or sparseMatrix.')
+    }
+
+    if (! is(X, 'matrix') & ! is(X, 'sparseMatrix')) {
+        stop('X must be of format matrix or sparseMatrix.')
+    }
+
+    if (! is(D, 'matrix') & ! is(D, 'sparseMatrix')) {
+        stop('D must be of format matrix or sparseMatrix.')
+    }
+
+    if (! is(peak.o, 'sparseMatrix')) {
+        peak.o <- Matrix(peak.o, sparse = T)
     }
 
     if (! is(X, 'sparseMatrix')) {
@@ -18,32 +31,41 @@ cnmf.default <- function(PeakO,
         D <- Matrix(D, sparse = T)
     }
 
-    if (! is(k, 'numeric')) {
-        stop('k must be an integer.')
+    if (! is(k, 'numeric') & ! is(k, 'integer')) {
+        stop('k must be an numeric (integer).')
+    }
+
+    if (! is(alpha, 'numeric')) {
+        stop('alpha must be of format numeric.')
+    }
+
+    if (! is(beta.max.scale, 'numeric')) {
+        stop('beta.max.scale must be of format numeric.')
     }
 
     k <- as.integer(k)
 
-    if (!missing(beta_min)) {
-        if (! is(beta_min, numeric)) {
-            warning('User must supply a valid beta_min of type numeric, or supply nothing at all. Using default value.')
-            beta <- 10.0^seq(beta_max_scale, -3, -1)
+    if (! missing(beta.min)) {
+        if (! is(beta.min, numeric)) {
+            warning('User must supply a valid beta.min of type numeric, or supply nothing at all. Using default value.')
+            beta <- 10.0^seq(beta.max.scale, -3, -1)
         } else {
-            beta <- beta_min * 10.0^seq(beta_max_scale, 0, -1)
+            beta <- beta.min * 10.0^seq(beta.max.scale, 0, -1)
         }
     } else {
-        beta <- 10.0^seq(beta_max_scale, -3, -1)
+        beta <- 10.0^seq(beta.max.scale, -3, -1)
     }
+
     # convert to matrix to use NNLM::nnmf function
     X.nmf <- nnmf(as.matrix(X), k=k)
     w2 <- X.nmf$W
     h2 <- X.nmf$H
 
-    PO.nmf <- nnmf(as.matrix(PeakO), k=k)
+    PO.nmf <- nnmf(as.matrix(peak.o), k=k)
     w1 <- PO.nmf$W
     h1 <- PO.nmf$H
 
-    PO.dim <- dim(PeakO)
+    PO.dim <- dim(peak.o)
 
     mat.init <- initializeMatrix(PO.dim[1],
                           PO.dim[2],
@@ -52,7 +74,7 @@ cnmf.default <- function(PeakO,
                           D)
 
     for (j in 1:length(beta)) {
-        dp.ret <- compute_lambda(PeakO,
+        dp.ret <- compute_lambda(peak.o,
                                 w1,
                                 h1,
                                 X,
@@ -68,7 +90,7 @@ cnmf.default <- function(PeakO,
             message(paste("Lambda 1:", lambda1))
             message(paste("Lambda 2:", lambda2))
         }
-        nmf.ret <- nmf_cluster_sep2_lap(PeakO,
+        nmf.ret <- nmf_cluster_sep2_lap(peak.o,
                              X,
                              D,
                              k,

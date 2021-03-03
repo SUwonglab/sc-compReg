@@ -3,7 +3,8 @@ mfbs.default <- function(elem.name,
                          motif.name,
                          motif.weight,
                          match2,
-                         motif.file) {
+                         motif.file,
+                         ...) {
     this.call <- match.call()
     tf.name <- intersect(symbol, unique(match2[[2]]))
     tf.name.len <- length(tf.name)

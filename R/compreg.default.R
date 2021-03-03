@@ -14,7 +14,8 @@ compreg.default <- function(symbol,
                             sig.level,
                             num.top.tf,
                             d0.default,
-                            verbose) {
+                            verbose,
+                            ...) {
     if (!is(peak.gene.prior.path, 'character')) {
         stop('peak.gene.prior.path must be of class character.')
     }

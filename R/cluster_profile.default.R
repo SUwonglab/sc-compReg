@@ -11,7 +11,8 @@ cluster_profile.default <- function(O1,
                                     symbol2,
                                     peak.name2,
                                     peak.name.intersect1,
-                                    peak.name.intersect2) {
+                                    peak.name.intersect2,
+                                    ...) {
     this.call <- match.call()
 
     K1 <- max(max(O1.idx), max(E1.idx))
