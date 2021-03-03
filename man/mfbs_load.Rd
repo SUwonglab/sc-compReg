@@ -2,10 +2,10 @@
 \alias{mfbs_load}
 \title{Single cell comparative regulatory analysis based on scRNA-seq and scATAC-seq from two different conditions}
 \usage{
-\method{mfbs_load}{default}(peak.o, X, D, k, beta.min, alpha=0.5, beta.max.scale=5, verbose=T, ...)
+\method{mfbs_load}{default}(motif.target.dir, ...)
 }
 \description{
-Performs joint clustering of scRNA-seq and scATAC-seq via coupled nonnegative matrix factorization.}
+Efficiently loads the \code{motif_target} file necessary for the \code{sc_compreg} methods via \code{c++}.}
 \author{Sophia Lu \email{sophialu@stanford.edu}, Zhana Duren}
 
 \details{
@@ -18,44 +18,14 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
 }
 
 \arguments{
-    \item{peak.o}{\code{matrix} or \code{sparseMatrix}. Matrix of the openness counts (ATAC-seq data).}
-    \item{X}{\code{matrix} or \code{sparseMatrix}. Matrix of gene expression (RNA-seq data).}
-    \item{D}{\code{matrix} or \code{sparseMatrix}.Coupling matrix learned from paired expression and chromatin accessibility data across diverse panel of cellular contexts.}
-    \item{k}{\code{numeric} or \code{integer}. Number of clusters to identify.}
-    \item{beta.min}{\code{numeric}. If \code{beta.min} is missing, then it is set to
-    \code{10.0^seq(beta.max.scale, -3, -1)}.}
-    \item{alpha}{\code{numeric} Tuning parameter balancing the weight of scRNA-seq and scATAC-seq. Default: 0.5.}
-    \item{beta.max.scale}{\code{numeric}.}
+    \item{motif.target.dir}{\code{character}. Path to the directory where \code{motif_target} file is stored.}
 }
 
 \value{
-    \item{W1}{\code{matrix}. Final W1 matrix.}
-    \item{W2}{\code{matrix}. Final W2 matrix.}
-    \item{H1}{\code{matrix}. Final H1 matrix.}
-    \item{H2}{\code{matrix}. Final H2 matrix.}
-    \item{lambda1}{\code{numeric}.}
-    \item{lambda2}{\code{numeric}.}
-    \item{score}{\code{numeric}.}
-    \item{cluster1}{\code{vector}. A vector indicating cluster assignments for ATAC-seq data.}
-    \item{cluster2}{code{vector}. A vector indicating cluster assignments for RNA-seq data.}
+    \item{motif.file}{\code{list}. A loaded list to be passed to \code{sc_compreg}.}
 }
 
 
 \examples{
-    library(scCompReg)
-    library(R.matlab)
-
-    file.mat <- readMat( '~/data/cnmf_data.mat')
-    X <- Matrix(file.mat[['X']], sparse=TRUE)
-    D <- Matrix(file.mat[['D']], sparse=TRUE)
-    peak.o <- Matrix(log10(file.mat[['PeakO']] + 1), sparse=TRUE)
-
-    output = cnmf(peak.o,
-                  X,
-                  D,
-                  k=3,
-                  alpha=0.5,
-                  beta.max.scale=5,
-                  verbose=T)
-
+    motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
 }
