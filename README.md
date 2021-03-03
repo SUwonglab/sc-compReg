@@ -87,7 +87,7 @@ for (i in 1:compreg.output$n.pops) {
 
 ## Full Workflow ##
 The entire scCompReg workflow consists of three steps. 
-1. Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`.
+1. Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
 2. Obtain the rest of the necessary inputs to `sc_compreg` by editing and running in bash `processing_data_sc_compreg.sh`.
 3. Follow the tutorial on the `sc_compreg` function.
 
