@@ -52,7 +52,6 @@ sc_compreg.default <- function(O1,
 
     if (! is(O1.idx, 'numeric') &
         ! is(O1.idx, 'matrix') &
-        ! is(O1.idx, 'vector') &
         ! is(E1.idx, 'integer')) {
         if (length(O1.idx < 1) | O1.idx[1] %% 1 != 0) {
             stop('O1.idx must be a vector of integer (indices).')
@@ -63,7 +62,6 @@ sc_compreg.default <- function(O1,
 
     if (! is(E1.idx, 'numeric') &
         ! is(E1.idx, 'matrix') &
-        ! is(E1.idx, 'vector') &
         ! is(E1.idx, 'integer')) {
         if (length(E1.idx < 1) | E1.idx[1] %% 1 != 0) {
             stop('E1.idx must be a vector of integer (indices).')
@@ -72,7 +70,7 @@ sc_compreg.default <- function(O1,
 
     E1.idx <- as.integer(E1.idx)
 
-    if (! is(symbol1, 'vector')) {
+    if (! is(symbol1, 'character')) {
         stop('symbol1 must be a vector of characters.')
     }
 
@@ -80,14 +78,13 @@ sc_compreg.default <- function(O1,
         peak.name1 <- unlist(peak.name1, use.names = F)
     }
 
-    if (! is(peak.name1, 'vector')) {
+    if (! is(peak.name1, 'character')) {
         stop('peak.name1 must be a vector of characters.')
     }
 
 
     if (! is(O2.idx, 'numeric') &
         ! is(O2.idx, 'matrix') &
-        ! is(O2.idx, 'vector') &
         ! is(E1.idx, 'integer')) {
         if (length(O2.idx < 1) | O2.idx[1] %% 1 != 0) {
             stop('O2.idx must be a vector of integer (indices).')
@@ -98,7 +95,6 @@ sc_compreg.default <- function(O1,
 
     if (! is(E2.idx, 'numeric') &
         ! is(E2.idx, 'matrix') &
-        ! is(E2.idx, 'vector') &
         ! is(E1.idx, 'integer')) {
         if (length(E2.idx < 1) | E2.idx[1] %% 1 != 0) {
             stop('E2.idx must be a vector of integer (indices).')
@@ -107,7 +103,7 @@ sc_compreg.default <- function(O1,
 
     E2.idx <- as.integer(E2.idx)
 
-    if (! is(symbol2, 'vector')) {
+    if (! is(symbol2, 'character')) {
         stop('symbol2 must be a vector of characters.')
     }
 
@@ -115,7 +111,7 @@ sc_compreg.default <- function(O1,
         peak.name2 <- unlist(peak.name2, use.names = F)
     }
 
-    if (! is(peak.name2, 'vector')) {
+    if (! is(peak.name2, 'character')) {
         stop('peak.name2 must be a vector of characters.')
     }
 

@@ -21,33 +21,36 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
 }
 
 \arguments{
-    \item{O1}{\code{matrix} or \code{sparseMatrix}. Matrix of the openness counts (ATAC-seq data).}
-    \item{E1}{\code{matrix} or \code{sparseMatrix}. Matrix of the gene expression (RNA-seq data).}
-    \item{O1.idx}{\code{matrix} or \code{sparseMatrix}. }
-    \item{E1.idx}{\code{matrix} or \code{sparseMatrix}.}
-    \item{symbol1}{\code{matrix} or \code{sparseMatrix}.}
-    \item{peak.name1}{\code{matrix} or \code{sparseMatrix}.}
-    \item{O2}{\code{matrix} or \code{sparseMatrix}.}
-    \item{E2}{\code{matrix} or \code{sparseMatrix}.}
-    \item{O2.idx}{\code{matrix} or \code{sparseMatrix}.}
-    \item{E2.idx}{\code{matrix} or \code{sparseMatrix}.}
-    \item{symbol2}{\code{matrix} or \code{sparseMatrix}.}
-    \item{peak.name2}{\code{matrix} or \code{sparseMatrix}.}
-    \item{motif.name}{\code{matrix} or \code{sparseMatrix}.}
-    \item{motif.weight}{\code{matrix} or \code{sparseMatrix}.}
-    \item{motif.file}{\code{matrix} or \code{sparseMatrix}.}
-    \item{peak.name.intersect.dir}{\code{matrix} or \code{sparseMatrix}.}
-    \item{peak.gene.prior.dir}{\code{matrix} or \code{sparseMatrix}.}
-    \item{sep.char}{\code{matrix} or \code{sparseMatrix}.}
-    \item{thresh}{\code{matrix} or \code{sparseMatrix}.}
-    \item{sig.level}{\code{matrix} or \code{sparseMatrix}.}
-    \item{num.top.tf}{\code{matrix} or \code{sparseMatrix}.}
-    \item{d0.default}{\code{matrix} or \code{sparseMatrix}.}
-    \item{verbose}{\code{matrix} or \code{sparseMatrix}.}
+    \item{O1}{\code{matrix} or \code{sparseMatrix}. Peak by cell matrix of scATAC-seq from sample 1 (healthy).}
+    \item{E1}{\code{matrix} or \code{sparseMatrix}. Gene by cell matrix of scRNA-seq from sample 1 (healthy).}
+    \item{O1.idx}{\code{numeric} or \code{matrix} or \code{integer}. Clustering labels of the \code{O1} matrix columns from sample 1.}
+    \item{E1.idx}{\code{numeric} or \code{matrix} or \code{integer}. Clustering labels of the \code{E1} matrix columns from sample 1.}
+    \item{symbol1}{\code{character}. symbol1 is a vector of characters, indicating the raw names of E1 from sample 1.}
+    \item{peak.name1}{\code{character} peak.name1 is a vector of characters, indicating the raw names of O1 from sample 1.}
+    \item{O2}{\code{matrix} or \code{sparseMatrix}. Peak by cell matrix of scATAC-seq from sample 2 (diseased).}
+    \item{E2}{\code{matrix} or \code{sparseMatrix}. Gene by cell matrix of scRNA-seq from sample 1 (diseased).}
+    \item{O2.idx}{\code{numeric} or \code{matrix} or \code{integer}. Clustering labels of the \code{O2} matrix columns from sample 2.}
+    \item{E2.idx}{\code{numeric} or \code{matrix} or \code{integer}. Clustering labels of the \code{E2} matrix columns from sample 2.}
+    \item{symbol2}{\code{character}. symbol2 is a vector of characters, indicating the raw names of E2 from sample 2.}
+    \item{peak.name2}{\code{character} peak.name2 is a vector of characters, indicating the raw names of O2 from sample 2.}
+    \item{motif.name}{\code{list} or \code{character}. A vector of characters indicating the name of motifs.}
+    \item{motif.weight}{\code{numeric} or \code{matrix}. motif.weight is a vector of numeric indicating the weight of motif based on the number of their matching sites on the genome.}
+    \item{motif.file}{\code{list} motif.file is the loaded motif_target file (\code{list}) returned from \code{mfbs_load}.}
+    \item{peak.name.intersect.dir}{\code{character}. Path to the directory of the peak_name_intersect file. peak_name_intersect file includes overlapped peaks from two samples.}
+    \item{peak.gene.prior.dir}{\code{character}. Path to the directory of the peak_gene_prior file. peak_gene_prior file includes prior of peak-gene association from PECA model, which is used to constrcut the coupling matrix D.}
+    \item{sep.char}{\code{character}. The delimiter or separating character in the file, peak_name_intersect. Default: \code{'\\t'}}
+    \item{thresh}{\code{numeric}.}
+    \item{sig.level}{\code{numeric}.}
+    \item{num.top.tf}{\code{numeric}.}
+    \item{d0.default}{\code{numeric}.}
+    \item{verbose}{\code{logical}.}
 }
 
 \value{
-    \item{W1}
+    \item{n.pops}{\code{numeric}}
+    \item{match}{\code{matrix}}
+    \item{diff.net}{\code{list}}
+    \item{hub.tf}{\code{list}}
 }
 
 
