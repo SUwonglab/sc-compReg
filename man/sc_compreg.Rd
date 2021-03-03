@@ -47,10 +47,10 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
 }
 
 \value{
-    \item{n.pops}{\code{numeric}}
-    \item{match}{\code{matrix}}
-    \item{diff.net}{\code{list}}
-    \item{hub.tf}{\code{list}}
+    \item{n.pops}{\code{numeric}. Number of linked subpopulations (cluster matching) between sample 1 and sample 2.}
+    \item{match}{\code{matrix} Subpopulation matching table between sample 1 and sample 2.}
+    \item{diff.net}{\code{list}. Differential gene regulatory network between two linked subpopulation.}
+    \item{hub.tf}{\code{list}. TF names and their in-degree in each of the differentional regulatory network.}
 }
 
 
