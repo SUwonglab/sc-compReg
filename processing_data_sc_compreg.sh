@@ -2,7 +2,6 @@
 #SBATCH -n 1                # Number of cores
 #SBATCH -N 1                # Ensure that all cores are on one machine
 #SBATCH -t 2-00:00:00          # Runtime in D-HH:MM
-#SBATCH -p whwong          # Partition to submit to
 #SBATCH --mem=125000         # Memory pool for all cores
 #SBATCH -o Run-job_2.out     # File to which STDOUT will be written
 #SBATCH -e Run-job_2.err     # File to which STDERR will be written
