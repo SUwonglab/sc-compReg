@@ -6,7 +6,7 @@ rm(list = ls())
 # set the path to the document with all of the input files
 # path should end in '/'
 # for example, something like path = 'Desktop/compreg_input/'
-path = './data/'
+path = './example_data/'
 sample1 = readRDS(paste(path, 'sample1.rds', sep = ''))
 sample2 = readRDS(paste(path, 'sample2.rds', sep = ''))
 
@@ -14,7 +14,8 @@ peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
 motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 
-motif = readRDS(paste(path, 'motif.rds', sep=''))
+prior_path = './prior_data/'
+motif = readRDS(paste(prior_path, 'motif_human.rds', sep=''))
 # To load the MotifTarget file, use the following line
 # motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
 

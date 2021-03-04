@@ -6,7 +6,7 @@ rm(list = ls())
 # set the path to the document with all of the input files
 # path should end in '/'
 # for example, something like path = 'Desktop/compreg_input/'
-path = './data/'
+path = './example_data/'
 
 cnmf.data <- readRDS(paste(path, 'cnmf_data.rds', sep=''))
 cnmf.output <- cnmf(cnmf.data$PeakO,

@@ -285,7 +285,6 @@ void step_six (unsigned int &step, arma::mat &cost,
 }
 
 
-
 arma::umat hungarian(const arma::mat &input_cost)
 {
     const unsigned int N = input_cost.n_rows;

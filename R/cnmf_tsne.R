@@ -23,12 +23,12 @@ cnmf_tsne <- function(H1, H2,
     S20 <- apply(H2, 2, function(x) {return(which(x == max(x))[1])})
     clust.assignments <- c(S10, S20)
     HH <- cbind(H1, H2)
-    HH <- t(sweep(HH, 2, sqrt(rowSums(HH^2)), '/'))
+    HH <- t(sweep(HH, 2, sqrt(colSums(HH^2)), '/'))
     HH.cos.sim <- HH / sqrt(rowSums(HH * HH))
     HH.cos.sim <- HH.cos.sim %*% t(HH.cos.sim)
     tsne.output <- Rtsne(HH.cos.sim, perplexity = 100,
                          check_duplicates = F,
-                         is_distance = T,
+                         is_distance = F,
                          pca_scale = T,
                          eta = 250)
 

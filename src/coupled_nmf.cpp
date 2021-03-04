@@ -1,6 +1,5 @@
 #include "../inst/include/coupled_nmf.h"
 
-
 // [[Rcpp::export]]
 Rcpp::List initializeMatrix(const unsigned int POnRow,
                                  const unsigned int POnCol,
@@ -123,7 +122,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         unsigned int SSize, XSize;
         arma::sp_mat zeroPOVec = arma::sp_mat(PeakO.n_rows, 1);
         arma::sp_mat zeroXVec = arma::sp_mat(X.n_rows, 1);
-        arma::uvec assignment;
+        arma::urowvec assignment;
         arma::mat S, WP1, WP2;
         arma::uvec tempJIdx, tempNJIdx;
         arma::vec hTempVec;
@@ -185,7 +184,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                 if (verbose) std::cout<< "On iteration " << iter << "." << std::endl;
                 hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H20, 2.0), 1));
                 // row-wise scalar multiplication
-                H2T = H2.each_col() % hTempVec;
+                H2T = H20.each_col() % hTempVec;
                 S20 = arma::index_max(H2T);
                 hTempVec = 1. / arma::sqrt(arma::sum(arma::pow(H10, 2.0), 1));
                 H1T = H10.each_col() % hTempVec;
@@ -220,11 +219,11 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                     FC1.col(j) = tempSumS10 / (tempSumNS10 / arma::sum(S10 != j) * arma::sum(S10 == j) + 1.0);
                     FC2.col(j) = tempSumS20 / (tempSumNS20 / arma::sum(S20 != j) * arma::sum(S20 == j) + 1.0);
                 }
+                
                 WP1 = quantileNorm(FC1);
                 WP2 = quantileNorm(FC2);
-                S = (WP2.t() * D * WP1).t();
-                assignment = arma::find(hungarian(-S) == 1);
-                assignment = assignment - arma::floor(assignment / S.n_cols) * S.n_cols;
+                S = WP2.t() * D * WP1;
+                assignment = arma::index_max(hungarian(-S), 0);
                 W2 = W2.cols(assignment);
                 H2 = H2.rows(assignment);
             }
@@ -279,9 +278,8 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
         }
         WP1 = quantileNorm(FC1);
         WP2 = quantileNorm(FC2);
-        S = (WP2.t() * D * WP1).t();
-        assignment = arma::find(hungarian(-S) == 1);
-        assignment = assignment - arma::floor(assignment / S.n_cols) * S.n_cols;
+        S = WP2.t() * D * WP1;
+        assignment = arma::index_max(hungarian(-S), 0);
         W2 = W2.cols(assignment);
         H2 = H2.rows(assignment);
         return Rcpp::List::create(Named("W1") = W1,
