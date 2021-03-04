@@ -26,7 +26,7 @@ write.table(cnmf.output$atac_cluster,
             sep = '\t')
 
 write.table(cnmf.output$rna_cluster,
-            paste(path, 'atac_cluster.txt', sep=''),
+            paste(path, 'rna_cluster.txt', sep=''),
             row.names = F,
             quote = F,
             sep = '\t')
