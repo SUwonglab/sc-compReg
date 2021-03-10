@@ -116,11 +116,11 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         * symbol names of samples 1 and 2
     * Load the corresponding motif file via
         ```R
-            motif = readRDS('motif_human.rds')
+            motif = readRDS('prior_data/motif_human.rds')
         ```
         or
         ```R
-            motif = readRDS('motif_mouse.rds')
+            motif = readRDS('prior_data/motif_mouse.rds')
         ```
 
 
