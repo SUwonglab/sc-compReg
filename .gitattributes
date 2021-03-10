@@ -1,3 +1,14 @@
 data filter=lfs diff=lfs merge=lfs -text
 data/motif_file.rds filter=lfs diff=lfs merge=lfs -text
 example_data/motif_file.rds filter=lfs diff=lfs merge=lfs -text
+prior_data/motif_human.rds filter=lfs diff=lfs merge=lfs -text
+prior_data/motif_mouse.rds filter=lfs diff=lfs merge=lfs -text
+prior_data/Promoter_100k_mm9.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/RE_gene_corr_mm9.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/Promoter_100k_mm10.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/Promoter_100k_hg38.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/RE_gene_corr_hg19.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/RE_gene_corr_hg38.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/RE_gene_corr_mm10.bed filter=lfs diff=lfs merge=lfs -text
+prior_data/all_motif_rmdup filter=lfs diff=lfs merge=lfs -text
+prior_data/Promoter_100k_hg19.bed filter=lfs diff=lfs merge=lfs -text

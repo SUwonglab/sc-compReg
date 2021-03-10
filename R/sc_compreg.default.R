@@ -50,6 +50,38 @@ sc_compreg.default <- function(O1,
         }
     }
 
+    if (length(symbol1) != nrow(E1)) {
+        stop('symbol1 (row names of E1) must be of the same length as the # of rows for E1 matrix.')
+    }
+
+    if (length(symbol2) != nrow(E2)) {
+        stop('symbol2 (row names of E2) must be of the same length as the # of rows for E2 matrix.')
+    }
+
+    if (length(peak.name1) != nrow(O1)) {
+        stop('peak.name1 (row names of O1) must be of the same length as the # of rows for O1 matrix.')
+    }
+
+    if (length(peak.name2) != nrow(O2)) {
+        stop('peak.name2 (row names of O2) must be of the same length as the # of rows for O2 matrix.')
+    }
+
+    if (length(E1.idx) != ncol(E1)) {
+        stop('E1.idx (cluster assignment for E1) must be of same length as # of cols for E1 matrix.')
+    }
+
+    if (length(E2.idx) != ncol(E2)) {
+        stop('E2.idx (cluster assignment for E2) must be of same length as # of cols for E2 matrix.')
+    }
+
+    if (length(O1.idx) != ncol(O1)) {
+        stop('O1.idx (cluster assignment for O1) must be of same length as # of cols for O1 matrix.')
+    }
+
+    if (length(O2.idx) != ncol(O2)) {
+        stop('O2.idx (cluster assignment for O2) must be of same length as # of cols for O2 matrix.')
+    }
+
     if (! is(O1.idx, 'numeric') &
         ! is(O1.idx, 'matrix') &
         ! is(E1.idx, 'integer')) {
