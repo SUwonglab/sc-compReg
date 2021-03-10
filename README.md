@@ -113,6 +113,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
             ```bash
                 bash sc_compreg_process_data_.sh path/to/peak_name1.txt path/to/peak_name2.txt genome_version path/to/prior_data
             ```
+            
             where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
 
 4. **Follow the tutorial on the `sc_compreg` function.**
