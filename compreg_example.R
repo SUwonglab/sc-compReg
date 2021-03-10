@@ -16,6 +16,7 @@ peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 
 prior_path = './prior_data/'
 motif = readRDS(paste(prior_path, 'motif_human.rds', sep=''))
+
 # To load the MotifTarget file, use the following line
 # motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
 
