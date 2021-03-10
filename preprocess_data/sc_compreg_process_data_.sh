@@ -3,30 +3,40 @@
 FILE=$1
 if [ ! -f "$FILE" ]; then
     echo "Please enter a valid path for the peak names of sample 1."
+    echo "Call sc_compreg_process_data using the following format:"
+    echo "bash sc_compreg_process_data.sh path/to/peak_name1.txt path/to/peak_name1.txt path/to/prior/data hg19"
 	exit 2
 fi
 
 FILE=$2
 if [ ! -f "$FILE" ]; then
     echo "Please enter a valid path for the peak names of sample 2."
+    echo "Call sc_compreg_process_data using the following format:"
+    echo "bash sc_compreg_process_data.sh path/to/peak_name1.txt path/to/peak_name1.txt path/to/prior/data hg19"
 	exit 2
 fi
 
 dir=$3
 if [ ! -d "$dir" ]; then
     echo "Please enter a valid path prior data."
+    echo "Call sc_compreg_process_data using the following format:"
+    echo "bash sc_compreg_process_data.sh path/to/peak_name1.txt path/to/peak_name1.txt path/to/prior/data hg19"
 	exit 2
 fi
 
 if [ -z "$4" ];
   then
     echo "No argument supplied genome version. Please select one of following: {hg19, hg38, mm9, mm10}."
+    echo "Call sc_compreg_process_data using the following format:"
+    echo "bash sc_compreg_process_data.sh path/to/peak_name1.txt path/to/peak_name1.txt path/to/prior/data hg19"
     exit 2
 fi
 
 if [ ! $4 == "hg19" ] && [ ! $4 == "hg38" ] && [ ! $4 == "mm9" ] && [ ! $4 == "mm10" ];
 then 
-    echo 'Please select one of following: {hg19, hg38, mm9, mm10}.' 
+    echo "Please select one of following: {hg19, hg38, mm9, mm10}."
+    echo "Call sc_compreg_process_data using the following format:"
+    echo "bash sc_compreg_process_data.sh path/to/peak_name1.txt path/to/peak_name1.txt path/to/prior/data hg19"
     exit 2
 fi 
 

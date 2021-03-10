@@ -4,24 +4,32 @@
 FILE=$1
 if [ ! -f "$FILE" ]; then
     echo "Please enter a valid path for the peak names of sample 1."
+    echo "Call cnmf_process_data using the following format:"
+    echo "bash cnmf_process_data.sh path/to/peak.bed hg19 path/to/prior/data"
 	exit 2
 fi
 
 if [ -z "$2" ];
   then
     echo "No argument supplied genome version. Please select one of following: {hg19, hg38, mm9, mm10}."
+    echo "Call cnmf_process_data using the following format:"
+    echo "bash cnmf_process_data.sh path/to/peak.bed hg19 path/to/prior/data"
     exit 2
 fi
 
 if [ ! $2 == "hg19" ] && [ ! $2 == "hg38" ] && [ ! $2 == "mm9" ] && [ ! $2 == "mm10" ];
 then 
-    echo 'Please select one of following: {hg19, hg38, mm9, mm10}.' 
+    echo "Please select one of following: {hg19, hg38, mm9, mm10}.'"
+    echo "Call cnmf_process_data using the following format:"
+    echo "bash cnmf_process_data.sh path/to/peak.bed hg19 path/to/prior/data"
     exit 2
 fi 
 
 dir=$3
 if [ ! -d "$dir" ]; then
     echo "Please enter a valid path prior data."
+    echo "Call cnmf_process_data using the following format:"
+    echo "bash cnmf_process_data.sh path/to/peak.bed hg19 path/to/prior/data"
 	exit 2
 fi
 
