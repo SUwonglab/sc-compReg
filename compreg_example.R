@@ -14,8 +14,8 @@ peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
 motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 
-prior_path = './prior_data/'
-motif = readRDS(paste(prior_path, 'motif_human.rds', sep=''))
+prior_data_path = './prior_data/'
+motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 
 # To load the MotifTarget file, use the following line
 # motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))

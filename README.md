@@ -30,7 +30,8 @@ git clone git@github.com:SUwonglab/sc-compReg.git
 ```
 The downloaded data directory will be in `sc-compReg/data/`. Simply set 
 ```R
-path = "./sc-compReg/data/"
+path = './example_data/'
+prior_data_path = './prior_data/'
 ```
 To run scCompReg, run the following lines:
 ```R
@@ -40,7 +41,7 @@ sample2 = readRDS(paste(path, 'sample2.rds', sep = ''))
 peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
 motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
-motif = readRDS(paste(path, 'motif.rds', sep=''))
+motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 motif.file = readRDS(paste(path, 'motif_file.rds', sep=''))
 
 compreg.output = sc_compreg(sample1$O1,
@@ -84,14 +85,6 @@ for (i in 1:compreg.output$n.pops) {
 ## Full Workflow ##
 The entire scCompReg workflow consists of three mandatory steps and one optional step. 
 
-**The necessary inputs to `sc_compreg` are**
-* consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
-* gene expression matrices of samples 1 and 2
-* chromatin accessibility matrices of samples 1 and 2
-* symbol names of samples 1 and 2
-* text file indicating the peak names of sample 1
-* text file indicating the peak names of sample 2
-
 1. **Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.**
 
 2. Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
@@ -116,6 +109,19 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
 
 4. **Follow the tutorial on the `sc_compreg` function.**
+    * **The necessary inputs to `sc_compreg` are**
+        * consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
+        * gene expression matrices of samples 1 and 2
+        * chromatin accessibility matrices of samples 1 and 2
+        * symbol names of samples 1 and 2
+    * Load the corresponding motif file via
+        ```R
+            motif = readRDS('motif_human.rds')
+        ```
+        or
+        ```R
+            motif = readRDS('motif_mouse.rds')
+        ```
 
 
 ## Usage ##
