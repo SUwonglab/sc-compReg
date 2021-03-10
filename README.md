@@ -95,6 +95,8 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
                 bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
             ```
             where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
+        * Output: 
+            * peak_gene_100k_corr.bed
     * Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
     * Note: It is not required to obtain cluster assignments using the coupled nonnegative matrix factorization workflow. The necessary input to `scCompReg` is some consistent cluster assignments in scRNA-seq and scATAC-seq.
 
@@ -106,6 +108,10 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
             bash sc_compreg_process_data_.sh path/to/peak_name1.txt path/to/peak_name2.txt genome_version path/to/prior_data
         ```
         where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
+    * Output:
+        * PeakName_intersect.txt
+        * peak_gene_prior_intersect.bed
+        * MotifTarget.txt
 
 4. **Follow the tutorial on the `sc_compreg` function.**
     * **The necessary inputs to `sc_compreg` are**
@@ -114,7 +120,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         * chromatin accessibility matrices of samples 1 and 2
         * symbol names of samples 1 and 2
     * Input `peak.name.intersect.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
-    * Input `peak.gene.prior.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
+    * Input `peak.gene.prior.dir` is the path to the `peak_gene_prior_intersect.bed` file generated in step 3.
     * Load the corresponding motif file for human via
         ```R
             motif = readRDS('prior_data/motif_human.rds')
