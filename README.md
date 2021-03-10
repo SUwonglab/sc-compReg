@@ -7,6 +7,8 @@ Please check the man page via `?function` (for example, `?sc_compreg`) for a det
 
 ## System Requirements ##
 * R (>= 3.6.0)
+* Bedtools (Linux)
+* Homer (Linux)
 
 ## Change Log ##
 ### v1.0.0 ###
@@ -18,6 +20,36 @@ Use the following command to install scCompReg R package from source code:
 require(devtools)
 devtools::install_github("SUwonglab/sc-compReg")
 ```
+
+## Full Workflow ##
+The entire scCompReg workflow consists of three steps. 
+
+The necessary inputs to `sc_compreg` are 
+* consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
+* gene expression matrices of samples 1 and 2
+* chromatin accessibility matrices of samples 1 and 2
+* symbol names of samples 1 and 2
+* text file indicating the peak names of sample 1
+* text file indicating the peak names of sample 2
+
+In addition, download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.
+
+
+Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
+1. Preproces data for `cnmf`:
+    * Obtain `peak.bed` file
+    * In `sc-compReg/preprocess_data/`, run the following script:
+        ```bash
+            bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
+        ```
+        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}.
+2. Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
+
+
+
+3. Obtain the rest of the necessary inputs to `sc_compreg` by editing and running in bash `sc_compreg_process_data.sh`.
+4. Follow the tutorial on the `sc_compreg` function. 
+
 
 ## Usage ##
 scCompReg provides access to the following functions:
@@ -85,11 +117,6 @@ for (i in 1:compreg.output$n.pops) {
 }
 ```
 
-## Full Workflow ##
-The entire scCompReg workflow consists of three steps. 
-1. Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
-2. Obtain the rest of the necessary inputs to `sc_compreg` by editing and running in bash `processing_data_sc_compreg.sh`.
-3. Follow the tutorial on the `sc_compreg` function.
 
 ## Citation ##
 <a id="1">[1]</a> 
