@@ -219,7 +219,7 @@ Rcpp::List iterateCluster(const arma::sp_mat& PeakO,
                     FC1.col(j) = tempSumS10 / (tempSumNS10 / arma::sum(S10 != j) * arma::sum(S10 == j) + 1.0);
                     FC2.col(j) = tempSumS20 / (tempSumNS20 / arma::sum(S20 != j) * arma::sum(S20 == j) + 1.0);
                 }
-                
+
                 WP1 = quantileNorm(FC1);
                 WP2 = quantileNorm(FC2);
                 S = WP2.t() * D * WP1;
