@@ -39,7 +39,6 @@ sample1 = readRDS(paste(path, 'sample1.rds', sep = ''))
 sample2 = readRDS(paste(path, 'sample2.rds', sep = ''))
 
 peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
-motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 motif.file = readRDS(paste(path, 'motif_file.rds', sep=''))
@@ -114,14 +113,21 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         * gene expression matrices of samples 1 and 2
         * chromatin accessibility matrices of samples 1 and 2
         * symbol names of samples 1 and 2
-    * Load the corresponding motif file via
+    * Input `peak.name.intersect.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
+    * Input `peak.gene.prior.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
+    * Load the corresponding motif file for human via
         ```R
             motif = readRDS('prior_data/motif_human.rds')
         ```
-        or
+        or for mouse,
         ```R
             motif = readRDS('prior_data/motif_mouse.rds')
         ```
+    * Load `motif.file` via
+        ```R
+            motif.file = mfbs_load(motif.target.dir)
+        ```
+        where `motif.target.dir` is the path to the `MotifTarget.txt` file generated in step 3.
 
 
 ## Usage ##
