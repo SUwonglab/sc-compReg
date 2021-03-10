@@ -32,18 +32,17 @@ The necessary inputs to `sc_compreg` are
 * text file indicating the peak names of sample 1
 * text file indicating the peak names of sample 2
 
-In addition, download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.
-
+1. Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.
 
 Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
-1. Preproces data for `cnmf`:
+1. a) Preproces data for `cnmf`:
     * Obtain `peak.bed` file
     * In `sc-compReg/preprocess_data/`, run the following script:
         ```bash
             bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
         ```
-        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}.
-2. Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
+        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
+1. b) Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
 
 
 
