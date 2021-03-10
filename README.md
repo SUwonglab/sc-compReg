@@ -24,7 +24,7 @@ devtools::install_github("SUwonglab/sc-compReg")
 ## Full Workflow ##
 The entire scCompReg workflow consists of three steps. 
 
-The necessary inputs to `sc_compreg` are 
+**The necessary inputs to `sc_compreg` are**
 * consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
 * gene expression matrices of samples 1 and 2
 * chromatin accessibility matrices of samples 1 and 2
@@ -32,17 +32,17 @@ The necessary inputs to `sc_compreg` are
 * text file indicating the peak names of sample 1
 * text file indicating the peak names of sample 2
 
-1. Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.
+1. **Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.**
 
-Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
-1. a) Preproces data for `cnmf`:
+2. Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
+* Preproces data for `cnmf`:
     * Obtain `peak.bed` file
     * In `sc-compReg/preprocess_data/`, run the following script:
         ```bash
             bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
         ```
         where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
-1. b) Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
+* Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
 
 
 
