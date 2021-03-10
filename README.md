@@ -101,7 +101,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
     * Note: It is not required to obtain cluster assignments using the coupled nonnegative matrix factorization workflow. The necessary input to `scCompReg` is some consistent cluster assignments in scRNA-seq and scATAC-seq.
 
 3. **Process data for `scCompReg`**
-    * Obtain `peak_name1.txt` and `peak_name2.txt` files containing the peak names of sample 1 and sample 2, respectively in bed format (**chr**\t**start**\t**end**)
+    * Obtain `peak_name1.txt` and `peak_name2.txt` files containing the peak names of sample 1 and sample 2, respectively in bed format (**chr**<div class="text-blue mb-2">\t</div>**start**\t**end**)
     * In `sc-compReg/preprocess_data/`, run the following script:
 
         ```bash
