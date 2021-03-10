@@ -21,42 +21,6 @@ require(devtools)
 devtools::install_github("SUwonglab/sc-compReg")
 ```
 
-## Full Workflow ##
-The entire scCompReg workflow consists of three steps. 
-
-**The necessary inputs to `sc_compreg` are**
-* consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
-* gene expression matrices of samples 1 and 2
-* chromatin accessibility matrices of samples 1 and 2
-* symbol names of samples 1 and 2
-* text file indicating the peak names of sample 1
-* text file indicating the peak names of sample 2
-
-1. **Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.**
-
-2. Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
-* Preproces data for `cnmf`:
-    * Obtain `peak.bed` file
-    * In `sc-compReg/preprocess_data/`, run the following script:
-        ```bash
-            bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
-        ```
-        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
-* Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
-
-
-
-3. Obtain the rest of the necessary inputs to `sc_compreg` by editing and running in bash `sc_compreg_process_data.sh`.
-4. Follow the tutorial on the `sc_compreg` function. 
-
-
-## Usage ##
-scCompReg provides access to the following functions:
-Command       | Description
-------------- | -------------
-sc_compreg    | Performs single-cell comparative regulatory analysis based on scRNA-seq and scATAC-seq data from two different conditions.
-mfbs_load     | Efficiently loads the `motif_target` file and returns an R `list` of the loaded objects.
-
 ## Example ##
 For a full example of using the scCompReg method, please refer to `example.R`. The necessary data have been uploaded to the `data` folder in this repository.
 
@@ -115,6 +79,51 @@ for (i in 1:compreg.output$n.pops) {
                 sep = '\t')
 }
 ```
+
+
+## Full Workflow ##
+The entire scCompReg workflow consists of three mandatory steps and one optional step. 
+
+**The necessary inputs to `sc_compreg` are**
+* consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
+* gene expression matrices of samples 1 and 2
+* chromatin accessibility matrices of samples 1 and 2
+* symbol names of samples 1 and 2
+* text file indicating the peak names of sample 1
+* text file indicating the peak names of sample 2
+
+1. **Download the `prior_data` directory from github via `git clone git@github.com:SUwonglab/sc-compReg.git`.**
+
+2. Optional: obtaining cluster assignments from coupled nonnegative matrix factorization.
+* Preproces data for `cnmf`:
+    * Obtain `peak.bed` file
+    * In `sc-compReg/preprocess_data/`, run the following script:
+
+        ```bash
+            bash cnmf_process_data.sh path/to/peak.bed genome_version path/to/prior_data
+        ```
+        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
+* Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
+* Note: It is not required to obtain cluster assignments using the coupled nonnegative matrix factorization workflow. The necessary input to `scCompReg` is some consistent cluster assignments in scRNA-seq and scATAC-seq.
+
+3. **Process data for `scCompReg`**
+* Obtain `peak_name1.txt` and `peak_name2.txt` files containing the peak names of sample 1 and sample 2, respectively in bed format (**chr**\t**start**\t**end**)
+* In `sc-compReg/preprocess_data/`, run the following script:
+
+        ```bash
+            bash sc_compreg_process_data_.sh path/to/peak_name1.txt path/to/peak_name2.txt genome_version path/to/prior_data
+        ```
+        where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
+
+4. Follow the tutorial on the `sc_compreg` function. 
+
+
+## Usage ##
+scCompReg provides access to the following functions:
+Command       | Description
+------------- | -------------
+sc_compreg    | Performs single-cell comparative regulatory analysis based on scRNA-seq and scATAC-seq data from two different conditions.
+mfbs_load     | Efficiently loads the `motif_target` file and returns an R `list` of the loaded objects.
 
 
 ## Citation ##
