@@ -54,8 +54,16 @@ sc_compreg.default <- function(O1,
         stop('symbol1 (row names of E1) must be of the same length as the # of rows for E1 matrix.')
     }
 
+    if (is(symbol1, 'list')) {
+        symbol1 <- unlist(symbol1, use.names = F)
+    }
+
     if (length(symbol2) != nrow(E2)) {
         stop('symbol2 (row names of E2) must be of the same length as the # of rows for E2 matrix.')
+    }
+
+    if (is(symbol2, 'list')) {
+        symbol2 <- unlist(symbol2, use.names = F)
     }
 
     if (length(peak.name1) != nrow(O1)) {
