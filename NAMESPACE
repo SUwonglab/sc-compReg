@@ -10,7 +10,7 @@ importFrom(muRty, get_k_best)
 importFrom(R.matlab, readMat)
 importFrom(pracma, pinv, fminunc)
 importFrom(EnvStats, egamma)
-importFrom(Matrix, rowMeans, colMeans, sparseMatrix)
+importFrom(Matrix, Matrix, rowMeans, colMeans, sparseMatrix)
 importFrom(Rtsne, Rtsne)
 importFrom(scales, hue_pal)
 

@@ -1,5 +1,4 @@
 library(scCompReg)
-library(Matrix)
 
 rm(list = ls())
 
