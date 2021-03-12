@@ -25,7 +25,7 @@ devtools::install_github("SUwonglab/sc-compReg")
 For a full example of using the scCompReg method, please refer to `example.R`. The necessary data have been uploaded to the `data` folder in this repository.
 
 
-To download the data, make sure you have `git lfs` installed. Installation instructions can be found here: (https://github.com/git-lfs/git-lfs/wiki/Installation).
+To download the data, make sure you have `git lfs` installed. Installation instructions can be found here: https://github.com/git-lfs/git-lfs/wiki/Installation
 
 Next, run the following line:
 ```bash
