@@ -132,7 +132,8 @@ arma::rowvec colMax(const arma::sp_mat& X) {
 void parseMotifTarget(std::string filePath,
                       std::vector<std::string>& stringVec1,
                       std::vector<std::string>& stringVec2,
-                      std::vector<float>& doubleVec) {
+                      std::vector<float>& doubleVec,
+                      char sep) {
     char buffer[BUFFER_SIZE];
     char *a = (char *)malloc(BUFFER_SIZE);
     char *b = (char *)malloc(BUFFER_SIZE);
@@ -140,9 +141,15 @@ void parseMotifTarget(std::string filePath,
     int scanRet;
     FILE* f = fopen(filePath.c_str(), "r");
     std::string temp;
+    std::string inputFormat = std::string("%s") +
+                              sep +
+                              std::string("%s") +
+                              sep +
+                              std::string("%f");
+    const char *inputCStr = inputFormat.c_str();
     while (true) {
         if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
-        scanRet = sscanf(buffer, "%s\t%s\t%f", a, b, &c);
+        scanRet = sscanf(buffer, inputCStr, a, b, &c);
         temp = a;
         stringVec1.push_back(temp);
         temp = b;
@@ -155,12 +162,13 @@ void parseMotifTarget(std::string filePath,
 }
 
 // [[Rcpp::export]]
-Rcpp::List mfbsLoad(const std::string& motifTargetPath) {
+Rcpp::List mfbsLoad(const std::string& motifTargetPath,
+                    char sep) {
     try {
         std::vector<std::string> strVec1, strVec2;
         std::vector<float> floatVec3;
         unsigned int index;
-        parseMotifTarget(motifTargetPath, strVec1, strVec2, floatVec3);
+        parseMotifTarget(motifTargetPath, strVec1, strVec2, floatVec3, sep);
         return List::create(Named("C1") = strVec1,
                             Named("C2") = strVec2,
                             Named("C3") = floatVec3);

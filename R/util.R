@@ -2,8 +2,9 @@ normalize.index <- function(X) {
     return(X - min(X))
 }
 
-mfbs.load <- function(motif.path) {
-    motif.files <- mfbsLoad(motif.path)
+mfbs.load <- function(motif.path,
+                      sep.char) {
+    motif.files <- mfbsLoad(motif.path, sep.char)
     return(motif.files)
 }
 

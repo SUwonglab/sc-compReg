@@ -54,13 +54,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // mfbsLoad
-Rcpp::List mfbsLoad(const std::string& motifTargetPath);
-RcppExport SEXP _scCompReg_mfbsLoad(SEXP motifTargetPathSEXP) {
+Rcpp::List mfbsLoad(const std::string& motifTargetPath, char sep);
+RcppExport SEXP _scCompReg_mfbsLoad(SEXP motifTargetPathSEXP, SEXP sepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type motifTargetPath(motifTargetPathSEXP);
-    rcpp_result_gen = Rcpp::wrap(mfbsLoad(motifTargetPath));
+    Rcpp::traits::input_parameter< char >::type sep(sepSEXP);
+    rcpp_result_gen = Rcpp::wrap(mfbsLoad(motifTargetPath, sep));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -109,6 +110,18 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type peakGenePriorPath(peakGenePriorPathSEXP);
     rcpp_result_gen = Rcpp::wrap(compRegLoad(peakGenePriorPath));
+    return rcpp_result_gen;
+END_RCPP
+}
+// loadBedFile
+Rcpp::List loadBedFile(std::string filePath, char sep);
+RcppExport SEXP _scCompReg_loadBedFile(SEXP filePathSEXP, SEXP sepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filePath(filePathSEXP);
+    Rcpp::traits::input_parameter< char >::type sep(sepSEXP);
+    rcpp_result_gen = Rcpp::wrap(loadBedFile(filePath, sep));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -204,11 +217,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scCompReg_threshK", (DL_FUNC) &_scCompReg_threshK, 2},
     {"_scCompReg_mult", (DL_FUNC) &_scCompReg_mult, 2},
     {"_scCompReg_colMax", (DL_FUNC) &_scCompReg_colMax, 1},
-    {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 1},
+    {"_scCompReg_mfbsLoad", (DL_FUNC) &_scCompReg_mfbsLoad, 2},
     {"_scCompReg_corrTest", (DL_FUNC) &_scCompReg_corrTest, 2},
     {"_scCompReg_accumArrayMin", (DL_FUNC) &_scCompReg_accumArrayMin, 2},
     {"_scCompReg_computeBZ", (DL_FUNC) &_scCompReg_computeBZ, 3},
     {"_scCompReg_compRegLoad", (DL_FUNC) &_scCompReg_compRegLoad, 1},
+    {"_scCompReg_loadBedFile", (DL_FUNC) &_scCompReg_loadBedFile, 2},
     {"_scCompReg_initializeMatrix", (DL_FUNC) &_scCompReg_initializeMatrix, 5},
     {"_scCompReg_computeLambda", (DL_FUNC) &_scCompReg_computeLambda, 10},
     {"_scCompReg_iterateCluster", (DL_FUNC) &_scCompReg_iterateCluster, 15},

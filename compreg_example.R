@@ -10,14 +10,14 @@ sample1 = readRDS(paste(path, 'sample1.rds', sep = ''))
 sample2 = readRDS(paste(path, 'sample2.rds', sep = ''))
 
 peak.name.intersect.dir = paste(path, 'PeakName_intersect.txt', sep='')
-motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
+# motif.target.dir = paste(path, 'MotifTarget.txt', sep='')
 peak.gene.prior.dir = paste(path, 'peak_gene_prior_intersect.bed', sep='')
 
 prior_data_path = './prior_data/'
 motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 
 # To load the MotifTarget file, use the following line
-# motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
+motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
 
 # To run through the example with example data
 # simply run the line below

@@ -19,6 +19,7 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
 
 \arguments{
     \item{motif.target.dir}{\code{character}. Path to the directory where \code{motif_target} file is stored.}
+    \item{sep.char}{\code{character}. The field separator character. Each line in the file is separated by this character.}
 }
 
 \value{

@@ -1,11 +1,53 @@
 #include "../inst/include/coupled_nmf.h"
 
 // [[Rcpp::export]]
+Rcpp::List loadBedFile(std::string filePath,
+                       char sep) {
+    try {
+        std::vector<std::string> strVec1, strVec2;
+        std::vector<float> floatVec3, floatVec4;
+        char buffer[BUFFER_SIZE];
+        char *a = (char *)malloc(BUFFER_SIZE);
+        char *b = (char *)malloc(BUFFER_SIZE);
+        float c;
+        float d;
+        int scanRet;
+        FILE* f = fopen(filePath.c_str(), "r");
+        std::string temp;
+        std::string inputFormat = std::string("%s") + sep +
+                                  std::string("%s") + sep +
+                                  std::string("%f") + sep +
+                                  std::string("%f");
+        const char *inputCStr = inputFormat.c_str();
+        std::cout<<inputFormat<<endl;
+        while (true) {
+            if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
+            scanRet = sscanf(buffer, inputCStr, a, b, &c, &d);
+            temp = a;
+            strVec1.push_back(temp);
+            temp = b;
+            strVec2.push_back(temp);
+            floatVec3.push_back(c);
+            floatVec4.push_back(d);
+        }
+        fclose(f);
+        free(a);
+        free(b);
+        return List::create(Named("C1") = strVec1,
+                            Named("C2") = strVec2,
+                            Named("C3") = floatVec3,
+                            Named("C4") = floatVec4);
+    } catch (...) {
+        ::Rf_error("c++ exception");
+    }
+}
+
+// [[Rcpp::export]]
 Rcpp::List initializeMatrix(const unsigned int POnRow,
-                                 const unsigned int POnCol,
-                                 const unsigned int XnCol,
-                                 const unsigned int k,
-                                 const arma::sp_mat& D) {
+                             const unsigned int POnCol,
+                             const unsigned int XnCol,
+                             const unsigned int k,
+                             const arma::sp_mat& D) {
     try {
         arma::mat W10 = arma::mat(POnRow, k, fill::randu);
         arma::mat H10 = arma::mat(k, POnCol, fill::randu);

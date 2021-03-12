@@ -17,8 +17,8 @@ colMax <- function(X) {
     .Call(`_scCompReg_colMax`, X)
 }
 
-mfbsLoad <- function(motifTargetPath) {
-    .Call(`_scCompReg_mfbsLoad`, motifTargetPath)
+mfbsLoad <- function(motifTargetPath, sep) {
+    .Call(`_scCompReg_mfbsLoad`, motifTargetPath, sep)
 }
 
 corrTest <- function(X, Y) {
@@ -35,6 +35,10 @@ computeBZ <- function(tfBinding, OM, beta) {
 
 compRegLoad <- function(peakGenePriorPath) {
     .Call(`_scCompReg_compRegLoad`, peakGenePriorPath)
+}
+
+loadBedFile <- function(filePath, sep) {
+    .Call(`_scCompReg_loadBedFile`, filePath, sep)
 }
 
 initializeMatrix <- function(POnRow, POnCol, XnCol, k, D) {

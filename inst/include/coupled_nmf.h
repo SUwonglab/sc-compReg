@@ -18,8 +18,9 @@
 #include <math.h>
 #include <chrono> // for seeding
 #include "Hungarian.h"
-
 #include <iomanip>
+
+#define BUFFER_SIZE 200
 
 using namespace RcppParallel;
 using namespace arma;

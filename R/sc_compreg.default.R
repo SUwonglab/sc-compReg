@@ -50,10 +50,10 @@ sc_compreg.default <- function(O1,
         }
     }
 
-    E1.log <- max(E1) <= 100
-    E2.log <- max(E2) <= 100
-    O1.log <- max(O1) <= 100
-    O2.log <- max(O2) <= 100
+    E1.log <- max(E1) <= 30
+    E2.log <- max(E2) <= 30
+    O1.log <- max(O1) <= 30
+    O2.log <- max(O2) <= 30
     if (!E1.log | !E2.log | !O1.log | !O2.log) {
         warn('O1, O2, E1, E2 must be log2-transformed. Performing log2-transformation...')
         if (!E1.log) {
