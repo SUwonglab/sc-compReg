@@ -121,8 +121,8 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
 4. **Follow the tutorial on the `sc_compreg` function.**
     * **The necessary inputs to `sc_compreg` are**
         * consistent cluster assignments in scRNA-seq and scATAC-seq (can be obtained from coupled nonnegative matrix factorization or obtained elsewhere)
-        * gene expression matrices of samples 1 and 2
-        * chromatin accessibility matrices of samples 1 and 2
+        * **log2-transformed** gene expression matrices of samples 1 and 2
+        * **log2-transformed** chromatin accessibility matrices of samples 1 and 2
         * symbol names of samples 1 and 2
     * Input `peak.name.intersect.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
     * Input `peak.gene.prior.dir` is the path to the `peak_gene_prior_intersect.bed` file generated in step 3.

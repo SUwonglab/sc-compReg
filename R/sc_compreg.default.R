@@ -50,6 +50,26 @@ sc_compreg.default <- function(O1,
         }
     }
 
+    E1.log <- max(E1) <= 100
+    E2.log <- max(E2) <= 100
+    O1.log <- max(O1) <= 100
+    O2.log <- max(O2) <= 100
+    if (!E1.log | !E2.log | !O1.log | !O2.log) {
+        warn('O1, O2, E1, E2 must be log2-transformed. Performing log2-transformation...')
+        if (!E1.log) {
+            E1 <- log2(E1 + 1)
+        }
+        if (!E2.log) {
+            E2 <- log2(E2 + 1)
+        }
+        if (!O1.log) {
+            O1 <- log2(O1 + 1)
+        }
+        if (!O2.log) {
+            O2 <- log2(O2 + 1)
+        }
+    }
+
     if (length(symbol1) != nrow(E1)) {
         stop('symbol1 (row names of E1) must be of the same length as the # of rows for E1 matrix.')
     }

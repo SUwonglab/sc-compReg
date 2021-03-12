@@ -18,6 +18,17 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
 
 cnmf_tsne(cnmf.output$H1, cnmf.output$H2, save.plot=F)
 
+if (!require("Matrix")) install.packages("Matrix")
+library(Matrix)
+# log-transforming E matrix and O matrix
+# sc-compReg requires log-transformed matrices
+cnmf.data$PeakO@x = log2(cnmf.data$PeakO@x + 1)
+writeMM(cnmf.data$PeakO,
+        file=paste(path, 'O.mtx', sep=''))
+cnmf.data$X@x = log2(cnmf.data$X@x + 1)
+writeMM(cnmf.data$X,
+        file=paste(path, 'E.mtx', sep=''))
+
 write.table(cnmf.output$atac_cluster,
             paste(path, 'atac_cluster.txt', sep=''),
             row.names = F,
@@ -31,4 +42,6 @@ write.table(cnmf.output$rna_cluster,
             col.names = F,
             quote = F,
             sep = '\t')
+
+
 
