@@ -44,6 +44,10 @@ cnmf_tsne <- function(H1, H2,
          col=color.assignment, pch=19,
          cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
          xlab='x', ylab='y')
+    legend("topleft", inset=.05,
+           c(as.character(sort(unique(clust.assignments)))),
+           fill=c(color.palette[sort(unique(clust.assignments))]),
+           horiz=F, cex=0.7)
 
     plot(tsne.output$Y[, 1], tsne.output$Y[, 2],
          col=c(rep('red', length(S10)),
@@ -51,7 +55,8 @@ cnmf_tsne <- function(H1, H2,
          cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
          xlab='x', ylab='y')
     legend("topleft", inset=.05,
-           c("RNA-seq", "ATAC-seq"), fill=c('red', 'blue'), horiz=F, cex=0.7)
+           c("RNA-seq", "ATAC-seq"),
+           fill=c('red', 'blue'), horiz=F, cex=0.7)
 
     if (save.plot) {
         par(mfrow=c(1,1))
@@ -60,6 +65,10 @@ cnmf_tsne <- function(H1, H2,
              col=color.assignment, pch=19,
              cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
              xlab='x', ylab='y')
+        legend("topright", inset=.05,
+               c(sort(unique(clust.assignments))),
+               fill=c(color.palette[sort(unique(clust.assignments))]),
+               horiz=F, cex=0.7)
         dev.off()
 
         png(paste(path, 'joint_data_type_plot.png', sep='_'), units="in", width=8, height=8, res=300)
