@@ -24,10 +24,15 @@ devtools::install_github("SUwonglab/sc-compReg")
 ## Example ##
 For a full example of using the scCompReg method, please refer to `example.R`. The necessary data have been uploaded to the `data` folder in this repository.
 
-To download the data, run the following line:
+
+To download the data, make sure you have `git lfs` installed. Installation instructions can be found here: (https://github.com/git-lfs/git-lfs/wiki/Installation).
+
+Next, run the following line:
 ```bash
-git clone git@github.com:SUwonglab/sc-compReg.git
+git lfs clone https://github.com/SUwonglab/sc-compReg.git
 ```
+
+
 The downloaded data directory will be in `sc-compReg/data/`. Simply set 
 ```R
 path = './example_data/'
