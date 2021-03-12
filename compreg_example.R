@@ -17,7 +17,7 @@ prior_data_path = './prior_data/'
 motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 
 # To load the MotifTarget file, use the following line
-motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
+# motif.file = mfbs_load(paste(path, motif.target.dir, sep=''))
 
 # To run through the example with example data
 # simply run the line below
