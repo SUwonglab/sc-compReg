@@ -55,32 +55,33 @@ cnmf_tsne <- function(H1, H2,
          rep('blue', length(S20))), pch=19,
          cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
          xlab='x', ylab='y')
-    legend("topleft", inset=.05,
+    legend("topright", inset=.05,
            c("RNA-seq", "ATAC-seq"),
            fill=c('red', 'blue'), horiz=F, cex=0.7,
            bty = "n")
 
     if (save.plot) {
         par(mfrow=c(1,1))
-        png(paste(path, 'joint_clusters_plot.png', sep='_'), units="in", width=8, height=8, res=300)
+        png(paste(path, 'joint_clusters_plot.png', sep=''), units="in", width=8, height=8, res=300)
         plot(tsne.output$Y[, 1], tsne.output$Y[, 2],
              col=color.assignment, pch=19,
-             cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
+             cex=1, main = 't-SNE plot for RNA-seq and ATAC-seq',
              xlab='x', ylab='y')
         legend("topright", inset=.05,
-               c(sort(unique(clust.assignments))),
+               c(as.character(sort(unique(clust.assignments)))),
                fill=c(color.palette[sort(unique(clust.assignments))]),
-               horiz=F, cex=0.7,
+               horiz=F, cex=1,
                bty = "n")
         dev.off()
 
-        png(paste(path, 'joint_data_type_plot.png', sep='_'), units="in", width=8, height=8, res=300)
+        png(paste(path, 'joint_data_type_plot.png', sep=''), units="in", width=8, height=8, res=300)
         plot(tsne.output$Y[, 1], tsne.output$Y[, 2],
-             col=color.assignment, pch=19,
-             cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
+             col=c(rep('red', length(S10)),
+                   rep('blue', length(S20))), pch=19,
+             cex=1, main = 't-SNE plot for RNA-seq and ATAC-seq',
              xlab='x', ylab='y')
-        legend("topleft", inset=.05,
-               c("RNA-seq", "ATAC-seq"), fill=c('red', 'blue'), horiz=F, cex=0.7,
+        legend("topright", inset=.05,
+               c("RNA-seq", "ATAC-seq"), fill=c('red', 'blue'), horiz=F, cex=1,
                bty = "n")
         dev.off()
     }

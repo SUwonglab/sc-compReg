@@ -28,7 +28,7 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
                     beta_max_scale=5,
                     verbose=T)
 
-cnmf_tsne(cnmf.output$H1, cnmf.output$H2, save.plot=F)
+cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=T)
 
 if (!require("Matrix")) install.packages("Matrix")
 library(Matrix)
