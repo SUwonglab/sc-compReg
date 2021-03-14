@@ -101,7 +101,13 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
             ```
             where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
         * Output: 
-            * peak_gene_100k_corr.bed
+            * peak_gene_prior_intersect.bed
+        * After loading `peak.name` and `symbol`, run the following script in R to convert `peak_gene_prior_intersect.bed` to `D`, the coupling matrix, using the following code:
+        ```R 
+            D <- cnmf_load_coupling_matrix('peak_gene_prior_intersect.bed'),
+                                           peak.name,
+                                           symbol)
+        ```
     * Run `cnmf` to get the cluster labels for sample 1 and sample 2. The cluster labels should be passed to `sc_compreg` as `O1.idx`, `E1.idx`, `O2.idx`, and `E2.idx`. For an example on how to run `cnmf`, please refer to `cnmf_example.R`
     * Note: It is not required to obtain cluster assignments using the coupled nonnegative matrix factorization workflow. The necessary input to `scCompReg` is some consistent cluster assignments in scRNA-seq and scATAC-seq.
 
