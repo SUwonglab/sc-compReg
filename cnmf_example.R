@@ -7,6 +7,18 @@ rm(list = ls())
 # for example, something like path = 'Desktop/compreg_input/'
 path = './example_data/'
 
+
+# to convert the previously generated ```peak_gene_prior_intersect.bed``` by
+# ```cnmf_process_data.sh``` to D matrix
+# change the directory to where ```peak_gene_prior_intersect.bed```
+# is stored and run the lines below
+# preprocess.path = './preprocess_data/'
+# load peak.name
+# load symbol
+# D <- cnmf_load_coupling_matrix(paste(preprocess.path, 'peak_gene_prior_intersect.bed', sep=''),
+#                                peak.name,
+#                                symbol)
+
 cnmf.data <- readRDS(paste(path, 'cnmf_data.rds', sep=''))
 cnmf.output <- cnmf(cnmf.data$PeakO,
                     cnmf.data$X,

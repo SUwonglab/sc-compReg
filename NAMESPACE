@@ -15,6 +15,7 @@ importFrom(Rtsne, Rtsne)
 importFrom(scales, hue_pal)
 
 export(cnmf)
+export(cnmf_load_coupling_matrix)
 export(sc_compreg)
 export(mfbs_load)
 export(cnmf_tsne)

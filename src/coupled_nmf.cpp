@@ -19,7 +19,6 @@ Rcpp::List loadBedFile(std::string filePath,
                                   std::string("%f") + sep +
                                   std::string("%f");
         const char *inputCStr = inputFormat.c_str();
-        std::cout<<inputFormat<<endl;
         while (true) {
             if (fgets(buffer, BUFFER_SIZE, f) == NULL) break;
             scanRet = sscanf(buffer, inputCStr, a, b, &c, &d);

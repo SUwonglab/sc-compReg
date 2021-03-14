@@ -3,6 +3,8 @@ cnmf.default <- function(peak.o,
                          D,
                          k,
                          beta.min,
+                         rna.cell.label,
+                         atac.cell.label,
                          alpha=0.5,
                          beta.max.scale=5,
                          verbose=T,
@@ -114,7 +116,26 @@ cnmf.default <- function(peak.o,
         W2 <- update.ret$W2
         score <- nmf.ret$score
     }
-    cluster.output <- cluster(H1, H2);
+    cluster.output <- cluster(H1, H2)
+
+    cluster.output$c1 <- data.frame('ATAC-cluster' = cluster.output$c2)
+    cluster.output$c2 <- data.frame('RNA-cluster' = cluster.output$c2)
+    if (! missing(rna.cell.label)) {
+        if (length(rna.cell.label) != ncol(X)) {
+            warning("Cell labels and gene expression matrix are incompatible. Not using cell labels for RNA-seq clustering output.")
+        } else {
+            rownames(cluster.output$c2) <- rna.cell.label
+        }
+    }
+
+    if (! missing(atac.cell.label)) {
+        if (length(atac.cell.label) != ncol(peak.o)) {
+            warning("Cell labels and chromatin accessibility matrix are incompatible. Not using cell labels for ATAC-seq clustering output.")
+        } else {
+            rownames(cluster.output$c1) <- atac.cell.label
+        }
+    }
+
     return(list("W1" = W1,
                 "W2" = W2,
                 "H1" = H1,
