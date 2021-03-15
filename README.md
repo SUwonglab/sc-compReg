@@ -33,12 +33,12 @@ git lfs clone https://github.com/SUwonglab/sc-compReg.git
 ```
 
 
-The downloaded data directory will be in `sc-compReg/data/`. Simply set in `R`
+The downloaded data directory will be in `sc-compReg/data/`. Simply set in R
 ```R
 path = './example_data/'
 prior_data_path = './prior_data/'
 ```
-To run scCompReg, run the following lines in `R`:
+To run scCompReg, run the following lines in R:
 ```R
 library(scCompReg)
 
@@ -71,7 +71,7 @@ compreg.output = sc_compreg(sample1$O1,
                             sep.char=' ')
 
 ```
-To save the obtained output, run the lines below in `R`:
+To save the obtained output, run the lines below in R:
 ```R
 for (i in 1:compreg.output$n.pops) {
     write.table(compreg.output$hub.tf[[i]],
@@ -104,7 +104,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
             where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
         * Output: 
             * peak_gene_coupling_matrix.txt
-        * After loading `peak.name` and `symbol`, run the following script in R to convert `peak_gene_coupling_matrix.txt` to `D`, the coupling matrix, using the following code in `R`:
+        * After loading `peak.name` and `symbol`, run the following script in R to convert `peak_gene_coupling_matrix.txt` to `D`, the coupling matrix, using the following code in R:
         ```R 
             D <- cnmf_load_coupling_matrix('peak_gene_coupling_matrix.txt'),
                                            peak.name,
@@ -141,7 +141,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         * symbol names of samples 1 and 2
     * Input `peak.name.intersect.dir` is the path to the `PeakName_intersect.txt` file generated in step 3.
     * Input `peak.gene.prior.dir` is the path to the `peak_gene_prior_intersect.bed` file generated in step 3.
-    * Load the corresponding motif file for human in `R` via
+    * Load the corresponding motif file for human in R via
         ```R
             motif = readRDS('prior_data/motif_human.rds')
         ```
@@ -149,7 +149,7 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
         ```R
             motif = readRDS('prior_data/motif_mouse.rds')
         ```
-    * Load `motif.file` in `R` via
+    * Load `motif.file` in R via
         ```R
             motif.file = mfbs_load(motif.target.dir)
         ```
