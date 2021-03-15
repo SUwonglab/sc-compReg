@@ -1,4 +1,3 @@
-exportPattern("^[[:alpha:]]+")
 useDynLib(scCompReg, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 importFrom(RcppParallel, RcppParallelLibs)
