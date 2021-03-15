@@ -18,7 +18,7 @@ Please check the man page via `?function` (for example, `?sc_compreg`) for a det
 Use the following command to install scCompReg R package from source code:
 ```R
 require(devtools)
-devtools::install_github("SUwonglab/sc-compReg")
+devtools::install_github("SUwonglab/sc-compReg", subdir="R_package")
 ```
 
 ## Example ##
