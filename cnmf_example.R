@@ -7,7 +7,6 @@ rm(list = ls())
 # for example, something like path = 'Desktop/compreg_input/'
 path <- './example_data/'
 
-
 # # to convert the previously generated ```peak_gene_coupling_matrix.txt``` by
 # # ```cnmf_process_data.sh``` to D matrix
 # # change the directory to where ```peak_gene_coupling_matrix.txt```
@@ -42,7 +41,7 @@ cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=T)
 if (!require("Matrix")) install.packages("Matrix")
 library(Matrix)
 # log-transforming E matrix and O matrix
-# sc-compReg requires log-transformed matrices
+# ```cnmf```` requires log-transformed matrices
 cnmf.data$PeakO@x <- log2(cnmf.data$PeakO@x + 1)
 writeMM(cnmf.data$PeakO,
         file=paste(path, 'O.mtx', sep=''))
