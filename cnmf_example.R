@@ -8,14 +8,14 @@ rm(list = ls())
 path = './example_data/'
 
 
-# to convert the previously generated ```peak_gene_prior_intersect.bed``` by
+# to convert the previously generated ```peak_gene_coupling_matrix.txt``` by
 # ```cnmf_process_data.sh``` to D matrix
-# change the directory to where ```peak_gene_prior_intersect.bed```
+# change the directory to where ```peak_gene_coupling_matrix.txt```
 # is stored and run the lines below
 # preprocess.path = './preprocess_data/'
 # load peak.name
 # load symbol
-# D <- cnmf_load_coupling_matrix(paste(preprocess.path, 'peak_gene_prior_intersect.bed', sep=''),
+# D <- cnmf_load_coupling_matrix(paste(preprocess.path, 'peak_gene_coupling_matrix.txt', sep=''),
 #                                peak.name,
 #                                symbol)
 
@@ -26,7 +26,9 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
                     k=3,
                     alpha=0.5,
                     beta_max_scale=5,
-                    verbose=T)
+                    verbose=T,
+                    rna.cell.barcode = sample1$symbol1,
+                    atac.cell.barcode = sample1$symbol1,)
 
 cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=T)
 

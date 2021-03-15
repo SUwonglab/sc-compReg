@@ -42,7 +42,7 @@ cnmf_tsne <- function(H1, H2,
 
     plot(tsne.output$Y[, 1], tsne.output$Y[, 2],
          col=color.assignment, pch=19,
-         cex=0.8, main = 't-SNE plot for RNA-seq and ATAC-seq',
+         cex=0.8, main = 't-SNE plot colored by clustering output',
          xlab='x', ylab='y')
     legend("topleft", inset=.05,
            c(as.character(sort(unique(clust.assignments)))),
@@ -66,7 +66,7 @@ cnmf_tsne <- function(H1, H2,
         plot(tsne.output$Y[, 1], tsne.output$Y[, 2],
              col=color.assignment, pch=19,
              cex=1, cex.main=2, cex.axis=2,
-             main = 't-SNE plot for RNA-seq and ATAC-seq',
+             main = 't-SNE plot colored by clustering output',
              xlab='x', ylab='y')
         legend("topright", inset=.05,
                c(as.character(sort(unique(clust.assignments)))),

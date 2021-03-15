@@ -2,12 +2,12 @@ cnmf.default <- function(peak.o,
                          X,
                          D,
                          k,
-                         beta.min,
-                         rna.cell.label,
-                         atac.cell.label,
                          alpha=0.5,
                          beta.max.scale=5,
                          verbose=T,
+                         beta.min,
+                         rna.cell.barcode,
+                         atac.cell.barcode,
                          ...) {
     if (! is(peak.o, 'matrix') & ! is(peak.o, 'sparseMatrix')) {
         stop('peak.o must be of format matrix or sparseMatrix.')
@@ -120,19 +120,19 @@ cnmf.default <- function(peak.o,
 
     cluster.output$c1 <- data.frame('ATAC-cluster' = cluster.output$c2)
     cluster.output$c2 <- data.frame('RNA-cluster' = cluster.output$c2)
-    if (! missing(rna.cell.label)) {
-        if (length(rna.cell.label) != ncol(X)) {
+    if (! missing(rna.cell.barcode)) {
+        if (length(rna.cell.barcode) != ncol(X)) {
             warning("Cell labels and gene expression matrix are incompatible. Not using cell labels for RNA-seq clustering output.")
         } else {
-            rownames(cluster.output$c2) <- rna.cell.label
+            rownames(cluster.output$c2) <- rna.cell.barcode
         }
     }
 
-    if (! missing(atac.cell.label)) {
-        if (length(atac.cell.label) != ncol(peak.o)) {
+    if (! missing(atac.cell.barcode)) {
+        if (length(atac.cell.barcode) != ncol(peak.o)) {
             warning("Cell labels and chromatin accessibility matrix are incompatible. Not using cell labels for ATAC-seq clustering output.")
         } else {
-            rownames(cluster.output$c1) <- atac.cell.label
+            rownames(cluster.output$c1) <- atac.cell.barcode
         }
     }
 

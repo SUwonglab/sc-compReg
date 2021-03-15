@@ -22,10 +22,12 @@ Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Fran
     \item{X}{\code{matrix} or \code{sparseMatrix}. Matrix of gene expression (RNA-seq data).}
     \item{D}{\code{matrix} or \code{sparseMatrix}.Coupling matrix learned from paired expression and chromatin accessibility data across diverse panel of cellular contexts.}
     \item{k}{\code{numeric} or \code{integer}. Number of clusters to identify.}
-    \item{beta.min}{\code{numeric}. If \code{beta.min} is missing, then it is set to
-    \code{10.0^seq(beta.max.scale, -3, -1)}.}
     \item{alpha}{\code{numeric} Tuning parameter balancing the weight of scRNA-seq and scATAC-seq. Default: 0.5.}
     \item{beta.max.scale}{\code{numeric}.}
+    \item{beta.min}{\code{numeric}. If \code{beta.min} is missing, then it is set to
+    \code{10.0^seq(beta.max.scale, -3, -1)}.}
+    \item{rna.cell.barcode}{\code{character}}. If \code{rna.cell.barcode} is provided, each rna clustering output will be matched with its corresponding cell barcode.
+    \item{atac.cell.barcode}{\code{character}}. If \code{atac.cell.barcode} is provided, each atac clustering output will be matched with its corresponding cell barcode.
 }
 
 \value{

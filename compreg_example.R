@@ -23,6 +23,11 @@ motif = readRDS(paste(prior_data_path, 'motif_human.rds', sep=''))
 # simply run the line below
 motif.file = readRDS(paste(path, 'motif_file.rds', sep=''))
 
+print('Printing first 5 rows of sample 1 peak name...')
+print(unlist(sample1$peak.name1, use.names=F)[1:5])
+print('Printing first 5 rows of sample 1 symbol...')
+print(unlist(sample1$symbol1, use.names=F)[1:5])
+
 compreg.output = sc_compreg(sample1$O1,
                             sample1$E1,
                             sample1$O1.idx,

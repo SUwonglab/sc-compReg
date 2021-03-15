@@ -40,6 +40,8 @@ prior_data_path = './prior_data/'
 ```
 To run scCompReg, run the following lines:
 ```R
+library(scCompReg)
+
 sample1 = readRDS(paste(path, 'sample1.rds', sep = ''))
 sample2 = readRDS(paste(path, 'sample2.rds', sep = ''))
 
@@ -101,10 +103,10 @@ The entire scCompReg workflow consists of three mandatory steps and one optional
             ```
             where `genome_version` is one of {`hg19`, `hg38`, `mm9`, `mm10`}, and `prior_data` is a folder downloaded in step 1.
         * Output: 
-            * peak_gene_prior_intersect.bed
-        * After loading `peak.name` and `symbol`, run the following script in R to convert `peak_gene_prior_intersect.bed` to `D`, the coupling matrix, using the following code:
+            * peak_gene_coupling_matrix.txt
+        * After loading `peak.name` and `symbol`, run the following script in R to convert `peak_gene_coupling_matrix.txt` to `D`, the coupling matrix, using the following code:
         ```R 
-            D <- cnmf_load_coupling_matrix('peak_gene_prior_intersect.bed'),
+            D <- cnmf_load_coupling_matrix('peak_gene_coupling_matrix.txt'),
                                            peak.name,
                                            symbol)
         ```
