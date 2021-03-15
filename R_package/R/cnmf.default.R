@@ -32,7 +32,7 @@ cnmf.default <- function(peak.o,
     peak.o.log <- max(peak.o@x <= 30)
     X.log <- max(X@x <= 30)
     if (! peak.o.log | ! X.log) {
-        warn('peak.o and X must be log2-transformed. Performing log2-transformation...')
+        warning('peak.o and X must be log2-transformed. Performing log2-transformation...')
     }
     if (! peak.o.log) {
         peak.o@x <- log2(peak.o@x + 1)
