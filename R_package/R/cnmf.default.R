@@ -132,6 +132,8 @@ cnmf.default <- function(peak.o,
 
     cluster.output$c1 <- data.frame('ATAC-cluster' = cluster.output$c2)
     cluster.output$c2 <- data.frame('RNA-cluster' = cluster.output$c2)
+    colnames(cluster.output$c1) <- "atac_cluster"
+    colnames(cluster.output$c2) <- "rna_cluster"
 
     if (! missing(rna.cell.barcode)) {
         if (length(rna.cell.barcode) != ncol(X)) {
@@ -139,7 +141,6 @@ cnmf.default <- function(peak.o,
             rownames(cluster.output$c2) <- paste('cell', rownames(cluster.output$c2), sep='_')
         } else {
             rownames(cluster.output$c2) <- rna.cell.barcode
-            colnames(cluster.output$c2) <- "rna_cluster"
         }
     } else {
         rownames(cluster.output$c2) <- paste('cell', rownames(cluster.output$c2), sep='_')
@@ -151,7 +152,6 @@ cnmf.default <- function(peak.o,
             rownames(cluster.output$c1) <- paste('cell', rownames(cluster.output$c1), sep='_')
         } else {
             rownames(cluster.output$c1) <- atac.cell.barcode
-            colnames(cluster.output$c1) <- "atac_cluster"
         }
     } else {
         rownames(cluster.output$c1) <- paste('cell', rownames(cluster.output$c1), sep='_')
