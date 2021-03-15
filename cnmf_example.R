@@ -52,14 +52,14 @@ cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=F, perplexity=100
 
 write.table(cnmf.output$atac_cluster,
             paste(path, 'atac_cluster.txt', sep=''),
-            row.names = F,
+            row.names = T,
             col.names = F,
             quote = F,
             sep = '\t')
 
 write.table(cnmf.output$rna_cluster,
             paste(path, 'rna_cluster.txt', sep=''),
-            row.names = F,
+            row.names = T,
             col.names = F,
             quote = F,
             sep = '\t')
