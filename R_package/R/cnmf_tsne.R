@@ -1,6 +1,7 @@
 cnmf_tsne <- function(H1, H2,
                       save.plot=T,
                       path='./',
+                      perplexity=100,
                       ...) {
     if (! is (H1, 'matrix')) {
         stop("H1 must be a matrix (output from cnmf).")
@@ -26,7 +27,7 @@ cnmf_tsne <- function(H1, H2,
     HH <- t(sweep(HH, 2, sqrt(colSums(HH^2)), '/'))
     HH.cos.sim <- HH / sqrt(rowSums(HH * HH))
     HH.cos.sim <- HH.cos.sim %*% t(HH.cos.sim)
-    tsne.output <- Rtsne(HH.cos.sim, perplexity = 100,
+    tsne.output <- Rtsne(HH.cos.sim, perplexity = perplexity,
                          check_duplicates = F,
                          is_distance = F,
                          pca_scale = T,
