@@ -38,16 +38,17 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
 
 cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=T)
 
-if (!require("Matrix")) install.packages("Matrix")
-library(Matrix)
-# log-transforming E matrix and O matrix
-# ```cnmf```` requires log-transformed matrices
-cnmf.data$PeakO@x <- log2(cnmf.data$PeakO@x + 1)
-writeMM(cnmf.data$PeakO,
-        file=paste(path, 'O.mtx', sep=''))
-cnmf.data$X@x <- log2(cnmf.data$X@x + 1)
-writeMM(cnmf.data$X,
-        file=paste(path, 'E.mtx', sep=''))
+# if data is not log-transformed, perform log-transformation
+# if (!require("Matrix")) install.packages("Matrix")
+# library(Matrix)
+# # log-transforming E matrix and O matrix
+# # ```cnmf```` requires log-transformed matrices
+# cnmf.data$PeakO@x <- log2(cnmf.data$PeakO@x + 1)
+# writeMM(cnmf.data$PeakO,
+#         file=paste(path, 'O.mtx', sep=''))
+# cnmf.data$X@x <- log2(cnmf.data$X@x + 1)
+# writeMM(cnmf.data$X,
+#         file=paste(path, 'E.mtx', sep=''))
 
 write.table(cnmf.output$atac_cluster,
             paste(path, 'atac_cluster.txt', sep=''),
