@@ -26,9 +26,7 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
                     k=3,
                     alpha=0.5,
                     beta_max_scale=5,
-                    verbose=T,
-                    rna.cell.barcode = sample1$symbol1,
-                    atac.cell.barcode = sample1$symbol1,)
+                    verbose=T)
 
 cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=T)
 
