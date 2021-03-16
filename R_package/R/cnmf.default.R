@@ -29,8 +29,8 @@ cnmf.default <- function(peak.o,
         X <- Matrix(X, sparse = T)
     }
 
-    peak.o.log <- max(peak.o@x <= 30)
-    X.log <- max(X@x <= 30)
+    peak.o.log <- max(peak.o@x) <= 30
+    X.log <- max(X@x) <= 30
     if ((! peak.o.log) | (! X.log)) {
         warning(paste('peak.o and X must be log2-transformed.',
                       'Performing log2-transformation...', sep='\n'),
