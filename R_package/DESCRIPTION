@@ -11,6 +11,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
 	Rcpp (>= 1.0.5), RcppParallel, graphics, stats, NNLM (>= 0.4.4), reader, muRty (>= 0.3.1), R.matlab (>= 3.6.2), pracma (>= 2.2.9), EnvStats (>= 2.3.0), Matrix (>= 1.2-18), Rtsne (>= 0.15), scales (>= 1.1.1)
+Remotes:
+    git::https://github.com/linxihui/NNLM.git
 SystemRequirements: GNU make
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel, BH
 RoxygenNote: 6.1.1
