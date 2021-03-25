@@ -6,7 +6,7 @@ scCompReg (**S**ingle-**C**ell **C**omparative **R**egulatory analysis) is an R 
 Please check the man page via `?function` (for example, `?sc_compreg`) for a detailed description of the types of inputs and outputs.
 
 ## System Requirements ##
-* Linux or MacOS
+* Operating System: Linux or MacOS
 * R (>= 3.6.0)
 * Bedtools (Linux)
 * Homer (Linux)
