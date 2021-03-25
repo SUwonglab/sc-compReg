@@ -87,21 +87,21 @@ cnmf.default <- function(peak.o,
     PO.dim <- dim(peak.o)
 
     mat.init <- initializeMatrix(PO.dim[1],
-                          PO.dim[2],
-                          dim(X)[2],
-                          k,
-                          D)
+                                 PO.dim[2],
+                                 dim(X)[2],
+                                 k,
+                                 D)
 
     for (j in 1:length(beta)) {
         dp.ret <- compute_lambda(peak.o,
-                                w1,
-                                h1,
-                                X,
-                                w2,
-                                h2,
-                                D,
-                                alpha,
-                                beta[j])
+                                 w1,
+                                 h1,
+                                 X,
+                                 w2,
+                                 h2,
+                                 D,
+                                 alpha,
+                                 beta[j])
         lambda1 <- dp.ret$lambda1
         lambda2 <- dp.ret$lambda2
         if (verbose) {
