@@ -1,4 +1,4 @@
-//coupledNMF.h
+//coupled_nmf.h
 #ifndef COUPLED_NMF
 #define COUPLED_NMF
 
@@ -14,15 +14,14 @@
 #include <sstream>
 #include <cmath> // isnan
 #include <RcppArmadillo.h>
-#include <RcppParallel.h>
 #include <math.h>
 #include <chrono> // for seeding
 #include "Hungarian.h"
 #include <iomanip>
 
+
 #define BUFFER_SIZE 200
 
-using namespace RcppParallel;
 using namespace arma;
 using namespace R;
 using namespace Rcpp;

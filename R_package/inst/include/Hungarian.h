@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <vector>
-#include<RcppArmadillo.h>
+#include <RcppArmadillo.h>
 
 using namespace std;
 

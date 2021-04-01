@@ -34,7 +34,7 @@ cnmf.output <- cnmf(cnmf.data$PeakO,
                     k=3,
                     alpha=0.5,
                     beta_max_scale=5,
-                    verbose=T)
+                    verbose=F)
 
 cnmf_tsne(cnmf.output$H1, cnmf.output$H2, path=path, save.plot=F, perplexity=100)
 

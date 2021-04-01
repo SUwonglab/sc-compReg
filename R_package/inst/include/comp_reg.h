@@ -12,7 +12,6 @@
 #include <sstream>
 #include <cmath> // isnan
 #include <RcppArmadillo.h>
-#include <RcppParallel.h>
 #include <math.h>
 #include <chrono> // for seeding
 #include <bits/stdc++.h>
@@ -29,7 +28,6 @@
 #define TOLERANCE 0.00000001
 #define ALPHA_THRESH 0.05
 
-using namespace RcppParallel;
 using namespace arma;
 using namespace R;
 using namespace Rcpp;
