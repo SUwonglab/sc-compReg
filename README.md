@@ -1,6 +1,6 @@
 # scCompReg #
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-https://zenodo.org/badge/DOI/10.5281/zenodo.5034676.svg
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5034676.svg)
 
 scCompReg (**S**ingle-**C**ell **C**omparative **R**egulatory analysis) is an R package that provides coupled clustering and joint embedding of scRNA-seq and scATAC-seq on one sample, and performs comparative gene regulatory analysis between two conditions.
 
@@ -168,5 +168,5 @@ mfbs_load     | Efficiently loads the `motif_target` file and returns an R `list
 
 ## Citation ##
 <a id="1">[1]</a> 
-**Comparative regulatory analysis of single cell data reveals a novel B cell subpopulation in chronic lymphocytic leukemia**
+**Sc-compReg enables the comparison of gene regulatory networks between conditions using single-cell data**
 Zhana Duren, Wenhui Sophia Lu, Joseph G. Arthur, Preyas Shah, Jingxue Xin,  Francesca Meschi, Miranda Lin Li, Corey M. Nemec, Yifeng Yin, and Wing Hung Wong
